@@ -12,14 +12,14 @@
     - Python
     - FastAPI
 ## Cronograma
- 1. Levantamento de requisitos (25/03 a 01/04)
- 2. Prototipagem das telas no Figma (25/03 a 08/04)
- 3. Modelagem do banco de dados (25/03 a 08/04)
- 4. Documentação da API (11/04 a 18/04)
- 5. Estrutura inicial do projeto (11/04 a 18/04)
- 6. Iniciar desenvolvimento (20/04)
- 7. Refinamento do projeto (20/07)
- 8. Entrega ()
+| Fase                              | Atividade                          | Duração        | Período (Semanas) |
+|-----------------------------------|-----------------------------------|---------------|-------------------|
+| Planejamento                      | Levantamento de requisitos        | 2 semanas     | 1 - 2             |
+| Design                            | Prototipação no Figma             | 3 semanas     | 3 - 5             |
+| Arquitetura                       | Modelagem do banco de dados       | 2 semanas     | 6 - 7             |
+| Backend                           | Desenvolvimento da API            | 4 semanas     | 8 - 11            |
+| Frontend                          | Desenvolvimento do frontend       | 4 semanas     | 12 - 15           |
+| Finalização                       | Ajustes, testes e refinamentos    | 1 semana      | 16                |
 ## Componentes
   - Alan Pereira da Silva
   - Flauber Sauan Candido Alves
