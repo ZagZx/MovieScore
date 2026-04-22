@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from constants import KITSU_API_URL
+from constants import KITSU_API_URL, HEADERS_KITSU
 from utils import get_data
 
 animes_router = APIRouter(prefix="/anime", tags=["anime"])
@@ -12,5 +12,5 @@ def buscar_animes(busca: str):
     if busca:
         params["filter[text]"] = busca
 
-    animes = get_data(url, params)
+    animes = get_data(url, params, HEADERS_KITSU)
     return animes

@@ -15,3 +15,8 @@ HEADERS_TMDB = {
     "accept": "application/json",
     "Authorization": f"Bearer {TMDB_KEY}"
 }
+
+HEADERS_KITSU = {
+    "Accept": "application/vnd.api+json",
+    "Content-Type": "application/vnd.api+json"
+}
