@@ -1,6 +1,5 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
-from sqlalchemy.exc import IntegrityError
 
 from database import SessionDep
 from models import UsuarioRead, UsuarioCreate, UsuarioUpdate, Usuario
@@ -27,6 +26,18 @@ def buscar_usuario(id: int, session: SessionDep):
     
 @usuario_router.post("", response_model=UsuarioRead, status_code=status.HTTP_201_CREATED)
 def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
+    usuario = session.exec(
+        select(Usuario).where((Usuario.email == usuario_json.email) | (Usuario.nome == usuario_json.nome))
+    ).first()
+
+    if usuario:
+        if usuario.nome == usuario_json.nome:
+            raise HTTPException(400, "Já existe um usuário com esse nome")
+        if usuario.email == usuario_json.email:
+            print("ativouuu")
+            raise HTTPException(400, "Já existe um usuário com esse email")
+
+    
     novo_usuario = Usuario(
         nome=usuario_json.nome,
         email=usuario_json.email,
