@@ -34,7 +34,6 @@ def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
         if usuario.nome == usuario_json.nome:
             raise HTTPException(400, "Já existe um usuário com esse nome")
         if usuario.email == usuario_json.email:
-            print("ativouuu")
             raise HTTPException(400, "Já existe um usuário com esse email")
 
     
