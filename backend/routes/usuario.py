@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
+from sqlalchemy.exc import IntegrityError
 
 from database import SessionDep
 from models import UsuarioRead, UsuarioCreate, UsuarioUpdate, Usuario
@@ -24,7 +25,7 @@ def buscar_usuario(id: int, session: SessionDep):
     
     return usuario
     
-@usuario_router.post("", response_model=UsuarioRead)
+@usuario_router.post("", response_model=UsuarioRead, status_code=status.HTTP_201_CREATED)
 def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
     novo_usuario = Usuario(
         nome=usuario_json.nome,
@@ -34,10 +35,11 @@ def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
     try:
         session.add(novo_usuario)
         session.commit()
-    except:
+        
+        return novo_usuario
+    except Exception as e:
+        print(e)
         session.rollback()
-
-    return novo_usuario
 
 @usuario_router.patch("/{id}", response_model=UsuarioRead)
 def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, session: SessionDep):
@@ -56,12 +58,13 @@ def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, session: SessionDep)
     try: 
         session.commit()
         session.refresh(usuario)
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
 
     return usuario
     
-@usuario_router.delete("/{id}")
+@usuario_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_usuario(id: int, session: SessionDep):
     usuario = session.get(Usuario, id)
 
@@ -72,6 +75,7 @@ def deletar_usuario(id: int, session: SessionDep):
 
     try:
         session.commit()
-    except:
+    except Exception as e:
+        print(e)
         session.rollback()
 
