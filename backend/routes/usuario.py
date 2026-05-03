@@ -5,7 +5,7 @@ from database import SessionDep
 from models import UsuarioRead, UsuarioCreate, UsuarioUpdate, Usuario
 from utils import get_password_hash
 
-usuario_router = APIRouter(prefix="/usuario", tags=["usuario"])
+usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 @usuario_router.get("", response_model=list[UsuarioRead])
 def listar_usuarios(session: SessionDep):
@@ -20,7 +20,7 @@ def buscar_usuario(id: int, session: SessionDep):
     usuario: Usuario = session.get(Usuario, id)
 
     if not usuario:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
     
     return usuario
     
@@ -32,9 +32,9 @@ def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
 
     if usuario:
         if usuario.nome == usuario_json.nome:
-            raise HTTPException(400, "Já existe um usuário com esse nome")
+            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse nome")
         if usuario.email == usuario_json.email:
-            raise HTTPException(400, "Já existe um usuário com esse email")
+            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse email")
 
     
     novo_usuario = Usuario(
@@ -53,10 +53,19 @@ def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
 
 @usuario_router.patch("/{id}", response_model=UsuarioRead)
 def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, session: SessionDep):
+    usuario_existente = session.exec(
+        select(Usuario).where((Usuario.email == usuario_json.email) | (Usuario.nome == usuario_json.nome))
+    ).first()
+
+    if usuario_existente:
+        if usuario_existente.nome == usuario_json.nome:
+            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse nome")
+        if usuario_existente.email == usuario_json.email:
+            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse email")
+        
     usuario = session.get(Usuario, id)
-    
     if not usuario:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
     
     if usuario_json.nome:
         usuario.nome = usuario_json.nome
@@ -79,7 +88,7 @@ def deletar_usuario(id: int, session: SessionDep):
     usuario = session.get(Usuario, id)
 
     if not usuario:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status.HTTP_404_NOT_FOUND)
    
     session.delete(usuario)
 
