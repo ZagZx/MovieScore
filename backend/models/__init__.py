@@ -4,3 +4,11 @@ from .usuario import (
     UsuarioUpdate,
     Usuario,
 )
+
+from .avaliacao import (
+    Avaliacao,
+    AvaliacaoCreate,
+    AvaliacaoRead,
+    AvaliacaoUpdate,
+    TipoMidia,
+)
