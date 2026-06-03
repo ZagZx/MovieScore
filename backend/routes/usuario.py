@@ -2,8 +2,13 @@ from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
 from database import SessionDep
-from models import UsuarioRead, UsuarioCreate, UsuarioUpdate, Usuario
 from utils import get_password_hash
+from models import Usuario
+from schemas.usuario import (
+    UsuarioCreate,
+    UsuarioRead,
+    UsuarioUpdate
+)
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
