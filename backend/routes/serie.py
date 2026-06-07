@@ -8,20 +8,25 @@ from constants import (
 )
 from utils import get_data
 
+
 series_router = APIRouter(
     prefix="/series",
     tags=["Séries"]
 )
 
-
 @series_router.get("")
-def listar_series():
+def buscar_series(busca: str):
+    params = PARAMS_TMDB.copy()
+    if busca:
+        params["query"] = busca
+        
     try:
         data = get_data(
-            f"{TMDB_API_URL}/tv/popular",
-            params=PARAMS_TMDB,
+            f"{TMDB_API_URL}/search/tv",
+            params=params,
             headers=HEADERS_TMDB
         )
+
 
         if not data:
             raise HTTPException(
