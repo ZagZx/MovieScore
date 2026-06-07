@@ -9,12 +9,18 @@ def get_password_hash(password):
 def verify_password(password, hashed_password):
     return password_hash.verify(password, hashed_password)
 
-def get_data(url, params = None, headers = None):
-    request = requests.get(url, params, headers=headers)
-
+def get_data(url, params=None, headers=None):
     try:
-        data = request.json()
-    except Exception as e:
-        print(e)
+        response = requests.get(
+            url,
+            params=params,
+            headers=headers,
+            timeout=10
+        )
 
-    return data
+        response.raise_for_status()
+
+        return response.json()
+
+    except requests.exceptions.RequestException:
+        return None

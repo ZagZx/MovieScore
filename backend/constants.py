@@ -5,8 +5,11 @@ load_dotenv()
 
 KITSU_API_URL = "https://kitsu.io/api/edge"
 TMDB_API_URL = "https://api.themoviedb.org/3"
-TMDB_API_KEY = "eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJlYzliMTUwNGQ1MDBkMzE3MTU0ZWU3MDRhZjg0ZjQzNiIsIm5iZiI6MTc4MDMwODk3MS4yNTIsInN1YiI6IjZhMWQ1YmViYjBhZmE0YzNlZTgyYTZjMSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.nYDbSi_34xgj5EX5xstqGoF0GFUD_9v7TbpCFXnBZ1E"
-TMDB_KEY = getenv("TMBD_API_KEY")
+TMDB_KEY = getenv("TMDB_API_KEY")
+
+
+if not TMDB_KEY:
+    raise ValueError("TMDB_API_KEY não encontrada no arquivo .env")
 
 PARAMS_TMDB = {
     "language": "pt-BR"
