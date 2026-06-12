@@ -1,7 +1,7 @@
-from sqlmodel import create_engine, Session
+from sqlalchemy import create_engine, URL
+from sqlalchemy.orm import Session, sessionmaker
 from fastapi import Depends
 from typing import Annotated
-from sqlalchemy import URL
 from os import getenv
 from dotenv import load_dotenv
 
@@ -23,9 +23,10 @@ DB_URL = URL.create(
 )
 
 engine = create_engine(DB_URL)
+SessionFactory = sessionmaker(bind=engine)
 
 def get_session():
-    with Session(engine) as session:
+    with SessionFactory() as session:
         yield session
 
-SessionDep = Annotated[Session,Depends(get_session)]
+SessionDep = Annotated[Session, Depends(get_session)]

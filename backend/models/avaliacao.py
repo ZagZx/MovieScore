@@ -1,44 +1,33 @@
-from sqlmodel import SQLModel, Field
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
+from sqlalchemy import BigInteger, DateTime, Text, ForeignKey, DECIMAL
+from sqlalchemy.orm import mapped_column, Mapped, relationship
+from decimal import Decimal
 from datetime import datetime
-from enum import Enum
+
+from utils import get_now_datetime_utc
+from .base import Base
+if TYPE_CHECKING:
+    from .conteudo import Conteudo
+    from .usuario import Usuario
 
 
-class TipoMidia(str, Enum):
-    filme = "filme"
-    serie = "serie"
-    anime = "anime"
+class Avaliacao(Base):
+    __tablename__ = "avaliacao"
 
-class Avaliacao(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuario.id"), nullable=False)
+    conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), nullable=False)
+    estrelas: Mapped[Decimal] = mapped_column(DECIMAL(2, 1), nullable=False)
+    comentario: Mapped[Optional[str]] = mapped_column(Text)
+    data_criacao: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        insert_default=get_now_datetime_utc,
+        nullable=False
+    )
+    data_atualizacao: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True),
+        onupdate=get_now_datetime_utc
+    )
 
-    usuario_id: int = Field(foreign_key="usuario.id", index=True)
-
-    # esse midia_id vai receber da API TMDB ou Kitsu 
-    midia_id: str = Field(index=True)
-    tipo: TipoMidia
-    # não sei se vai ser de 0 a 10 ou 0 a 5 
-    nota: float = Field(ge=0, le=10)
-    comentario: Optional[str] = Field(default=None, max_length=1000)
-    criado_em: datetime = Field(default_factory=datetime.utcnow)
-    atualizado_em: datetime = Field(default_factory=datetime.utcnow)
-
-class AvaliacaoCreate(SQLModel):
-    midia_id: str
-    tipo: TipoMidia
-    nota: float = Field(ge=0, le=10)
-    comentario: Optional[str] = Field(default=None, max_length=1000)
-
-class AvaliacaoUpdate(SQLModel):
-    nota: Optional[float] = Field(default=None, ge=0, le=10)
-    comentario: Optional[str] = Field(default=None, max_length=1000)
-
-class AvaliacaoRead(SQLModel):
-    id: int
-    usuario_id: int
-    midia_id: str
-    tipo: TipoMidia
-    nota: float
-    comentario: Optional[str]
-    criado_em: datetime
-    atualizado_em: datetime
+    conteudo: Mapped["Conteudo" ] = relationship(back_populates="avaliacoes")
+    usuario: Mapped["Usuario" ] = relationship(back_populates="avaliacoes")

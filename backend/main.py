@@ -1,17 +1,14 @@
 from fastapi import FastAPI
-from contextlib import asynccontextmanager
 
-from routes import animes_router, filmes_router, usuario_router, series_router
-from database import create_db
-
-
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    create_db()
-    yield
+from routes import (
+    animes_router, 
+    filmes_router, 
+    usuario_router, 
+    series_router
+)
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 
 app.include_router(usuario_router)
 app.include_router(animes_router)
