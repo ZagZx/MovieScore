@@ -1,106 +1,42 @@
-from typing import Annotated
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status
 from sqlmodel import select
 
 from database import SessionDep
 from utils import get_password_hash
 from models import Usuario
+from services import UsuarioServiceDep
 from schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate
 )
-from services.usuario_service import UsuarioService
-from services.implementations.usuario_service_implementation import UsuarioServiceImpl
+from exceptions import NotFoundException
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
-usuario_service = Annotated[UsuarioService, Depends(UsuarioServiceImpl)]
 
 @usuario_router.get("", response_model=list[UsuarioRead])
-def listar_usuarios(usuario_service: usuario_service):
+def listar_usuarios(usuario_service: UsuarioServiceDep):
     return usuario_service.list_usuario()
 
 @usuario_router.get("/{id}", response_model=UsuarioRead)
-def buscar_usuario(id: int, session: SessionDep):
-    usuario: Usuario | None = session.get(Usuario, id)
-
-    if not usuario:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
-    
-    return usuario
+def buscar_usuario(id: int, usuario_service: UsuarioServiceDep):
+    return usuario_service.get_usuario(id)
     
 @usuario_router.post("", response_model=UsuarioRead, status_code=status.HTTP_201_CREATED)
-def criar_usuario(usuario_json: UsuarioCreate, session: SessionDep):
-    usuario: Usuario | None = session.scalar(
-        select(Usuario).where((Usuario.email == usuario_json.email) | (Usuario.nome == usuario_json.nome))
-    )
-
-    if usuario:
-        if usuario.nome == usuario_json.nome:
-            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse nome")
-        if usuario.email == usuario_json.email:
-            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse email")
-
-    
-    novo_usuario = Usuario(
-        nome=usuario_json.nome,
-        email=usuario_json.email,
-        senha_hash=get_password_hash(usuario_json.senha)
-    )
-    try:
-        session.add(novo_usuario)
-        session.commit()
-        
-        return novo_usuario
-    except Exception as e:
-        print(e)
-        session.rollback()
-
-@usuario_router.patch("/{id}", response_model=UsuarioRead)
-def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, session: SessionDep):
-    usuario_existente: Usuario | None = session.scalar(
-        select(Usuario).where((Usuario.email == usuario_json.email) | (Usuario.nome == usuario_json.nome))
-    )
-
+def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDep):
+    usuario_existente = usuario_service.get_usuario_by_email(usuario_json.email)
     if usuario_existente:
-        if usuario_existente.nome == usuario_json.nome:
-            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse nome")
-        if usuario_existente.email == usuario_json.email:
-            raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse email")
-        
-    usuario: Usuario | None = session.get(Usuario, id)
-    if not usuario:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
-    
-    if usuario_json.nome:
-        usuario.nome = usuario_json.nome
-    if usuario_json.email:
-        usuario.email = usuario_json.email
-    if usuario_json.senha:
-        usuario.senha_hash = get_password_hash(usuario_json.senha)
+        raise HTTPException(status.HTTP_409_CONFLICT, "Já existe um usuário com esse email")
 
-    try: 
-        session.commit()
-        session.refresh(usuario)
-    except Exception as e:
-        print(e)
-        session.rollback()
+    usuario = usuario_service.create_usuario(usuario_json)
 
     return usuario
+
+@usuario_router.patch("/{id}", response_model=UsuarioRead)
+def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, usuario_service: UsuarioServiceDep):
+    return usuario_service.update_usuario(id, usuario_json)
     
 @usuario_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def deletar_usuario(id: int, session: SessionDep):
-    usuario: Usuario | None = session.get(Usuario, id)
-
-    if not usuario:
-        raise HTTPException(status.HTTP_404_NOT_FOUND)
-   
-    session.delete(usuario)
-
-    try:
-        session.commit()
-    except Exception as e:
-        print(e)
-        session.rollback()
-
+def deletar_usuario(id: int, usuario_service: UsuarioServiceDep):
+    usuario_service.delete_usuario(id)

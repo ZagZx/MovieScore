@@ -1,12 +1,20 @@
 from abc import ABC, abstractmethod
 
 from models import Usuario
-from schemas.usuario import UsuarioCreate
+from schemas.usuario import UsuarioCreate, UsuarioUpdate
 
 
 class UsuarioService(ABC):
     @abstractmethod
-    def create_usuario(self, usuario: UsuarioCreate) -> Usuario:
+    def create_usuario(self, usuario_data: UsuarioCreate) -> Usuario:
+        pass
+
+    @abstractmethod
+    def delete_usuario(self, id: int):
+        pass
+
+    @abstractmethod
+    def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
         pass
 
     @abstractmethod
@@ -15,4 +23,8 @@ class UsuarioService(ABC):
 
     @abstractmethod
     def get_usuario(self, id: int) -> Usuario:
+        pass
+
+    @abstractmethod
+    def get_usuario_by_email(self, email: str) -> Usuario | None:
         pass
