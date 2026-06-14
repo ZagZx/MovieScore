@@ -122,16 +122,22 @@ class UsuarioServiceImpl(UsuarioService):
         try:
             self.session.commit()
             self.session.refresh(usuario)
-
-            if caminho_foto_antiga and os.path.exists(caminho_foto_antiga):
-                os.remove(caminho_foto_antiga)      
-
-            return usuario
         except Exception:
             self.session.rollback()
-            os.remove(caminho_foto_nova)
+            try:
+                os.remove(caminho_foto_nova)
+            except Exception as e:
+                print(f"Erro ao deletar foto de perfil nova {caminho_foto_antiga}: {e}")
 
             raise
+
+        if caminho_foto_antiga:
+            if os.path.exists(caminho_foto_antiga):
+                try:
+                    os.remove(caminho_foto_antiga)
+                except Exception as e:
+                    print(f"Erro ao deletar foto de perfil antiga {caminho_foto_antiga}: {e}")
+        return usuario     
 
     def list_usuario(self) -> list[Usuario]:
         usuarios = self.session.scalars(
