@@ -15,9 +15,9 @@ TMDB_KEY = getenv("TMDB_API_KEY")
 if not TMDB_KEY:
     raise ValueError("TMDB_API_KEY não encontrada no arquivo .env")
 
-API_URL = getenv("API_URL") # utilizada no retorno da foto_perfil_url do usuário
-if not API_URL:
-    raise ValueError("API_URL não encontrado no arquivo .env")
+BASE_URL = getenv("BASE_URL") # utilizada no retorno da foto_perfil_url do usuário
+if not BASE_URL:
+    raise ValueError("BASE_URL não encontrado no arquivo .env")
 
 PARAMS_TMDB = {
     "language": "pt-BR"

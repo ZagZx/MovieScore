@@ -2,13 +2,13 @@ from pydantic import (
     EmailStr, 
     Field, 
     BaseModel, 
-    model_validator
+    field_serializer
 )
 from typing import Optional
 from datetime import datetime
-from os import path
+from urllib.parse import urljoin
 
-from constants import API_URL
+from constants import BASE_URL
 
 
 class UsuarioCreate(BaseModel):
@@ -23,12 +23,9 @@ class UsuarioRead(BaseModel):
     foto_perfil_url: Optional[str]
     data_criacao: datetime
 
-    @model_validator(mode="after")
-    def corrigir_foto_url(self) -> "UsuarioRead":
-        if self.foto_perfil_url:
-            self.foto_perfil_url = path.join(API_URL, self.foto_perfil_url)
-        
-        return self
+    @field_serializer("foto_perfil_url", when_used="json-unless-none")
+    def adicionar_url_base_em_foto_perfil_url(self, foto_perfil_url: Optional[str]):
+        return urljoin(BASE_URL, foto_perfil_url)
 
 class UsuarioUpdate(BaseModel):
     nome: Optional[str] = Field(default=None, min_length=3, max_length=50)
