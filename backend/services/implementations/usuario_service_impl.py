@@ -6,7 +6,7 @@ from pwdlib import PasswordHash
 from pathlib import Path
 from uuid import uuid4
 
-from constants import STORAGE_FOTOS_PERFIL
+from constants import STORAGE
 from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
@@ -39,8 +39,7 @@ def salvar_imagem(imagem: UploadFile) -> str:
     if extensao not in EXTENSOES_PERMITIDAS:
         raise UnsupportedMediaTypeException(f"Extensão {extensao} não suportada, use .jpg, .jpeg, .png ou .webp")
     
-    caminho = Path(STORAGE_FOTOS_PERFIL)
-    caminho.mkdir(parents=True, exist_ok=True)
+    caminho = Path(STORAGE)
     nome_arquivo = uuid4().hex + extensao
     
     caminho_arquivo = caminho.joinpath(Path(nome_arquivo))

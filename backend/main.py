@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Request, status
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from pathlib import Path
 
 from constants import STORAGE
 from routes import (
@@ -15,6 +16,8 @@ from exceptions import (
     UnsupportedMediaTypeException
 )
 
+
+Path(STORAGE).mkdir(parents=True, exist_ok=True)
 
 app = FastAPI()
 app.mount(f"/{STORAGE}", StaticFiles(directory=STORAGE), name="storage")
