@@ -1,4 +1,8 @@
-from fastapi import APIRouter, status
+from fastapi import (
+    APIRouter, 
+    status, 
+    UploadFile
+)
 
 from services import UsuarioServiceDep
 from schemas.usuario import (
@@ -24,9 +28,13 @@ def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDe
     return usuario_service.create_usuario(usuario_json)
 
 @usuario_router.patch("/{id}", response_model=UsuarioRead)
-def atualizar_usuario(id: int, usuario_json: UsuarioUpdate, usuario_service: UsuarioServiceDep):
-    return usuario_service.update_usuario(id, usuario_json)
+def atualizar_usuario(id: int, usuario_form: UsuarioUpdate, usuario_service: UsuarioServiceDep):
+    return usuario_service.update_usuario(id, usuario_form)
     
 @usuario_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_usuario(id: int, usuario_service: UsuarioServiceDep):
     usuario_service.delete_usuario(id)
+
+@usuario_router.patch("/{id}/foto-perfil")
+def atualizar_foto_perfil(id: int, foto_perfil: UploadFile, usuario_service: UsuarioServiceDep):
+    usuario_service.update_foto_perfil(id, foto_perfil)

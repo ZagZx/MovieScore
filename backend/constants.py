@@ -1,15 +1,23 @@
 from dotenv import load_dotenv
 from os import getenv
 
+
+STORAGE = "storage"
+STORAGE_FOTOS_PERFIL = STORAGE + "/usuarios/fotos"
+
 load_dotenv()
+
 
 KITSU_API_URL = "https://kitsu.io/api/edge"
 TMDB_API_URL = "https://api.themoviedb.org/3"
+
 TMDB_KEY = getenv("TMDB_API_KEY")
-
-
 if not TMDB_KEY:
     raise ValueError("TMDB_API_KEY não encontrada no arquivo .env")
+
+API_URL = getenv("API_URL") # utilizada no retorno da foto_perfil_url do usuário
+if not API_URL:
+    raise ValueError("API_URL não encontrado no arquivo .env")
 
 PARAMS_TMDB = {
     "language": "pt-BR"

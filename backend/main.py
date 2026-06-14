@@ -1,6 +1,8 @@
 from fastapi import FastAPI, Request, status
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 
+from constants import STORAGE
 from routes import (
     animes_router, 
     filmes_router, 
@@ -9,12 +11,13 @@ from routes import (
 )
 from exceptions import (
     NotFoundException,
-    ConflictException
+    ConflictException,
+    UnsupportedMediaTypeException
 )
 
 
 app = FastAPI()
-
+app.mount(f"/{STORAGE}", StaticFiles(directory=STORAGE), name="storage")
 
 @app.exception_handler(Exception)
 def generic_handler(request: Request, exc: Exception):
@@ -36,6 +39,13 @@ def not_found_handler(request: Request, exc: NotFoundException):
 def conflict_handler(request: Request, exc: ConflictException):
     return JSONResponse(
         status_code = status.HTTP_409_CONFLICT,
+        content = {"detail": exc.message}
+    )
+
+@app.exception_handler(UnsupportedMediaTypeException)
+def unsupported_media_type_handler(request: Request, exc: UnsupportedMediaTypeException):
+    return JSONResponse(
+        status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         content = {"detail": exc.message}
     )
 

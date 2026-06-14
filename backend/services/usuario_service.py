@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from abc import ABC, abstractmethod
 
 from models import Usuario
@@ -15,6 +16,10 @@ class UsuarioService(ABC):
 
     @abstractmethod
     def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
+        pass
+
+    @abstractmethod
+    def update_foto_perfil(self, id, foto_perfil: UploadFile):
         pass
 
     @abstractmethod

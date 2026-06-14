@@ -1,13 +1,20 @@
+import magic
+import os
+from fastapi import UploadFile
 from sqlalchemy import select
 from pwdlib import PasswordHash
+from pathlib import Path
+from uuid import uuid4
 
+from constants import STORAGE_FOTOS_PERFIL
 from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
 from services.usuario_service import UsuarioService
 from exceptions import (
     NotFoundException,
-    ConflictException
+    ConflictException,
+    UnsupportedMediaTypeException
 )
 
 password_hash = PasswordHash.recommended()
@@ -18,6 +25,33 @@ def get_password_hash(password):
 def verify_password(password, hashed_password):
     return password_hash.verify(password, hashed_password)
 
+def salvar_imagem(imagem: UploadFile) -> str:
+    "Salva a imagem no storage e retorna o caminho para ela"
+    TIPOS_PERMITIDOS = ["image/png", "image/jpeg", "image/webp"]
+    EXTENSOES_PERMITIDAS = [".jpg", ".jpeg", ".png", ".webp"]
+
+    conteudo = imagem.file.read()
+    mime_type = magic.from_buffer(conteudo[:2048], mime=True)
+    if mime_type not in TIPOS_PERMITIDOS:
+        raise UnsupportedMediaTypeException(f"Tipo {mime_type} não suportado, use JPEG, PNG ou WebP")
+    
+    extensao = Path(imagem.filename).suffix.lower()
+    if extensao not in EXTENSOES_PERMITIDAS:
+        raise UnsupportedMediaTypeException(f"Extensão {extensao} não suportada, use .jpg, .jpeg, .png ou .webp")
+    
+    caminho = Path(STORAGE_FOTOS_PERFIL)
+    caminho.mkdir(parents=True, exist_ok=True)
+    nome_arquivo = uuid4().hex + extensao
+    
+    caminho_arquivo = caminho.joinpath(Path(nome_arquivo))
+
+    try:
+        with open(caminho_arquivo, "wb") as f:
+            f.write(conteudo)    
+    except Exception:
+        raise 
+
+    return caminho_arquivo
 
 class UsuarioServiceImpl(UsuarioService):
     def __init__(self, session: SessionDep):
@@ -30,8 +64,7 @@ class UsuarioServiceImpl(UsuarioService):
         usuario = Usuario(
             nome = usuario_data.nome,
             email = usuario_data.email,
-            senha_hash = get_password_hash(usuario_data.senha),
-            foto_perfil_url = None # FALTA IMPLEMENTAR
+            senha_hash = get_password_hash(usuario_data.senha)
         )
 
         try:    
@@ -68,8 +101,6 @@ class UsuarioServiceImpl(UsuarioService):
             usuario.email = usuario_data.email
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
-        if usuario_data.foto_perfil: # FALTA IMPLEMENTAR
-            pass
 
         try: 
             self.session.commit()
@@ -79,6 +110,24 @@ class UsuarioServiceImpl(UsuarioService):
         except Exception:
             self.session.rollback()
             
+            raise
+
+    def update_foto_perfil(self, id:int, foto_perfil: UploadFile):
+        usuario = self.get_usuario(id)
+
+        caminho_imagem = salvar_imagem(foto_perfil)
+        if usuario.foto_perfil_url and os.path.exists(usuario.foto_perfil_url):
+            os.remove(usuario.foto_perfil_url)
+            
+        usuario.foto_perfil_url = caminho_imagem
+
+        try:
+            self.session.commit()
+            self.session.refresh(usuario)
+        except Exception:
+            self.session.rollback()
+            os.remove(caminho_imagem)
+
             raise
 
     def list_usuario(self) -> list[Usuario]:
