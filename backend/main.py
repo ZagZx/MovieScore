@@ -9,13 +9,14 @@ from routes import (
     filmes_router,
     usuario_router,
     series_router,
-    auth_router,          # <-- novo
+    auth_router,
 )
 from exceptions import (
     NotFoundException,
     ConflictException,
     UnsupportedMediaTypeException,
 )
+from utils import ExternalAPIError
 
 
 Path(STORAGE).mkdir(parents=True, exist_ok=True)
@@ -23,6 +24,8 @@ Path(STORAGE).mkdir(parents=True, exist_ok=True)
 app = FastAPI()
 app.mount(f"/{STORAGE}", StaticFiles(directory=STORAGE), name="storage")
 
+
+# ── handlers de exceção ───────────────────────────────────────────────────────
 
 @app.exception_handler(Exception)
 def generic_handler(request: Request, exc: Exception):
@@ -57,7 +60,22 @@ def unsupported_media_type_handler(request: Request, exc: UnsupportedMediaTypeEx
     )
 
 
-app.include_router(auth_router)       # <-- novo
+@app.exception_handler(ExternalAPIError)
+def external_api_error_handler(request: Request, exc: ExternalAPIError):
+    """
+    Captura ExternalAPIError não tratada dentro das rotas (segurança extra).
+    Na prática as rotas já convertem para HTTPException, mas este handler
+    garante que nenhum detalhe interno vaze para o cliente.
+    """
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.message},
+    )
+
+
+# ── routers ───────────────────────────────────────────────────────────────────
+
+app.include_router(auth_router)
 app.include_router(usuario_router)
 app.include_router(animes_router)
 app.include_router(filmes_router)
