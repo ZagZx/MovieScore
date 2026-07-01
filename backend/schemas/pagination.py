@@ -6,7 +6,7 @@ T = TypeVar("T")
 
 class CursorParams(BaseModel):
     limit: int = 20
-    cursor: Optional[int] = None
+    cursor: Optional[int] = 0
 
 
 class CursorPaging(BaseModel):

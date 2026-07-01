@@ -2,6 +2,7 @@ from fastapi import (
     APIRouter,
     status,
     UploadFile,
+    Depends
 )
 
 from services import UsuarioServiceDep
@@ -10,15 +11,26 @@ from schemas.usuario import (
     UsuarioRead,
     UsuarioUpdate,
 )
+from schemas.pagination import (
+    CursorParams,
+    CursorPage,
+    CursorPaging
+)
+
 from auth import CurrentUsuarioDep   # <-- importado para proteger rotas
 
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 
-@usuario_router.get("", response_model=list[UsuarioRead])
-def listar_usuarios(usuario_service: UsuarioServiceDep):
-    return usuario_service.list_usuario()
+@usuario_router.get("", response_model=CursorPage[UsuarioRead])
+def listar_usuarios(usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()):
+    usuarios, paging = usuario_service.list_usuario(pagingParams.cursor, pagingParams.limit)
+
+    return CursorPage(
+        data = usuarios,
+        paging = paging
+    )
 
 
 @usuario_router.get("/{id}", response_model=UsuarioRead)

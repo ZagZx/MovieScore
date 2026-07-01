@@ -10,6 +10,7 @@ from constants import STORAGE
 from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
+from schemas.pagination import CursorPaging
 from services.usuario_service import UsuarioService
 from exceptions import (
     NotFoundException,
@@ -122,7 +123,7 @@ class UsuarioServiceImpl(UsuarioService):
             
             raise
 
-    def update_foto_perfil(self, id:int, foto_perfil: UploadFile) -> Usuario:
+    def update_foto_perfil(self, id: int, foto_perfil: UploadFile) -> Usuario:
         usuario = self.get_usuario(id)
 
         caminho_foto_antiga = usuario.foto_perfil_path
@@ -142,12 +143,24 @@ class UsuarioServiceImpl(UsuarioService):
         
         return usuario     
 
-    def list_usuario(self) -> list[Usuario]:
+
+    # erro ao colocar id igual ou maior que o ultimo da tabela
+    def list_usuario(self, last_id: int, limit: int) -> tuple[list[Usuario], CursorPaging]:
         usuarios = self.session.scalars(
-            select(Usuario)
+            select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
         ).all()
 
-        return usuarios
+        has_more = len(usuarios) > limit
+        if has_more:
+            usuarios[:limit]
+        last_id = usuarios[len(usuarios) - 1].id
+
+        paging = CursorPaging(
+            cursor = last_id,
+            has_more = has_more
+        )
+
+        return usuarios, paging
     
     def get_usuario(self, id: int) -> Usuario:
         usuario = self.session.get(Usuario, id)
