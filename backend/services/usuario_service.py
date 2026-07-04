@@ -23,8 +23,11 @@ class UsuarioService(ABC):
         pass
 
     from schemas.pagination import CursorPaging
+
     @abstractmethod
-    def list_usuario(self, last_id: int, limit: int) -> tuple[list[Usuario], CursorPaging]:
+    def list_usuario(
+        self, last_id: int, limit: int
+    ) -> tuple[list[Usuario], CursorPaging]:
         pass
 
     @abstractmethod

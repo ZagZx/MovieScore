@@ -15,9 +15,8 @@ from exceptions import (
     NotFoundException,
     ConflictException,
     UnsupportedMediaTypeException,
-    ExternalAPIException
+    ExternalAPIException,
 )
-
 
 Path(STORAGE).mkdir(parents=True, exist_ok=True)
 
@@ -26,6 +25,7 @@ app.mount(f"/{STORAGE}", StaticFiles(directory=STORAGE), name="storage")
 
 
 # ── handlers de exceção ───────────────────────────────────────────────────────
+
 
 @app.exception_handler(Exception)
 def generic_handler(request: Request, exc: Exception):
@@ -53,7 +53,9 @@ def conflict_handler(request: Request, exc: ConflictException):
 
 
 @app.exception_handler(UnsupportedMediaTypeException)
-def unsupported_media_type_handler(request: Request, exc: UnsupportedMediaTypeException):
+def unsupported_media_type_handler(
+    request: Request, exc: UnsupportedMediaTypeException
+):
     return JSONResponse(
         status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         content={"detail": exc.message},

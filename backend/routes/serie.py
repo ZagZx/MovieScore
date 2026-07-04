@@ -13,7 +13,9 @@ def buscar_series(busca: str):
         params["query"] = busca
 
     try:
-        data = get_data(f"{TMDB_API_URL}/search/tv", params=params, headers=HEADERS_TMDB)
+        data = get_data(
+            f"{TMDB_API_URL}/search/tv", params=params, headers=HEADERS_TMDB
+        )
         return data.get("results", [])
     except ExternalAPIException as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message)

@@ -16,9 +16,7 @@ def login(dados: LoginInput, session: SessionDep):
     Autentica o usuário com email e senha.
     Retorna um JWT de acesso em caso de sucesso.
     """
-    usuario = session.scalar(
-        select(Usuario).where(Usuario.email == dados.email)
-    )
+    usuario = session.scalar(select(Usuario).where(Usuario.email == dados.email))
 
     if not usuario or not verify_password(dados.senha, usuario.senha_hash):
         raise HTTPException(
