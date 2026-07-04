@@ -1,5 +1,6 @@
 import magic
 import os
+from typing import Sequence
 from fastapi import UploadFile
 from sqlalchemy import select
 from pwdlib import PasswordHash
@@ -143,20 +144,24 @@ class UsuarioServiceImpl(UsuarioService):
         
         return usuario     
 
+    def list_usuario(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+        last_id_table = self.session.scalar(
+            select(Usuario.id).order_by(Usuario.id.desc()).limit(1)
+        )
 
-    # erro ao colocar id igual ou maior que o ultimo da tabela
-    def list_usuario(self, last_id: int, limit: int) -> tuple[list[Usuario], CursorPaging]:
-        usuarios = self.session.scalars(
-            select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
-        ).all()
+        usuarios = []
+        if last_id < last_id_table:
+            usuarios = self.session.scalars(
+                select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
+            ).all()
 
         has_more = len(usuarios) > limit
         if has_more:
             usuarios[:limit]
-        last_id = usuarios[len(usuarios) - 1].id
+        cursor = usuarios[len(usuarios) - 1].id if usuarios else None
 
         paging = CursorPaging(
-            cursor = last_id,
+            cursor = cursor,
             has_more = has_more
         )
 
