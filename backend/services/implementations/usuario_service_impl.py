@@ -1,5 +1,6 @@
 import magic
 import os
+from typing import Sequence
 from fastapi import UploadFile
 from sqlalchemy import select
 from pwdlib import PasswordHash
@@ -10,6 +11,7 @@ from constants import STORAGE
 from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
+from schemas.pagination import CursorPaging
 from services.usuario_service import UsuarioService
 from exceptions import (
     NotFoundException,
@@ -122,7 +124,7 @@ class UsuarioServiceImpl(UsuarioService):
             
             raise
 
-    def update_foto_perfil(self, id:int, foto_perfil: UploadFile) -> Usuario:
+    def update_foto_perfil(self, id: int, foto_perfil: UploadFile) -> Usuario:
         usuario = self.get_usuario(id)
 
         caminho_foto_antiga = usuario.foto_perfil_path
@@ -142,12 +144,28 @@ class UsuarioServiceImpl(UsuarioService):
         
         return usuario     
 
-    def list_usuario(self) -> list[Usuario]:
-        usuarios = self.session.scalars(
-            select(Usuario)
-        ).all()
+    def list_usuario(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+        last_id_table = self.session.scalar(
+            select(Usuario.id).order_by(Usuario.id.desc()).limit(1)
+        )
 
-        return usuarios
+        usuarios = []
+        if last_id < last_id_table:
+            usuarios = self.session.scalars(
+                select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
+            ).all()
+
+        has_more = len(usuarios) > limit
+        if has_more:
+            usuarios[:limit]
+        cursor = usuarios[len(usuarios) - 1].id if usuarios else None
+
+        paging = CursorPaging(
+            cursor = cursor,
+            has_more = has_more
+        )
+
+        return usuarios, paging
     
     def get_usuario(self, id: int) -> Usuario:
         usuario = self.session.get(Usuario, id)
