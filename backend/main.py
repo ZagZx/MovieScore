@@ -15,8 +15,8 @@ from exceptions import (
     NotFoundException,
     ConflictException,
     UnsupportedMediaTypeException,
+    ExternalAPIException
 )
-from utils import ExternalAPIError
 
 
 Path(STORAGE).mkdir(parents=True, exist_ok=True)
@@ -60,10 +60,10 @@ def unsupported_media_type_handler(request: Request, exc: UnsupportedMediaTypeEx
     )
 
 
-@app.exception_handler(ExternalAPIError)
-def external_api_error_handler(request: Request, exc: ExternalAPIError):
+@app.exception_handler(ExternalAPIException)
+def external_api_error_handler(request: Request, exc: ExternalAPIException):
     """
-    Captura ExternalAPIError não tratada dentro das rotas (segurança extra).
+    Captura ExternalAPIException não tratada dentro das rotas (segurança extra).
     Na prática as rotas já convertem para HTTPException, mas este handler
     garante que nenhum detalhe interno vaze para o cliente.
     """

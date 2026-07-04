@@ -5,8 +5,7 @@ from database import SessionDep
 from models import Usuario
 from schemas.auth import LoginInput, TokenResponse
 from schemas.usuario import UsuarioRead
-from auth import create_access_token, CurrentUsuarioDep
-from utils import verify_password
+from auth import create_access_token, CurrentUsuarioDep, verify_password
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 

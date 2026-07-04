@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
 from constants import TMDB_API_URL, HEADERS_TMDB, PARAMS_TMDB
-from utils import get_data, ExternalAPIError
+from utils import get_data, ExternalAPIException
 
 filmes_router = APIRouter(prefix="/filme", tags=["filme"])
 
@@ -16,7 +16,7 @@ def buscar_filmes(busca: str):
 
     try:
         return get_data(url, params, HEADERS_TMDB)
-    except ExternalAPIError as exc:
+    except ExternalAPIException as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message)
 
 
@@ -26,5 +26,5 @@ def listar_filmes_em_alta():
 
     try:
         return get_data(url, PARAMS_TMDB, HEADERS_TMDB)
-    except ExternalAPIError as exc:
+    except ExternalAPIException as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message)
