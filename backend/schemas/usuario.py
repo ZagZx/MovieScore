@@ -1,9 +1,4 @@
-from pydantic import (
-    EmailStr, 
-    Field, 
-    BaseModel, 
-    field_serializer
-)
+from pydantic import EmailStr, Field, BaseModel, field_serializer
 from typing import Optional
 from datetime import datetime
 from urllib.parse import urljoin
@@ -16,16 +11,20 @@ class UsuarioCreate(BaseModel):
     email: EmailStr
     senha: str = Field(min_length=8)
 
+
 class UsuarioRead(BaseModel):
     id: int
     nome: str
     email: EmailStr
-    foto_perfil_url: Optional[str] = Field(default=None, validation_alias="foto_perfil_path")
+    foto_perfil_url: Optional[str] = Field(
+        default=None, validation_alias="foto_perfil_path"
+    )
     data_criacao: datetime
 
     @field_serializer("foto_perfil_url", when_used="json-unless-none")
     def adicionar_url_base_em_foto_perfil_url(self, foto_perfil_url: str):
         return urljoin(BASE_URL, foto_perfil_url).replace("\\", "/")
+
 
 class UsuarioUpdate(BaseModel):
     nome: Optional[str] = Field(default=None, min_length=3, max_length=50)

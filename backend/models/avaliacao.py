@@ -6,6 +6,7 @@ from datetime import datetime
 
 from utils import get_now_datetime_utc
 from .base import Base
+
 if TYPE_CHECKING:
     from .conteudo import Conteudo
     from .usuario import Usuario
@@ -20,14 +21,11 @@ class Avaliacao(Base):
     estrelas: Mapped[Decimal] = mapped_column(DECIMAL(2, 1), nullable=False)
     comentario: Mapped[Optional[str]] = mapped_column(Text)
     data_criacao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        insert_default=get_now_datetime_utc,
-        nullable=False
+        DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
     data_atualizacao: Mapped[Optional[datetime]] = mapped_column(
-        DateTime(timezone=True),
-        onupdate=get_now_datetime_utc
+        DateTime(timezone=True), onupdate=get_now_datetime_utc
     )
 
-    conteudo: Mapped["Conteudo" ] = relationship(back_populates="avaliacoes")
-    usuario: Mapped["Usuario" ] = relationship(back_populates="avaliacoes")
+    conteudo: Mapped["Conteudo"] = relationship(back_populates="avaliacoes")
+    usuario: Mapped["Usuario"] = relationship(back_populates="avaliacoes")

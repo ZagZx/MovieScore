@@ -15,9 +15,8 @@ from exceptions import (
     NotFoundException,
     ConflictException,
     UnsupportedMediaTypeException,
+    ExternalAPIException,
 )
-from utils import ExternalAPIError
-
 
 Path(STORAGE).mkdir(parents=True, exist_ok=True)
 
@@ -26,6 +25,7 @@ app.mount(f"/{STORAGE}", StaticFiles(directory=STORAGE), name="storage")
 
 
 # ── handlers de exceção ───────────────────────────────────────────────────────
+
 
 @app.exception_handler(Exception)
 def generic_handler(request: Request, exc: Exception):
@@ -53,17 +53,19 @@ def conflict_handler(request: Request, exc: ConflictException):
 
 
 @app.exception_handler(UnsupportedMediaTypeException)
-def unsupported_media_type_handler(request: Request, exc: UnsupportedMediaTypeException):
+def unsupported_media_type_handler(
+    request: Request, exc: UnsupportedMediaTypeException
+):
     return JSONResponse(
         status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
         content={"detail": exc.message},
     )
 
 
-@app.exception_handler(ExternalAPIError)
-def external_api_error_handler(request: Request, exc: ExternalAPIError):
+@app.exception_handler(ExternalAPIException)
+def external_api_error_handler(request: Request, exc: ExternalAPIException):
     """
-    Captura ExternalAPIError não tratada dentro das rotas (segurança extra).
+    Captura ExternalAPIException não tratada dentro das rotas (segurança extra).
     Na prática as rotas já convertem para HTTPException, mas este handler
     garante que nenhum detalhe interno vaze para o cliente.
     """

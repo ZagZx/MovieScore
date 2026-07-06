@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 
 from constants import KITSU_API_URL, HEADERS_KITSU
-from utils import get_data, ExternalAPIError
+from utils import get_data, ExternalAPIException
 
 animes_router = APIRouter(prefix="/anime", tags=["anime"])
 
@@ -16,5 +16,5 @@ def buscar_animes(busca: str):
 
     try:
         return get_data(url, params, HEADERS_KITSU)
-    except ExternalAPIError as exc:
+    except ExternalAPIException as exc:
         raise HTTPException(status_code=exc.status_code, detail=exc.message)
