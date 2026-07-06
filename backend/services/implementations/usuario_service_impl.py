@@ -3,10 +3,10 @@ import os
 from typing import Sequence
 from fastapi import UploadFile
 from sqlalchemy import select
-from pwdlib import PasswordHash
 from pathlib import Path
 from uuid import uuid4
 
+from auth import get_password_hash
 from constants import STORAGE
 from database import SessionDep
 from models import Usuario
@@ -18,16 +18,6 @@ from exceptions import (
     ConflictException,
     UnsupportedMediaTypeException,
 )
-
-password_hash = PasswordHash.recommended()
-
-
-def get_password_hash(password):
-    return password_hash.hash(password)
-
-
-def verify_password(password, hashed_password):
-    return password_hash.verify(password, hashed_password)
 
 
 def salvar_imagem(imagem: UploadFile) -> str:
