@@ -5,7 +5,7 @@ import axios from "axios";
 export default async function getUsuarios(data: GetUsuariosBody){
     try {
         const response = await axios.get<GetUsuariosResponse>(GET_USUARIOS_URL(), {
-            data: {
+            params: {
                 limit: data.limit,
                 cursor: data.cursor
             }

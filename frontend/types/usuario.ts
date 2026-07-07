@@ -14,6 +14,6 @@ export type GetUsuariosBody = {
 }
 
 export interface GetUsuariosResponse {
-    data: Usuario;
+    data: Usuario[];
     paging: CursorPaging;
 }
