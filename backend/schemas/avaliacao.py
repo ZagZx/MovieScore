@@ -1,13 +1,12 @@
-from pydantic import (
-    Field,
-    BaseModel,
-)
+from pydantic import Field
 from typing import Optional
 from datetime import datetime
 from decimal import Decimal
 
+from .base import Base
 
-class AvaliacaoCreate(BaseModel):
+
+class AvaliacaoCreate(Base):
     conteudo_id: int
     usuario_id: int
     estrelas: Decimal = Field(
@@ -16,7 +15,7 @@ class AvaliacaoCreate(BaseModel):
     comentario: Optional[str] = None
 
 
-class AvaliacaoRead(BaseModel):
+class AvaliacaoRead(Base):
     id: int
     conteudo_id: int
     usuario_id: int
@@ -26,7 +25,7 @@ class AvaliacaoRead(BaseModel):
     data_atualizacao: Optional[datetime]
 
 
-class AvaliacaoUpdate(BaseModel):
+class AvaliacaoUpdate(Base):
     estrelas: Optional[Decimal] = Field(
         default=None, ge=1, le=5, multiple_of=0.5, decimal_places=1
     )  # >= 1 e <= 5, step de 0.5
