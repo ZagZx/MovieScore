@@ -1,23 +1,28 @@
-import getUsuarios from "@/actions/usuario";
+import filmesLandingImage  from "@/public/filmes-landing.jpeg"
+import HeaderLanding from "@/components/HeaderLanding";
 
 export default async function Home() {
-  const usuarios = await getUsuarios({limit: 5, cursor: 0});
+  const opacity = 20; // opacidade do fundo em porcentagem
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        { usuarios?.data.map((usuario) => 
-          <div key={usuario.id} className="m-4">
-            <ul>
-              <li>{usuario.id}</li>
-              <li>{usuario.nome}</li>
-              <li>{usuario.email}</li>
-              <li>{usuario.data_criacao}</li>
-              <li>{usuario.foto_perfil_url}</li>
-            </ul>
-          </div>
-        )}
-      </main>
+    <div className="relative flex min-h-screen flex-col overflow-hidden">
+      <div
+        aria-hidden="true"
+        className={`absolute inset-0 bg-center bg-cover bg-no-repeat opacity-${opacity}`}
+        style={{ backgroundImage: `url(${filmesLandingImage.src})` }}
+      />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <HeaderLanding />
+        <main
+          className={`
+            flex flex-1 flex-col items-center justify-between 
+            w-full 
+            py-32 px-1
+          `}
+        >
+          TESTEE
+        </main>
+      </div>
     </div>
   );
 }
