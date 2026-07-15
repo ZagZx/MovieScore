@@ -1,5 +1,6 @@
 import logo from "@/public/logo.png";
 import Image from "next/image";
+import Button from "./Button";
 
 export default function HeaderLanding() {
   return (
@@ -13,12 +14,16 @@ export default function HeaderLanding() {
       <div>
         <Image 
           src={logo}
+          loading="eager"
+          preload
           alt=""
           className="w-3xs"
         />
       </div>
       <div>
-        Entrar
+        <Button>
+          Entrar
+        </Button>
       </div>
     </header>
   );
