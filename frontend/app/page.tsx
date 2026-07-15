@@ -30,7 +30,7 @@ export default async function Home() {
             </h1>
             <div className="space-x-4">
               <span className="text-xl">Quer avaliar? Crie sua conta</span>
-              <Button href="/cadastro">Vamos lá</Button>
+              <Button>Vamos lá</Button>
             </div>
           </div>
 
