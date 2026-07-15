@@ -1,5 +1,6 @@
 import filmesLandingImage  from "@/public/filmes-landing.jpeg"
 import HeaderLanding from "@/components/HeaderLanding";
+import Button from "@/components/Button";
 
 export default async function Home() {
   return (
@@ -13,12 +14,26 @@ export default async function Home() {
         <HeaderLanding />
         <main
           className={`
-            flex flex-1 flex-col items-center justify-between 
-            w-full 
-            py-32 px-1
+            flex flex-1 
+            items-center 
+            justify-center
           `}
         >
-          TESTEE
+          <div className="space-y-2 text-center">
+            <h1 
+              className="
+                font-bold
+                text-4xl
+              "
+            >
+              Filmes, séries e animes, sem limites
+            </h1>
+            <div className="space-x-4">
+              <span className="text-xl">Quer avaliar? Crie sua conta</span>
+              <Button href="/cadastro">Vamos lá</Button>
+            </div>
+          </div>
+
         </main>
       </div>
     </div>

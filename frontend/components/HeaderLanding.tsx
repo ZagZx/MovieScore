@@ -7,7 +7,9 @@ export default function HeaderLanding() {
     <header
       className="
         flex justify-between 
-        mx-8
+        absolute 
+        w-screen
+        px-8
         py-6
       "
     >
@@ -20,9 +22,12 @@ export default function HeaderLanding() {
           className="w-3xs"
         />
       </div>
-      <div>
+      <div className="space-x-2">
         <Button>
           Entrar
+        </Button>
+        <Button>
+          Cadastrar-se
         </Button>
       </div>
     </header>
