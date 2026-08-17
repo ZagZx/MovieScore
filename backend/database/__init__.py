@@ -2,5 +2,7 @@ from .database import (
     engine,
     SessionDep,
     get_session,
-    SessionFactory
+    SessionFactory,
+    metadata,
+    DB_URL
 )
