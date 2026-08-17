@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, URL
+from sqlalchemy import create_engine, URL, MetaData
 from sqlalchemy.orm import Session, sessionmaker
 from fastapi import Depends
 from typing import Annotated
@@ -24,6 +24,9 @@ DB_URL = URL.create(
 
 engine = create_engine(DB_URL)
 SessionFactory = sessionmaker(bind=engine)
+
+metadata = MetaData()
+metadata.reflect(bind=engine)
 
 def get_session():
     with SessionFactory() as session:
