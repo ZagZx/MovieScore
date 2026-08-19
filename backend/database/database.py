@@ -7,11 +7,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE=getenv("DATABASE")
-USERNAME=getenv("DB_USERNAME")
-PASSWORD=getenv("DB_PASSWORD")
-HOST=getenv("DB_HOST")
-PORT=int(getenv("DB_PORT", 3306))
+DATABASE = getenv("DATABASE")
+USERNAME = getenv("DB_USERNAME")
+PASSWORD = getenv("DB_PASSWORD")
+HOST = getenv("DB_HOST")
+PORT = int(getenv("DB_PORT", 3306))
 
 DB_URL = URL.create(
     drivername="mysql+pymysql",
@@ -19,7 +19,7 @@ DB_URL = URL.create(
     username=USERNAME,
     password=PASSWORD,
     host=HOST,
-    port=PORT
+    port=PORT,
 )
 
 engine = create_engine(DB_URL)
@@ -31,5 +31,6 @@ metadata.reflect(bind=engine)
 def get_session():
     with SessionFactory() as session:
         yield session
+
 
 SessionDep = Annotated[Session, Depends(get_session)]

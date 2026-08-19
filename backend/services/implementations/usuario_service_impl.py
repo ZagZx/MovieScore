@@ -3,10 +3,10 @@ import os
 from typing import Sequence
 from fastapi import UploadFile
 from sqlalchemy import select
-from pwdlib import PasswordHash
 from pathlib import Path
 from uuid import uuid4
 
+from auth import get_password_hash
 from constants import STORAGE
 from database import SessionDep
 from models import Usuario
@@ -16,17 +16,9 @@ from services.usuario_service import UsuarioService
 from exceptions import (
     NotFoundException,
     ConflictException,
-    UnsupportedMediaTypeException
+    UnsupportedMediaTypeException,
 )
 
-
-password_hash = PasswordHash.recommended()
-
-def get_password_hash(password):
-    return password_hash.hash(password)
-
-def verify_password(password, hashed_password):
-    return password_hash.verify(password, hashed_password)
 
 def salvar_imagem(imagem: UploadFile) -> str:
     "Salva a imagem no storage e retorna o caminho para ela"
@@ -36,24 +28,29 @@ def salvar_imagem(imagem: UploadFile) -> str:
     conteudo = imagem.file.read()
     mime_type = magic.from_buffer(conteudo[:2048], mime=True)
     if mime_type not in TIPOS_PERMITIDOS:
-        raise UnsupportedMediaTypeException(f"Tipo {mime_type} não suportado, use JPEG, PNG ou WebP")
-    
+        raise UnsupportedMediaTypeException(
+            f"Tipo {mime_type} não suportado, use JPEG, PNG ou WebP"
+        )
+
     extensao = Path(imagem.filename).suffix.lower()
     if extensao not in EXTENSOES_PERMITIDAS:
-        raise UnsupportedMediaTypeException(f"Extensão {extensao} não suportada, use .jpg, .jpeg, .png ou .webp")
-    
+        raise UnsupportedMediaTypeException(
+            f"Extensão {extensao} não suportada, use .jpg, .jpeg, .png ou .webp"
+        )
+
     caminho = Path(STORAGE)
     nome_arquivo = uuid4().hex + extensao
-    
+
     caminho_arquivo = caminho.joinpath(Path(nome_arquivo))
 
     try:
         with open(caminho_arquivo, "wb") as f:
-            f.write(conteudo)    
+            f.write(conteudo)
     except Exception:
-        raise 
+        raise
 
     return str(caminho_arquivo)
+
 
 def deletar_imagem(path: str):
     if path and os.path.exists(path):
@@ -72,20 +69,20 @@ class UsuarioServiceImpl(UsuarioService):
             raise ConflictException("Já existe um usuário cadastrado com esse email")
 
         usuario = Usuario(
-            nome = usuario_data.nome,
-            email = usuario_data.email,
-            senha_hash = get_password_hash(usuario_data.senha)
+            nome=usuario_data.nome,
+            email=usuario_data.email,
+            senha_hash=get_password_hash(usuario_data.senha),
         )
 
-        try:    
+        try:
             self.session.add(usuario)
             self.session.commit()
             self.session.refresh(usuario)
-    
+
             return usuario
         except Exception:
             self.session.rollback()
-            
+
             raise
 
     def delete_usuario(self, id: int):
@@ -99,7 +96,7 @@ class UsuarioServiceImpl(UsuarioService):
         except Exception:
             self.session.rollback()
 
-            raise 
+            raise
 
     def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
         usuario = self.get_usuario(id)
@@ -114,14 +111,14 @@ class UsuarioServiceImpl(UsuarioService):
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
 
-        try: 
+        try:
             self.session.commit()
             self.session.refresh(usuario)
-            
+
             return usuario
         except Exception:
             self.session.rollback()
-            
+
             raise
 
     def update_foto_perfil(self, id: int, foto_perfil: UploadFile) -> Usuario:
@@ -141,10 +138,12 @@ class UsuarioServiceImpl(UsuarioService):
 
             raise
         deletar_imagem(caminho_foto_antiga)
-        
-        return usuario     
 
-    def list_usuario(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+        return usuario
+
+    def list_usuario(
+        self, last_id: int, limit: int
+    ) -> tuple[Sequence[Usuario], CursorPaging]:
         last_id_table = self.session.scalar(
             select(Usuario.id).order_by(Usuario.id.desc()).limit(1)
         )
@@ -160,23 +159,18 @@ class UsuarioServiceImpl(UsuarioService):
             usuarios[:limit]
         cursor = usuarios[len(usuarios) - 1].id if usuarios else None
 
-        paging = CursorPaging(
-            cursor = cursor,
-            has_more = has_more
-        )
+        paging = CursorPaging(cursor=cursor, has_more=has_more)
 
         return usuarios, paging
-    
+
     def get_usuario(self, id: int) -> Usuario:
         usuario = self.session.get(Usuario, id)
         if not usuario:
             raise NotFoundException("Usuário", id)
-        
+
         return usuario
-        
+
     def get_usuario_by_email(self, email) -> Usuario | None:
-        usuario = self.session.scalar(
-            select(Usuario).where(Usuario.email == email)
-        )
+        usuario = self.session.scalar(select(Usuario).where(Usuario.email == email))
 
         return usuario

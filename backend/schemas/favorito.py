@@ -1,18 +1,19 @@
-from pydantic import ( 
-    BaseModel
-)
 from datetime import datetime
 
+from .base import Base
 
-class FavoritoCreate(BaseModel):
+
+class FavoritoCreate(Base):
     conteudo_id: int
     usuario_id: int
 
-class FavoritoRead(BaseModel):
+
+class FavoritoRead(Base):
     id: int
     conteudo_id: int
     usuario_id: int
     data_adicao: datetime
 
+
 # class FavoritoUpdate(BaseModel):
-    # pass
+# pass

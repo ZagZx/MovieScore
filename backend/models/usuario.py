@@ -5,6 +5,7 @@ from datetime import datetime
 
 from utils import get_now_datetime_utc
 from .base import Base
+
 if TYPE_CHECKING:
     from .avaliacao import Avaliacao
     from .favorito import Favorito
@@ -20,9 +21,7 @@ class Usuario(Base):
     senha_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     foto_perfil_path: Mapped[Optional[str]] = mapped_column(String(255))
     data_criacao: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True),
-        insert_default=get_now_datetime_utc,
-        nullable=False
+        DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
 
     favoritos: Mapped[list["Favorito"]] = relationship(back_populates="usuario")

@@ -5,8 +5,7 @@ from database import SessionDep
 from models import Usuario
 from schemas.auth import LoginInput, TokenResponse
 from schemas.usuario import UsuarioRead
-from auth import create_access_token, CurrentUsuarioDep
-from utils import verify_password
+from auth import create_access_token, CurrentUsuarioDep, verify_password
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -17,9 +16,7 @@ def login(dados: LoginInput, session: SessionDep):
     Autentica o usuário com email e senha.
     Retorna um JWT de acesso em caso de sucesso.
     """
-    usuario = session.scalar(
-        select(Usuario).where(Usuario.email == dados.email)
-    )
+    usuario = session.scalar(select(Usuario).where(Usuario.email == dados.email))
 
     if not usuario or not verify_password(dados.senha, usuario.senha_hash):
         raise HTTPException(
