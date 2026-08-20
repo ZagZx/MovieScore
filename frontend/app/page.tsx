@@ -1,5 +1,5 @@
 import filmesLandingImage  from "@/public/filmes-landing.jpeg"
-import HeaderLanding from "@/components/HeaderLanding";
+import HeaderLanding from "@/components/headers/HeaderLanding";
 import Button from "@/components/Button";
 
 export default async function Home() {
@@ -30,10 +30,9 @@ export default async function Home() {
             </h1>
             <div className="space-x-4">
               <span className="text-xl">Quer avaliar? Crie sua conta</span>
-              <Button>Vamos lá</Button>
+              <Button size="lg">Vamos lá</Button>
             </div>
           </div>
-
         </main>
       </div>
     </div>
