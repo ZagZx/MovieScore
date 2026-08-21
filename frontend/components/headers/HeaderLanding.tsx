@@ -24,7 +24,7 @@ export default function HeaderLanding() {
           />
         </a>
       </div>
-      <div className="space-x-4">
+      <div className="flex items-center gap-4">
         <a href="/login">
           <Button>
             Entrar

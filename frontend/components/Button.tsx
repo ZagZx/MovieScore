@@ -1,16 +1,15 @@
 import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
-import { ClassArray } from "clsx";
-
 import { ComponentProps, ReactNode } from "react";
 
 
 const buttonVariants = cva(
-  "cursor-pointer transition-colors duration-200 shadow shadow-black rounded-xl",
+  "cursor-pointer transition-colors duration-300 shadow shadow-black rounded-xl",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-white hover:bg-white hover:text-black"
+        primary: "bg-primary text-primary-foreground hover:bg-primary-hover",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover"
       },
       size: {
         sm: "h-8 px-4 text-sm",
@@ -27,7 +26,7 @@ const buttonVariants = cva(
 
 interface ButtonProps extends ComponentProps<"button">, VariantProps<typeof buttonVariants> {
   children: ReactNode
-}  
+}
 
 
 export default function Button({ children, className, variant, size, ...props }: ButtonProps) {
