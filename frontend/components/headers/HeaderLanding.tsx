@@ -1,6 +1,5 @@
-import logo from "@/public/logo.png";
-import Image from "next/image";
 import Button from "@/components/Button";
+import Logo from "./Logo";
 
 export default function HeaderLanding() {
   return (
@@ -15,13 +14,7 @@ export default function HeaderLanding() {
     >
       <div>
         <a href=""> {/* LINK PARA /home */}
-          <Image 
-            src={logo}
-            loading="eager"
-            preload
-            alt=""
-            className="w-3xs"
-          />
+          <Logo />
         </a>
       </div>
       <div className="flex items-center gap-4">
