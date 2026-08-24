@@ -3,16 +3,11 @@
 import { postCreateUsuario } from "@/actions/usuario";
 import Button from "@/components/Button";
 import InputAuth from "@/components/inputs/InputAuth";
+import { CadastroFormData, cadastroSchema } from "@/schemas/usuario";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 
-
-interface CadastroFormData {
-  nome: string;
-  email: string;
-  senha: string;
-  confirmarSenha: string;
-}
 
 export default function FormCadastro() {
   const {register, handleSubmit, formState: { isSubmitting }} = useForm<CadastroFormData>({
@@ -21,16 +16,12 @@ export default function FormCadastro() {
       email: "",
       senha: "",
       confirmarSenha: ""
-    }
+    },
+    resolver: zodResolver(cadastroSchema)
   });
 
   async function onSubmit(data: CadastroFormData) {
-    const nome = data.nome;
-    const email = data.email;
-    const senha = data.senha;
-    const confirmarSenha = data.confirmarSenha;
-
-    if (senha !== confirmarSenha) {
+    if (data.senha !== data.confirmarSenha) {
       Swal.fire({
         icon: "error",
         title: "Senhas não coincidem",
@@ -42,9 +33,9 @@ export default function FormCadastro() {
 
     try {
       const response = await postCreateUsuario({
-        nome: nome,
-        email: email,
-        senha: senha
+        nome: data.nome,
+        email: data.email,
+        senha: data.senha
       });
 
       if (response?.status === 201) {
@@ -55,12 +46,11 @@ export default function FormCadastro() {
       }
     } catch(error) {
       Swal.fire({
-        icon: "error",
+        icon: "question",
         title: "Erro",
-        text: "deu erro ai"
+        text: "Erro interno"
       });
     }
-    return;
   }
 
   return (
