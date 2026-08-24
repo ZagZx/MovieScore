@@ -1,7 +1,5 @@
-import Button from "@/components/Button";
-import FormCadastro from "@/components/forms/FormCadastro";
-import HeaderLanding from "@/components/headers/HeaderLanding";
-import InputAuth from "@/components/inputs/InputAuth";
+import FormCadastro from "@/components/features/auth/cadastro/FormCadastro";
+import HeaderLanding from "@/components/features/landing/HeaderLanding";
 
 
 export default function Cadastro() {

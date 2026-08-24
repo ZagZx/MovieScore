@@ -1,4 +1,4 @@
-import getUsuarios from "@/actions/usuario";
+import { getUsuarios } from "@/actions/usuario";
 
 export default async function UsuariosTeste() {
   const usuarios = await getUsuarios({limit: 5, cursor: 0});

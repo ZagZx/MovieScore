@@ -1,6 +1,6 @@
 import filmesLandingImage  from "@/public/filmes-landing.jpeg"
-import HeaderLanding from "@/components/headers/HeaderLanding";
-import Button from "@/components/Button";
+import HeaderLanding from "@/components/features/landing/HeaderLanding";
+import Button from "@/components/ui/Button";
 
 export default async function Landing() {
   return (

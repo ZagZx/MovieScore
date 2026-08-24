@@ -1,5 +1,5 @@
-import Button from "@/components/Button";
-import Logo from "./Logo";
+import Button from "@/components/ui/Button";
+import Logo from "@/components/ui/Logo";
 
 export default function HeaderLanding() {
   return (

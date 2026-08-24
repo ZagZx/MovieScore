@@ -13,6 +13,9 @@ export const cadastroSchema = z.object({
     confirmarSenha: z.string()
         .nonempty("Confirme sua senha")
         .min(8, "A senha deve conter pelo menos 8 caracteres")
+}).refine((data) => data.senha === data.confirmarSenha, {
+    message: "As senhas não coincidem",
+    path: ["confirmarSenha"]
 })
 
 export type CadastroFormData = z.infer<typeof cadastroSchema>;

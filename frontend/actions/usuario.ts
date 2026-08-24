@@ -1,7 +1,7 @@
 "use server";
 
 import { GET_USUARIOS_URL, POST_USUARIO_URL } from "@/routes/usuario";
-import { CreateUsuarioBody, CreateUsuarioResponse, GetUsuariosBody, GetUsuariosResponse } from "@/types/usuario";
+import { CreateUsuarioBody, CreateUsuarioResponse, GetUsuariosBody, GetUsuariosResponse } from "@/lib/types/usuario";
 import axios from "axios";
 
 export async function getUsuarios(data: GetUsuariosBody){
