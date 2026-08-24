@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { cva } from "class-variance-authority";
 import { ComponentProps } from "react";
 
@@ -7,25 +8,28 @@ const inputAuthVariants = cva(
 
 
 interface InputAuthProps extends ComponentProps<"input"> {
-  label: string;
+  labelValue: string;
+  labelClassName?: string;
 }
 
-function onFocus() {
 
-}
-
-export default function InputAuth({label, ...props}: InputAuthProps) {
+export default function InputAuth({labelValue, labelClassName, className, ...props}: InputAuthProps) {
   return (
     <div className="flex flex-col">
       <label
         htmlFor={props.id}
-        >
-          {label}
+        className={cn(labelClassName)}
+      >
+        {labelValue}
       </label>
       <input {...props} 
-        className="outline-0 text-foreground-muted"
+        className={cn(
+          "text-foreground-muted",
+          "outline-0 border-b-2 border-primary",
+          "focus:border-secondary",
+          className
+        )}
       />
-      <div className="bg-primary h-0.5"></div>
     </div>
   );
 }

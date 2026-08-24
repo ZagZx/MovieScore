@@ -7,10 +7,13 @@ import { CadastroFormData, cadastroSchema } from "@/lib/schemas/usuario";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
+import FieldError from "@/components/features/auth/FieldError";
 
 
 export default function FormCadastro() {
   const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<CadastroFormData>({
+    mode: "onBlur",
+    reValidateMode: "onBlur",
     defaultValues: {
       nome: "",
       email: "",
@@ -47,20 +50,30 @@ export default function FormCadastro() {
     <form onSubmit={handleSubmit(onSubmit)}>
       <div 
         className="
-          flex flex-col gap-2
+          flex flex-col gap-2 w-90
         "
       >
         <h1 className="text-4xl font-medium mb-8 text-center">
           Cadastro
         </h1>
-        <InputAuth required id="nome" label="Nome de usuário" {...register("nome")}/>
-        {errors.nome && (<span>{errors.nome.message}</span>)}
-        <InputAuth required type="email" id="email" label="Email" {...register("email")}/>
-        {errors.email && (<span>{errors.email.message}</span>)}
-        <InputAuth required type="password" id="senha" label="Senha" {...register("senha")}/>
-        {errors.senha && (<span>{errors.senha.message}</span>)}
-        <InputAuth required type="password" id="confirmarSenha" label="Confirme sua senha" {...register("confirmarSenha")}/>
-        {errors.confirmarSenha && (<span>{errors.confirmarSenha.message}</span>)}
+
+        <div>
+          <InputAuth id="nome" labelValue="Nome de usuário" {...register("nome")}/>
+          {errors.nome && (<FieldError aria-invalid aria-describedby="nome">{errors.nome.message}</FieldError>)}
+        </div>
+        <div>
+          <InputAuth type="email" id="email" labelValue="Email" {...register("email")}/>
+          {errors.email && (<FieldError>{errors.email.message}</FieldError>)}
+        </div>
+        <div>
+          <InputAuth type="password" id="senha" labelValue="Senha" {...register("senha")}/>
+          {errors.senha && (<FieldError>{errors.senha.message}</FieldError>)}
+        </div>
+        <div>
+          <InputAuth type="password" id="confirmarSenha" labelValue="Confirme sua senha" {...register("confirmarSenha")}/>
+          {errors.confirmarSenha && (<FieldError>{errors.confirmarSenha.message}</FieldError>)}
+        </div>
+
         <Button type="submit" className="mt-4" disabled={isSubmitting}>{isSubmitting ? "Cadastrando..." : "Cadastrar-se"}</Button>
       </div>
     </form>
