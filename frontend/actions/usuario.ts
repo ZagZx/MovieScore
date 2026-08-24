@@ -6,13 +6,16 @@ import axios from "axios";
 
 export async function getUsuarios(data: GetUsuariosBody){
     try {
-        const response = await axios.get<GetUsuariosResponse>(GET_USUARIOS_URL(), {
+        const response = await axios.get<GetUsuariosResponse | any>(GET_USUARIOS_URL(), {
             params: {
                 limit: data.limit,
                 cursor: data.cursor
             }
         });
-        return response.data;
+        return {
+            data: response.data,
+            status: response.status
+        };
     } catch (error) {
         console.error(error);
     }
@@ -20,14 +23,17 @@ export async function getUsuarios(data: GetUsuariosBody){
 
 export async function postCreateUsuario(data: CreateUsuarioBody){
     try {
-        const response = await axios.post<CreateUsuarioResponse>(POST_USUARIO_URL(), 
+        const response = await axios.post<CreateUsuarioResponse | any>(POST_USUARIO_URL(), 
             {
                 nome: data.nome,
                 email: data.email,
                 senha: data.senha
             }
         );
-        return response.data;
+        return {
+            data: response.data,
+            status: response.status
+        };
     } catch (error) {
         console.error(error);
     }

@@ -1,5 +1,5 @@
 import Button from "@/components/Button";
-import FormAuth from "@/components/forms/FormAuth";
+import FormCadastro from "@/components/forms/FormCadastro";
 import HeaderLanding from "@/components/headers/HeaderLanding";
 import InputAuth from "@/components/inputs/InputAuth";
 
@@ -15,7 +15,7 @@ export default function Cadastro() {
           justify-center
         "
       >
-        <FormAuth />
+        <FormCadastro />
       </main>
     </>
   );
