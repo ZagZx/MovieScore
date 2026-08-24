@@ -1,7 +1,12 @@
+"use client";
+
 import Button from "@/components/ui/Button";
 import Logo from "@/components/ui/Logo";
+import { usePathname } from "next/navigation";
 
 export default function HeaderLanding() {
+  const pathname = usePathname();
+
   return (
     <header
       className="
@@ -18,16 +23,21 @@ export default function HeaderLanding() {
         </a>
       </div>
       <div className="flex items-center gap-4">
-        <a href="/login">
-          <Button>
-            Entrar
-          </Button>
-        </a>
-        <a href="/cadastro">
-          <Button>
-            Cadastrar-se
-          </Button>
-        </a>
+        {['/', '/cadastro'].includes(pathname) && 
+          (<a href="/login">
+            <Button>
+              Entrar
+            </Button>
+          </a>)
+        }
+        {['/', '/login'].includes(pathname) && 
+          (<a href="/cadastro">
+            <Button>
+              Cadastrar-se
+            </Button>
+          </a>)
+        }
+        
       </div>
     </header>
   );
