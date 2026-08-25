@@ -1,7 +1,8 @@
-import getUsuarios from "@/actions/usuario";
+import { getUsuarios } from "@/actions/usuario";
 
 export default async function UsuariosTeste() {
-  const usuarios = await getUsuarios({limit: 5, cursor: 0});
+  const response = await getUsuarios({limit: 5, cursor: 0});
+  const usuarios = response?.data;
 
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">

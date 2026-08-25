@@ -1,8 +1,10 @@
-import { GET_USUARIOS_URL } from "@/routes/usuario";
-import { GetUsuariosBody, GetUsuariosResponse } from "@/types/usuario";
+"use server";
+
+import { GET_USUARIOS_URL, POST_USUARIO_URL } from "@/lib/routes/usuario";
+import { CreateUsuarioBody, CreateUsuarioResponse, GetUsuariosBody, GetUsuariosResponse } from "@/lib/types/usuario";
 import axios from "axios";
 
-export default async function getUsuarios(data: GetUsuariosBody){
+export async function getUsuarios(data: GetUsuariosBody){
     try {
         const response = await axios.get<GetUsuariosResponse>(GET_USUARIOS_URL(), {
             params: {
@@ -10,9 +12,30 @@ export default async function getUsuarios(data: GetUsuariosBody){
                 cursor: data.cursor
             }
         });
-        return response.data;
+        return {
+            data: response.data,
+            status: response.status
+        };
     } catch (error) {
         console.error(error);
     }
-
 }
+
+export async function postCreateUsuario(data: CreateUsuarioBody){
+    try {
+        const response = await axios.post<CreateUsuarioResponse>(POST_USUARIO_URL(), 
+            {
+                nome: data.nome,
+                email: data.email,
+                senha: data.senha
+            }
+        );
+        return {
+            data: response.data,
+            status: response.status
+        };
+    } catch (error) {
+        console.error(error);
+    }
+}
+

@@ -1,8 +1,8 @@
 import filmesLandingImage  from "@/public/filmes-landing.jpeg"
-import HeaderLanding from "@/components/HeaderLanding";
-import Button from "@/components/Button";
+import HeaderLanding from "@/components/features/landing/HeaderLanding";
+import Button from "@/components/ui/Button";
 
-export default async function Home() {
+export default async function Landing() {
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-background">
       <div
@@ -30,10 +30,9 @@ export default async function Home() {
             </h1>
             <div className="space-x-4">
               <span className="text-xl">Quer avaliar? Crie sua conta</span>
-              <Button>Vamos lá</Button>
+              <Button size="lg">Vamos lá</Button>
             </div>
           </div>
-
         </main>
       </div>
     </div>
