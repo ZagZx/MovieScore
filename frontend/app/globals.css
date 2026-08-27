@@ -12,6 +12,11 @@
   --secondary: #fafafa;
   --secondary-foreground: #333333;
   --secondary-hover: #D9D9D9;
+
+  --neutral: #333333;
+  --neutral-foreground: #d6d6d6; 
+  --neutral-hover: #434343;
+  --neutral-border: #0a0a0a;
 }
 
 @theme inline {
@@ -22,6 +27,11 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-secondary-hover: var(--secondary-hover);
+
+  --color-neutral: var(--neutral);
+  --color-neutral-foreground: var(--neutral-foreground);
+  --color-neutral-hover: var(--neutral-hover);
+  --color-neutral-border: var(--neutral-border);
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
