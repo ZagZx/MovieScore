@@ -16,7 +16,7 @@ export default async function UsuariosTeste() {
               <li>{usuario.data_criacao}</li>
               <li>
                 <img 
-                  src={usuario.foto_perfil_url}
+                  src={usuario.foto_perfil_url || undefined}
                   title="Foto de perfil"
                   width={70} 
                 />
