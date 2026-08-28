@@ -4,6 +4,6 @@ export interface LoginBody {
 }
 
 export interface LoginResponse {
-    acess_token: string;
+    access_token: string;
     token_type: string;
 }
