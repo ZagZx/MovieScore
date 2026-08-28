@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 
 
 const TOKEN_COOKIE_KEY = "token";
-const JWT_EXPIRE_MINUTES = (Number(process.env.JWT_EXPIRE_MINUTES) || 30) * 60;
+const JWT_EXPIRE_MINUTES = Number(process.env.JWT_EXPIRE_MINUTES) || 30;
 
 if (!process.env.JWT_EXPIRE_MINUTES) {
     console.warn("Duração do JWT não configurada, será utilizado o valor padrão de 30 minutos");
@@ -13,10 +13,10 @@ export async function setAuthToken(token: string) {
 
     cookieStorage.set(TOKEN_COOKIE_KEY, token, {
         httpOnly: true,
-        secure: true, // SÓ QUANDO O AMBIENTE FOR PRODUCTION EM HTTPS
+        secure: process.env.NODE_ENV === "production", // SÓ QUANDO O AMBIENTE FOR PRODUCTION EM HTTPS
         sameSite: "lax",
         path: "/",
-        maxAge: JWT_EXPIRE_MINUTES
+        maxAge: JWT_EXPIRE_MINUTES * 60
     });
 }
 
@@ -29,5 +29,5 @@ export async function getAuthHeader() {
     const cookieStorage = await cookies();
     const token = cookieStorage.get(TOKEN_COOKIE_KEY);
 
-    return token ? { Authorization: `Bearer ${token}` } : undefined;
+    return token ? { Authorization: `Bearer ${token.value}` } : undefined;
 }
