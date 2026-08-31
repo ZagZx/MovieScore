@@ -8,6 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Swal from "sweetalert2";
 import FieldError from "@/components/features/auth/FieldError";
+import { alert } from "@/lib/alert";
+import { redirect } from "next/navigation";
 
 
 export default function FormCadastro() {
@@ -32,13 +34,23 @@ export default function FormCadastro() {
       });
 
       if (response?.status === 201) {
-        Swal.fire({
+        alert.fire({
           icon: "success",
           title: "Usuário cadastrado",
-        })
+          text: "Prossiga para fazer login"
+        }).then(() => redirect("/login"));
+      } else if (response?.status === 409) {
+        alert.fire({
+          icon: "error",
+          title: "Email já cadastrado",
+          text: "Insira outro email ou faça login",
+          showCancelButton: true,
+          cancelButtonText: "Voltar",
+          confirmButtonText: "Iniciar sessão"
+        }).then((result) => result.isConfirmed && redirect("/login"));
       }
     } catch(error) {
-      Swal.fire({
+      alert.fire({
         icon: "question",
         title: "Erro",
         text: "Erro interno"

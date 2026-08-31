@@ -4,10 +4,10 @@ import Button from "@/components/ui/Button";
 import InputAuth from "@/components/features/auth/InputAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import FieldError from "@/components/features/auth/FieldError";
 import { LoginFormData, loginSchema } from "@/lib/schemas/auth";
 import { login } from "@/actions/auth";
+import { alert } from "@/lib/alert";
 
 
 export default function FormLogin() {
@@ -29,19 +29,21 @@ export default function FormLogin() {
       });
       
       if (response?.status === 200) {
-        Swal.fire({
+        alert.fire({
           icon: "success",
           title: "Login realizado",
+          text: "Bem vindo!"
         })
       } else if (response?.status === 401) {
-        Swal.fire({
+        alert.fire({
           icon: "question",
+          title: "Credenciais inválidas",
           text: "E-mail e/ou senha incorretos"
         })
       }
     } catch(error) {
       console.log(error);
-      Swal.fire({
+      alert.fire({
         icon: "question",
         title: "Erro",
         text: "Erro interno"
