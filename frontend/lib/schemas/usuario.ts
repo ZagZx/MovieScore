@@ -6,8 +6,7 @@ export const cadastroSchema = z.object({
         .nonempty("Insira um nome")
         .min(3, "O nome de usuário deve conter pelo menos 3 caracteres")
         .max(50, "O nome de usuário deve conter no máximo 50 caracteres"),
-    email: z.string()
-        .trim()
+    email: z.string().trim()
         .nonempty("Insira um email")
         .pipe(z.email("Email inválido")),
     senha: z.string()
@@ -19,6 +18,6 @@ export const cadastroSchema = z.object({
 }).refine((data) => data.senha === data.confirmarSenha, {
     message: "As senhas não coincidem",
     path: ["confirmarSenha"]
-})
+});
 
 export type CadastroFormData = z.infer<typeof cadastroSchema>;

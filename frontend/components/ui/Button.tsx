@@ -9,7 +9,8 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary: "bg-primary text-primary-foreground hover:bg-primary-hover",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover"
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
+        outline: "bg-neutral text-neutral-foreground border-neutral-border border-2 shadow-0 hover:bg-neutral-hover"
       },
       size: {
         sm: "h-8 px-4 text-sm",
@@ -25,7 +26,7 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps extends ComponentProps<"button">, VariantProps<typeof buttonVariants> {
-  children: ReactNode
+  children: ReactNode;
 }
 
 
