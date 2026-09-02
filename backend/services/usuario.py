@@ -1,18 +1,17 @@
 import magic
 import os
-from typing import Sequence
-from fastapi import UploadFile
+from typing import Sequence, Annotated
+from fastapi import UploadFile, Depends
 from sqlalchemy import select
 from pathlib import Path
 from uuid import uuid4
 
 from auth import get_password_hash
 from constants import STORAGE
-from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
 from schemas.pagination import CursorPaging
-from services.usuario_service import UsuarioService
+from repositories import UsuarioRepositoryDep
 from exceptions import (
     NotFoundException,
     ConflictException,
@@ -60,12 +59,24 @@ def deletar_imagem(path: str):
             print(f"Erro ao deletar imagem {path}: {e}")
 
 
-class UsuarioServiceImpl(UsuarioService):
-    def __init__(self, session: SessionDep):
-        self.session = session
+class UsuarioService:
+    def __init__(self, usuario_repository: UsuarioRepositoryDep):
+        self.usuario_repository = usuario_repository
+
+    def get_usuario(self, id: int) -> Usuario:
+        usuario = self.usuario_repository.get_usuario(id)
+        if not usuario:
+            raise NotFoundException("Usuário", id)
+
+        return usuario
+
+    def get_usuario_by_email(self, email: str) -> Usuario | None:
+        usuario = self.usuario_repository.get_usuario_by_email(email)
+
+        return usuario
 
     def create_usuario(self, usuario_data: UsuarioCreate) -> Usuario:
-        if self.get_usuario_by_email(usuario_data.email):
+        if self.usuario_repository.get_usuario_by_email(usuario_data.email):
             raise ConflictException("Já existe um usuário cadastrado com esse email")
 
         usuario = Usuario(
@@ -74,28 +85,17 @@ class UsuarioServiceImpl(UsuarioService):
             senha_hash=get_password_hash(usuario_data.senha),
         )
 
-        try:
-            self.session.add(usuario)
-            self.session.commit()
-            self.session.refresh(usuario)
-
-            return usuario
-        except Exception:
-            self.session.rollback()
-
-            raise
+        return self.usuario_repository.create_usuario(usuario)
 
     def delete_usuario(self, id: int):
-        usuario = self.get_usuario(id)
+        usuario = self.usuario_repository.get_usuario(id)
         caminho_foto = usuario.foto_perfil_path
 
+        self.usuario_repository.delete_usuario(usuario)
+
         try:
-            self.session.delete(usuario)
-            self.session.commit()
             deletar_imagem(caminho_foto)
         except Exception:
-            self.session.rollback()
-
             raise
 
     def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
@@ -163,14 +163,6 @@ class UsuarioServiceImpl(UsuarioService):
 
         return usuarios, paging
 
-    def get_usuario(self, id: int) -> Usuario:
-        usuario = self.session.get(Usuario, id)
-        if not usuario:
-            raise NotFoundException("Usuário", id)
 
-        return usuario
-
-    def get_usuario_by_email(self, email) -> Usuario | None:
-        usuario = self.session.scalar(select(Usuario).where(Usuario.email == email))
-
-        return usuario
+    
+UsuarioServiceDep = Annotated[UsuarioService, Depends(UsuarioService)]
