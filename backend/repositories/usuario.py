@@ -56,5 +56,17 @@ class UsuarioRepository:
             self.session.rollback()
             raise
 
+    def list_usuarios(self, last_id: int, limit: int) -> tuple[list[Usuario], bool]:
+        "Retorna a lista de usuários e um booleano indicando se existem mais usuários"
+        usuarios = self.session.scalars(
+            select(Usuario)
+            .where(Usuario.id > last_id)
+            .order_by(Usuario.id)
+            .limit(limit + 1)
+        ).all()
+        has_more = len(usuarios) > limit
+
+        return (usuarios[:limit] if has_more else usuarios), has_more
+
 
 UsuarioRepositoryDep = Annotated[UsuarioRepository, Depends(UsuarioRepository)]

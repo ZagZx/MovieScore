@@ -136,28 +136,14 @@ class UsuarioService:
 
         return usuario
 
-    def list_usuario(
-        self, last_id: int, limit: int
-    ) -> tuple[Sequence[Usuario], CursorPaging]:
-        last_id_table = self.session.scalar(
-            select(Usuario.id).order_by(Usuario.id.desc()).limit(1)
-        )
+    def list_usuarios(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+        usuarios, has_more = self.usuario_repository.list_usuarios(last_id, limit)
 
-        usuarios = []
-        if last_id < last_id_table:
-            usuarios = self.session.scalars(
-                select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
-            ).all()
-
-        has_more = len(usuarios) > limit
-        if has_more:
-            usuarios[:limit]
-        cursor = usuarios[len(usuarios) - 1].id if usuarios else None
+        cursor = usuarios[-1].id if usuarios else None
 
         paging = CursorPaging(cursor=cursor, has_more=has_more)
 
         return usuarios, paging
 
 
-    
 UsuarioServiceDep = Annotated[UsuarioService, Depends(UsuarioService)]

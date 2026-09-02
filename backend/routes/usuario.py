@@ -17,7 +17,7 @@ usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 def listar_usuarios(
     usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()
 ):
-    usuarios, paging = usuario_service.list_usuario(
+    usuarios, paging = usuario_service.list_usuarios(
         pagingParams.cursor, pagingParams.limit
     )
 
