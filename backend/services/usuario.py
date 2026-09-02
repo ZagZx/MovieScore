@@ -24,7 +24,11 @@ def salvar_imagem(imagem: UploadFile) -> str:
     TIPOS_PERMITIDOS = ["image/png", "image/jpeg", "image/webp"]
     EXTENSOES_PERMITIDAS = [".jpg", ".jpeg", ".png", ".webp"]
 
-    conteudo = imagem.file.read()
+    try:
+        conteudo = imagem.file.read()
+    except OSError as exc:
+        raise RuntimeError("Não foi possível ler a imagem enviada") from exc
+
     mime_type = magic.from_buffer(conteudo[:2048], mime=True)
     if mime_type not in TIPOS_PERMITIDOS:
         raise UnsupportedMediaTypeException(
@@ -43,10 +47,11 @@ def salvar_imagem(imagem: UploadFile) -> str:
     caminho_arquivo = caminho.joinpath(Path(nome_arquivo))
 
     try:
-        with open(caminho_arquivo, "wb") as f:
-            f.write(conteudo)
-    except Exception:
-        raise
+        with open(caminho_arquivo, "wb") as arquivo:
+            arquivo.write(conteudo)
+    except OSError as exc:
+        deletar_imagem(str(caminho_arquivo))
+        raise RuntimeError("Não foi possível salvar a imagem") from exc
 
     return str(caminho_arquivo)
 
@@ -55,8 +60,10 @@ def deletar_imagem(path: str):
     if path and os.path.exists(path):
         try:
             os.remove(path)
-        except Exception as e:
-            print(f"Erro ao deletar imagem {path}: {e}")
+        except FileNotFoundError:
+            print(f"Arquivo não encontrado: {path}")
+        except OSError:
+            print("Erro ao deletar imagem no caminho:", path)
 
 
 class UsuarioService:
@@ -101,25 +108,16 @@ class UsuarioService:
     def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
         usuario = self.get_usuario(id)
 
-        if self.get_usuario_by_email(usuario_data.email):
-            raise ConflictException("Já existe um usuário cadastrado com esse email")
-
+        if usuario_data.email and usuario_data.email != usuario.email:
+            if self.get_usuario_by_email(usuario_data.email):
+                raise ConflictException("Já existe um usuário cadastrado com esse email")
+            usuario.email = usuario_data.email
         if usuario_data.nome:
             usuario.nome = usuario_data.nome
-        if usuario_data.email:
-            usuario.email = usuario_data.email
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
 
-        try:
-            self.session.commit()
-            self.session.refresh(usuario)
-
-            return usuario
-        except Exception:
-            self.session.rollback()
-
-            raise
+        return self.usuario_repository.update_usuario(usuario)
 
     def update_foto_perfil(self, id: int, foto_perfil: UploadFile) -> Usuario:
         usuario = self.get_usuario(id)
@@ -130,12 +128,9 @@ class UsuarioService:
         usuario.foto_perfil_path = caminho_foto_nova
 
         try:
-            self.session.commit()
-            self.session.refresh(usuario)
+            usuario = self.usuario_repository.update_foto_perfil(usuario)
         except Exception:
-            self.session.rollback()
             deletar_imagem(caminho_foto_nova)
-
             raise
         deletar_imagem(caminho_foto_antiga)
 
