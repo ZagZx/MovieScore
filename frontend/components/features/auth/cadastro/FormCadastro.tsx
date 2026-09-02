@@ -6,7 +6,6 @@ import InputAuth from "@/components/features/auth/InputAuth";
 import { CadastroFormData, cadastroSchema } from "@/lib/schemas/usuario";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import FieldError from "@/components/features/auth/FieldError";
 import { alert } from "@/lib/alert";
 import { redirect } from "next/navigation";
@@ -48,8 +47,16 @@ export default function FormCadastro() {
           cancelButtonText: "Voltar",
           confirmButtonText: "Iniciar sessão"
         }).then((result) => result.isConfirmed && redirect("/login"));
+      } else if (!response.success) {
+        console.log(response.status, response.error);
+        alert.fire({
+          icon: "error",
+          title: "Erro",
+          text: "Erro interno"
+        });
       }
     } catch(error) {
+      console.log(error)
       alert.fire({
         icon: "question",
         title: "Erro",
@@ -86,7 +93,9 @@ export default function FormCadastro() {
           {errors.confirmarSenha && (<FieldError>{errors.confirmarSenha.message}</FieldError>)}
         </div>
 
-        <Button type="submit" className="mt-4" disabled={isSubmitting}>{isSubmitting ? "Cadastrando..." : "Cadastrar-se"}</Button>
+        <Button type="submit" className="mt-4" disabled={isSubmitting}>
+          {isSubmitting ? "Cadastrando..." : "Cadastrar-se"}
+        </Button>
       </div>
     </form>
   );

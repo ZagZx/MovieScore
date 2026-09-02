@@ -33,18 +33,25 @@ export default function FormLogin() {
           icon: "success",
           title: "Login realizado",
           text: "Bem vindo!"
-        })
+        });
       } else if (response?.status === 401) {
         alert.fire({
           icon: "question",
           title: "Credenciais inválidas",
           text: "E-mail e/ou senha incorretos"
-        })
+        });
+      } else if (!response.success) {
+        console.log(response.status, response.error);
+        alert.fire({
+          icon: "error",
+          title: "Erro",
+          text: "Erro interno"
+        });
       }
     } catch(error) {
       console.log(error);
       alert.fire({
-        icon: "question",
+        icon: "error",
         title: "Erro",
         text: "Erro interno"
       });
@@ -71,7 +78,9 @@ export default function FormLogin() {
           {errors.senha && (<FieldError>{errors.senha.message}</FieldError>)}
         </div>
 
-        <Button type="submit" className="mt-4" disabled={isSubmitting}>{isSubmitting ? "Aguarde..." : "Iniciar sessão"}</Button>
+        <Button type="submit" className="mt-4" disabled={isSubmitting}>
+          {isSubmitting ? "Aguarde..." : "Iniciar sessão"}
+        </Button>
       </div>
     </form>
   );
