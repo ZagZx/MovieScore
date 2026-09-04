@@ -27,6 +27,10 @@ export default function FormLogin() {
     setFocus,
   );
 
+  const handleButtonClick =
+    step < fields.length - 1
+      ? handleNextStep
+      : handleSubmit(onSubmit);
 
   async function onSubmit(data: LoginFormData) {
     try {
@@ -85,15 +89,18 @@ export default function FormLogin() {
         )}
 
         
-        {step < fields.length - 1 ? (
-          <Button type="button" variant="outline" onClick={() => handleNextStep()} disabled={isSubmitting}>
-            Próximo
-          </Button>
-        ) : (
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Aguarde..." : "Iniciar sessão"}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant={step < fields.length - 1 ? "outline" : "primary"}
+          onClick={handleButtonClick}
+          disabled={isSubmitting}
+        >
+          {step < fields.length - 1
+            ? "Próximo"
+            : isSubmitting
+              ? "Aguarde..."
+              : "Iniciar Sessão"}
+        </Button>
       </div>
     </form>
   );

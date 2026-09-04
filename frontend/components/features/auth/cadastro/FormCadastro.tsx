@@ -30,6 +30,10 @@ export default function FormCadastro() {
     setFocus,
   );
 
+  const handleButtonClick =
+    step < fields.length - 1
+      ? handleNextStep
+      : handleSubmit(onSubmit);
 
   async function onSubmit(data: CadastroFormData) {
     try {
@@ -106,15 +110,18 @@ export default function FormCadastro() {
         )}
 
         
-        {step < fields.length - 1 ? (
-          <Button type="button" variant="outline" onClick={handleNextStep} disabled={isSubmitting}>
-            Próximo
-          </Button>
-        ) : (
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Cadastrando..." : "Cadastrar-se"}
-          </Button>
-        )}
+        <Button
+          type="button"
+          variant={step < fields.length - 1 ? "outline" : "primary"}
+          onClick={handleButtonClick}
+          disabled={isSubmitting}
+        >
+          {step < fields.length - 1
+            ? "Próximo"
+            : isSubmitting
+              ? "Cadastrando..."
+              : "Cadastrar-se"}
+        </Button>
       </div>
     </form>
   );
