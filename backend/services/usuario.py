@@ -1,8 +1,7 @@
 import magic
 import os
-from typing import Sequence, Annotated
+from typing import Annotated
 from fastapi import UploadFile, Depends
-from sqlalchemy import select
 from pathlib import Path
 from uuid import uuid4
 
@@ -136,7 +135,7 @@ class UsuarioService:
 
         return usuario
 
-    def list_usuarios(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+    def list_usuarios(self, last_id: int, limit: int) -> tuple[list[Usuario], CursorPaging]:
         usuarios, has_more = self.usuario_repository.list_usuarios(last_id, limit)
 
         cursor = usuarios[-1].id if usuarios else None

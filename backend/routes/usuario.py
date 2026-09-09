@@ -25,19 +25,11 @@ def listar_usuarios(
     return CursorPage(data=usuarios, paging=paging)
 
 
-@usuario_router.get("/{id}", response_model=UsuarioRead)
-def buscar_usuario(id: int, usuario_service: UsuarioServiceDep):
-    return usuario_service.get_usuario(id)
-
-
 @usuario_router.post(
     "", response_model=UsuarioRead, status_code=status.HTTP_201_CREATED
 )
 def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDep):
     return usuario_service.create_usuario(usuario_json)
-
-
-# ── rotas que exigem autenticação ──────────────────────────────────────────────
 
 
 @usuario_router.get("/avaliacoes", response_model=list[AvaliacaoRead])
@@ -102,3 +94,7 @@ def atualizar_foto_perfil(
     id = current_user.id
     return usuario_service.update_foto_perfil(id, foto_perfil)
 
+
+@usuario_router.get("/{id}", response_model=UsuarioRead)
+def buscar_usuario(id: int, usuario_service: UsuarioServiceDep):
+    return usuario_service.get_usuario(id)

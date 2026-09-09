@@ -4,12 +4,15 @@ from fastapi import Depends
 from sqlalchemy import select
 
 from database import SessionDep
-from models import Favorito, Usuario
+from models import Favorito, Usuario, Conteudo
 
 
 class FavoritoRepository:
     def __init__(self, session: SessionDep):
         self.session = session
+
+    def get_favorito(self, id: int) -> Favorito | None:
+        return self.session.get(Favorito, id)
 
     def list_favoritos_by_usuario(self, usuario: Usuario) -> list[Favorito]:
         """Retorna todos os favoritos de um usuário específico."""
@@ -23,13 +26,13 @@ class FavoritoRepository:
         )
 
     def get_favorito_by_usuario_and_conteudo(
-        self, usuario: Usuario, conteudo_id: int
+        self, usuario: Usuario, conteudo: Conteudo
     ) -> Favorito | None:
         """Busca um favorito específico do usuário para um conteúdo."""
         return self.session.scalar(
             select(Favorito).where(
                 Favorito.usuario_id == usuario.id,
-                Favorito.conteudo_id == conteudo_id,
+                Favorito.conteudo_id == conteudo.id,
             )
         )
 

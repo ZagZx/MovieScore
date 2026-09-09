@@ -4,7 +4,7 @@ from fastapi import Depends
 from sqlalchemy import select
 
 from database import SessionDep
-from models import Avaliacao, Usuario
+from models import Avaliacao, Usuario, Conteudo
 
 
 class AvaliacaoRepository:
@@ -23,13 +23,13 @@ class AvaliacaoRepository:
         )
 
     def get_avaliacao_by_usuario_and_conteudo(
-        self, usuario: Usuario, conteudo_id: int
+        self, usuario: Usuario, conteudo: Conteudo
     ) -> Avaliacao | None:
         """Busca uma avaliação específica do usuário para um conteúdo."""
         return self.session.scalar(
             select(Avaliacao).where(
                 Avaliacao.usuario_id == usuario.id,
-                Avaliacao.conteudo_id == conteudo_id,
+                Avaliacao.conteudo_id == conteudo.id,
             )
         )
 

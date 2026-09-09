@@ -20,6 +20,12 @@ class FavoritoService:
         self.usuario_service = usuario_service
         self.conteudo_service = conteudo_service
 
+    def get_favorito(self, id: int) -> Favorito:
+        favorito = self.favorito_repository.get_favorito(id)
+        if not favorito:
+            raise NotFoundException("Favorito", id)
+        return favorito
+    
     def list_favoritos_usuario(self, usuario_id: int) -> list[Favorito]:
         """Retorna os favoritos do usuário autenticado."""
         usuario = self.usuario_service.get_usuario(usuario_id)
@@ -30,18 +36,18 @@ class FavoritoService:
     ) -> Favorito | None:
         """Busca um favorito específico do usuário para um conteúdo."""
         usuario = self.usuario_service.get_usuario(usuario_id)
-        self.conteudo_service.get_conteudo(conteudo_id)
+        conteudo = self.conteudo_service.get_conteudo(conteudo_id)
         return self.favorito_repository.get_favorito_by_usuario_and_conteudo(
-            usuario, conteudo_id
+            usuario, conteudo
         )
 
     def add_favorito_usuario(self, usuario_id: int, conteudo_id: int) -> Favorito:
         """Adiciona um conteúdo na lista de favoritos do usuário."""
         usuario = self.usuario_service.get_usuario(usuario_id)
-        self.conteudo_service.get_conteudo(conteudo_id)
+        conteudo = self.conteudo_service.get_conteudo(conteudo_id)
 
         if self.favorito_repository.get_favorito_by_usuario_and_conteudo(
-            usuario, conteudo_id
+            usuario, conteudo
         ):
             raise ConflictException("Este conteúdo já está nos favoritos do usuário")
 
