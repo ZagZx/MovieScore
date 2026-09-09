@@ -1,11 +1,12 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
-from services import UsuarioServiceDep
+from services import UsuarioServiceDep, AvaliacaoServiceDep
 from schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate,
 )
+from schemas.avaliacao import AvaliacaoRead
 from schemas.pagination import CursorParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
@@ -38,6 +39,14 @@ def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDe
 # ── rotas que exigem autenticação ──────────────────────────────────────────────
 
 
+@usuario_router.get("/avaliacoes", response_model=list[AvaliacaoRead])
+def listar_avaliacoes_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.list_avaliacoes_usuario(current_user.id)
+
+
 @usuario_router.patch("", response_model=UsuarioRead)
 def atualizar_usuario(
     current_user: CurrentUsuarioDep,
@@ -65,3 +74,4 @@ def atualizar_foto_perfil(
 ):
     id = current_user.id
     return usuario_service.update_foto_perfil(id, foto_perfil)
+
