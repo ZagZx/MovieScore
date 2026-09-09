@@ -1,12 +1,13 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
-from services import UsuarioServiceDep, AvaliacaoServiceDep
+from services import UsuarioServiceDep, AvaliacaoServiceDep, FavoritoServiceDep
 from schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate,
 )
 from schemas.avaliacao import AvaliacaoRead
+from schemas.favorito import FavoritoRead
 from schemas.pagination import CursorParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
@@ -45,6 +46,32 @@ def listar_avaliacoes_do_usuario_logado(
     avaliacao_service: AvaliacaoServiceDep,
 ):
     return avaliacao_service.list_avaliacoes_usuario(current_user.id)
+
+
+@usuario_router.get("/favoritos", response_model=list[FavoritoRead])
+def listar_favoritos_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    return favorito_service.list_favoritos_usuario(current_user.id)
+
+
+@usuario_router.post("/favoritos/{conteudo_id}", response_model=FavoritoRead, status_code=status.HTTP_201_CREATED)
+def adicionar_favorito_do_usuario_logado(
+    conteudo_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    return favorito_service.add_favorito_usuario(current_user.id, conteudo_id)
+
+
+@usuario_router.delete("/favoritos/{conteudo_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remover_favorito_do_usuario_logado(
+    conteudo_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    favorito_service.remove_favorito_usuario(current_user.id, conteudo_id)
 
 
 @usuario_router.patch("", response_model=UsuarioRead)
