@@ -10,7 +10,7 @@ from auth import get_password_hash
 from constants import STORAGE
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
-from schemas.pagination import CursorPaging
+from schemas.pagination import CursorPagination
 from repositories import UsuarioRepositoryDep
 from exceptions import (
     NotFoundException,
@@ -136,12 +136,12 @@ class UsuarioService:
 
         return usuario
 
-    def list_usuarios(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+    def list_usuarios(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPagination]:
         usuarios, has_more = self.usuario_repository.list_usuarios(last_id, limit)
 
         cursor = usuarios[-1].id if usuarios else None
 
-        paging = CursorPaging(cursor=cursor, has_more=has_more)
+        paging = CursorPagination(cursor=cursor, has_more=has_more)
 
         return usuarios, paging
 

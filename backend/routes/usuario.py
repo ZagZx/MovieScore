@@ -20,7 +20,7 @@ def listar_usuarios(
         pagingParams.cursor, pagingParams.limit
     )
 
-    return CursorPage(data=usuarios, paging=paging)
+    return CursorPage(data=usuarios, pagination=paging)
 
 
 @usuario_router.get("/{id}", response_model=UsuarioRead)
