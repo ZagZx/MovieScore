@@ -3,8 +3,8 @@ from sqlalchemy import select
 
 from database import SessionDep
 from models import Usuario
-from schemas.auth import LoginInput, TokenResponse
-from schemas.usuario import UsuarioRead
+from services.schemas.auth import LoginInput, TokenResponse
+from services.schemas.usuario import UsuarioRead
 from auth import create_access_token, CurrentUsuarioDep, verify_password
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
