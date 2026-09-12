@@ -12,10 +12,11 @@ class ImagensSerie(Base):
 
 class TemporadaSerie(Base):
     id: int
-    data_lancamento: str | None = None
-    quantidade_episodios: int = 0
+    nome: str
     numero_temporada: int = 0
+    quantidade_episodios: int = 0
     descricao: str | None = None
+    data_lancamento: str | None = None
     capa: str | None = None
 
 class SerieListRead(Base):

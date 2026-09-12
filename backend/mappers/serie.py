@@ -26,10 +26,11 @@ class SerieMapper:
         return [
             TemporadaSerie(
                 id=int(season["id"]),
-                data_lancamento=season.get("air_date") or None,
-                quantidade_episodios=season.get("episode_count") or 0,
+                nome=season.get("name") or "",
                 numero_temporada=season.get("season_number") or 0,
+                quantidade_episodios=season.get("episode_count") or 0,
                 descricao=season.get("overview"),
+                data_lancamento=season.get("air_date") or None,
                 capa=SerieMapper._map_image(season.get("poster_path"), "w500"),
             )
             for season in seasons
