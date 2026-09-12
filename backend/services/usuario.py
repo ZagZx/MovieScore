@@ -9,7 +9,7 @@ from auth import get_password_hash
 from constants import STORAGE
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
-from schemas.pagination import CursorPagination
+from schemas.pagination.cursor import CursorPagination
 from repositories import UsuarioRepositoryDep
 from exceptions import (
     NotFoundException,

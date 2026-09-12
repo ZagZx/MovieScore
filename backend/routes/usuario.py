@@ -8,7 +8,7 @@ from schemas.usuario import (
 )
 from schemas.avaliacao import AvaliacaoRead
 from schemas.favorito import FavoritoRead
-from schemas.pagination import CursorParams, CursorPage
+from schemas.pagination.cursor import CursorPaginationParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
@@ -16,7 +16,7 @@ usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 @usuario_router.get("", response_model=CursorPage[UsuarioRead])
 def listar_usuarios(
-    usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()
+    usuario_service: UsuarioServiceDep, pagingParams: CursorPaginationParams = Depends()
 ):
     usuarios, paging = usuario_service.list_usuarios(
         pagingParams.cursor, pagingParams.limit
