@@ -24,6 +24,7 @@ export default function RootLayout({
     <html
       lang="pt-BR"
       className={`${poppins.variable} h-full antialiased`}
+      cz-shortcut-listen="true"
     >
       <body className="min-h-full min-w-screen flex flex-col">
         {children}

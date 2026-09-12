@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from constants import TMDB_API_URL, HEADERS_TMDB, PARAMS_TMDB
 from utils import get_data, ExternalAPIException
 
-filmes_router = APIRouter(prefix="/filme", tags=["filme"])
+filmes_router = APIRouter(prefix="/filmes", tags=["filmes"])
 
 
 @filmes_router.get("")

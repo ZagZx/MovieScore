@@ -6,14 +6,14 @@ import InputAuth from "@/components/features/auth/InputAuth";
 import { CadastroFormData, cadastroSchema } from "@/lib/schemas/usuario";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import Swal from "sweetalert2";
 import FieldError from "@/components/features/auth/FieldError";
 import { alert } from "@/lib/alert";
 import { redirect } from "next/navigation";
+import useStepForm from "@/hooks/useStepForm";
 
 
 export default function FormCadastro() {
-  const {register, handleSubmit, formState: { isSubmitting, errors }} = useForm<CadastroFormData>({
+  const {register, handleSubmit, trigger, setFocus, formState: { isSubmitting, errors }} = useForm<CadastroFormData>({
     mode: "onBlur",
     reValidateMode: "onBlur",
     defaultValues: {
@@ -24,6 +24,16 @@ export default function FormCadastro() {
     },
     resolver: zodResolver(cadastroSchema)
   });
+  const { fields, step, handleNextStep, handleStepKeyDown } = useStepForm(
+    cadastroSchema,
+    trigger,
+    setFocus,
+  );
+
+  const handleButtonClick =
+    step < fields.length - 1
+      ? handleNextStep
+      : handleSubmit(onSubmit);
 
   async function onSubmit(data: CadastroFormData) {
     try {
@@ -48,8 +58,16 @@ export default function FormCadastro() {
           cancelButtonText: "Voltar",
           confirmButtonText: "Iniciar sessão"
         }).then((result) => result.isConfirmed && redirect("/login"));
+      } else if (!response.success) {
+        console.log(response.status, response.error);
+        alert.fire({
+          icon: "error",
+          title: "Erro",
+          text: "Erro interno"
+        });
       }
     } catch(error) {
+      console.log(error)
       alert.fire({
         icon: "question",
         title: "Erro",
@@ -60,33 +78,50 @@ export default function FormCadastro() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div 
-        className="
-          flex flex-col gap-2 w-90
-        "
-      >
-        <h1 className="text-4xl font-medium mb-8 text-center">
-          Cadastro
-        </h1>
+      <div className="flex flex-col gap-2 w-90">
+        <h1 className="text-4xl font-medium mb-8 text-center">Cadastro</h1>
 
-        <div>
-          <InputAuth id="nome" labelValue="Nome de usuário" {...register("nome")}/>
-          {errors.nome && (<FieldError aria-invalid aria-describedby="nome">{errors.nome.message}</FieldError>)}
-        </div>
-        <div>
-          <InputAuth type="email" id="email" labelValue="Email" {...register("email")}/>
-          {errors.email && (<FieldError>{errors.email.message}</FieldError>)}
-        </div>
-        <div>
-          <InputAuth type="password" id="senha" labelValue="Senha" {...register("senha")}/>
-          {errors.senha && (<FieldError>{errors.senha.message}</FieldError>)}
-        </div>
-        <div>
-          <InputAuth type="password" id="confirmarSenha" labelValue="Confirme sua senha" {...register("confirmarSenha")}/>
-          {errors.confirmarSenha && (<FieldError>{errors.confirmarSenha.message}</FieldError>)}
-        </div>
+        {step >= 0 && (
+          <div>
+            <InputAuth id="nome" labelValue="Nome de usuário" {...register("nome")} onKeyDown={handleStepKeyDown}/>
+            {errors.nome && (<FieldError aria-invalid aria-describedby="nome">{errors.nome.message}</FieldError>)}
+          </div>
+        )}
 
-        <Button type="submit" className="mt-4" disabled={isSubmitting}>{isSubmitting ? "Cadastrando..." : "Cadastrar-se"}</Button>
+        {step >= 1 && (
+          <div>
+            <InputAuth type="email" id="email" labelValue="Email" {...register("email")} onKeyDown={handleStepKeyDown}/>
+            {errors.email && (<FieldError>{errors.email.message}</FieldError>)}
+          </div>
+        )}
+
+        {step >= 2 && (
+          <div>
+            <InputAuth type="password" id="senha" labelValue="Senha" {...register("senha")} onKeyDown={handleStepKeyDown}/>
+            {errors.senha && (<FieldError>{errors.senha.message}</FieldError>)}
+          </div>
+        )}
+
+        {step >= 3 && (
+          <div>
+            <InputAuth type="password" id="confirmarSenha" labelValue="Confirme sua senha" {...register("confirmarSenha")}/>
+            {errors.confirmarSenha && (<FieldError>{errors.confirmarSenha.message}</FieldError>)}
+          </div>
+        )}
+
+        
+        <Button
+          type="button"
+          variant={step < fields.length - 1 ? "outline" : "primary"}
+          onClick={handleButtonClick}
+          disabled={isSubmitting}
+        >
+          {step < fields.length - 1
+            ? "Próximo"
+            : isSubmitting
+              ? "Cadastrando..."
+              : "Cadastrar-se"}
+        </Button>
       </div>
     </form>
   );

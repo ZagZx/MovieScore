@@ -1,14 +1,14 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
-from services import UsuarioServiceDep
+from services import UsuarioServiceDep, AvaliacaoServiceDep
 from schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate,
 )
-from schemas.pagination import CursorParams, CursorPage, CursorPaging
-
-from auth import CurrentUsuarioDep  # <-- importado para proteger rotas
+from schemas.avaliacao import AvaliacaoRead
+from schemas.pagination import CursorParams, CursorPage
+from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
@@ -17,7 +17,7 @@ usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 def listar_usuarios(
     usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()
 ):
-    usuarios, paging = usuario_service.list_usuario(
+    usuarios, paging = usuario_service.list_usuarios(
         pagingParams.cursor, pagingParams.limit
     )
 
@@ -39,30 +39,39 @@ def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDe
 # ── rotas que exigem autenticação ──────────────────────────────────────────────
 
 
-@usuario_router.patch("/{id}", response_model=UsuarioRead)
+@usuario_router.get("/avaliacoes", response_model=list[AvaliacaoRead])
+def listar_avaliacoes_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.list_avaliacoes_usuario(current_user.id)
+
+
+@usuario_router.patch("", response_model=UsuarioRead)
 def atualizar_usuario(
-    id: int,
+    current_user: CurrentUsuarioDep,
     usuario_form: UsuarioUpdate,
     usuario_service: UsuarioServiceDep,
-    _: CurrentUsuarioDep,  # garante que o requisitante está autenticado
 ):
+    id = current_user.id
     return usuario_service.update_usuario(id, usuario_form)
 
 
-@usuario_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@usuario_router.delete("", status_code=status.HTTP_204_NO_CONTENT)
 def deletar_usuario(
-    id: int,
+    current_user: CurrentUsuarioDep,
     usuario_service: UsuarioServiceDep,
-    _: CurrentUsuarioDep,
 ):
+    id = current_user.id
     usuario_service.delete_usuario(id)
 
 
-@usuario_router.patch("/{id}/foto-perfil", response_model=UsuarioRead)
+@usuario_router.patch("/foto-perfil", response_model=UsuarioRead)
 def atualizar_foto_perfil(
-    id: int,
+    current_user: CurrentUsuarioDep,
     foto_perfil: UploadFile,
     usuario_service: UsuarioServiceDep,
-    _: CurrentUsuarioDep,
 ):
+    id = current_user.id
     return usuario_service.update_foto_perfil(id, foto_perfil)
+

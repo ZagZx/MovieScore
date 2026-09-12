@@ -1,9 +1,9 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException
 
 from constants import KITSU_API_URL, HEADERS_KITSU
 from utils import get_data, ExternalAPIException
 
-animes_router = APIRouter(prefix="/anime", tags=["anime"])
+animes_router = APIRouter(prefix="/animes", tags=["animes"])
 
 
 @animes_router.get("")

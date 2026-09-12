@@ -1,18 +1,17 @@
 import magic
 import os
-from typing import Sequence
-from fastapi import UploadFile
+from typing import Sequence, Annotated
+from fastapi import UploadFile, Depends
 from sqlalchemy import select
 from pathlib import Path
 from uuid import uuid4
 
 from auth import get_password_hash
 from constants import STORAGE
-from database import SessionDep
 from models import Usuario
 from schemas.usuario import UsuarioCreate, UsuarioUpdate
 from schemas.pagination import CursorPaging
-from services.usuario_service import UsuarioService
+from repositories import UsuarioRepositoryDep
 from exceptions import (
     NotFoundException,
     ConflictException,
@@ -25,7 +24,11 @@ def salvar_imagem(imagem: UploadFile) -> str:
     TIPOS_PERMITIDOS = ["image/png", "image/jpeg", "image/webp"]
     EXTENSOES_PERMITIDAS = [".jpg", ".jpeg", ".png", ".webp"]
 
-    conteudo = imagem.file.read()
+    try:
+        conteudo = imagem.file.read()
+    except OSError as exc:
+        raise RuntimeError("Não foi possível ler a imagem enviada") from exc
+
     mime_type = magic.from_buffer(conteudo[:2048], mime=True)
     if mime_type not in TIPOS_PERMITIDOS:
         raise UnsupportedMediaTypeException(
@@ -44,10 +47,11 @@ def salvar_imagem(imagem: UploadFile) -> str:
     caminho_arquivo = caminho.joinpath(Path(nome_arquivo))
 
     try:
-        with open(caminho_arquivo, "wb") as f:
-            f.write(conteudo)
-    except Exception:
-        raise
+        with open(caminho_arquivo, "wb") as arquivo:
+            arquivo.write(conteudo)
+    except OSError as exc:
+        deletar_imagem(str(caminho_arquivo))
+        raise RuntimeError("Não foi possível salvar a imagem") from exc
 
     return str(caminho_arquivo)
 
@@ -56,16 +60,30 @@ def deletar_imagem(path: str):
     if path and os.path.exists(path):
         try:
             os.remove(path)
-        except Exception as e:
-            print(f"Erro ao deletar imagem {path}: {e}")
+        except FileNotFoundError:
+            print(f"Arquivo não encontrado: {path}")
+        except OSError:
+            print("Erro ao deletar imagem no caminho:", path)
 
 
-class UsuarioServiceImpl(UsuarioService):
-    def __init__(self, session: SessionDep):
-        self.session = session
+class UsuarioService:
+    def __init__(self, usuario_repository: UsuarioRepositoryDep):
+        self.usuario_repository = usuario_repository
+
+    def get_usuario(self, id: int) -> Usuario:
+        usuario = self.usuario_repository.get_usuario(id)
+        if not usuario:
+            raise NotFoundException("Usuário", id)
+
+        return usuario
+
+    def get_usuario_by_email(self, email: str) -> Usuario | None:
+        usuario = self.usuario_repository.get_usuario_by_email(email)
+
+        return usuario
 
     def create_usuario(self, usuario_data: UsuarioCreate) -> Usuario:
-        if self.get_usuario_by_email(usuario_data.email):
+        if self.usuario_repository.get_usuario_by_email(usuario_data.email):
             raise ConflictException("Já existe um usuário cadastrado com esse email")
 
         usuario = Usuario(
@@ -74,52 +92,32 @@ class UsuarioServiceImpl(UsuarioService):
             senha_hash=get_password_hash(usuario_data.senha),
         )
 
-        try:
-            self.session.add(usuario)
-            self.session.commit()
-            self.session.refresh(usuario)
-
-            return usuario
-        except Exception:
-            self.session.rollback()
-
-            raise
+        return self.usuario_repository.create_usuario(usuario)
 
     def delete_usuario(self, id: int):
-        usuario = self.get_usuario(id)
+        usuario = self.usuario_repository.get_usuario(id)
         caminho_foto = usuario.foto_perfil_path
 
+        self.usuario_repository.delete_usuario(usuario)
+
         try:
-            self.session.delete(usuario)
-            self.session.commit()
             deletar_imagem(caminho_foto)
         except Exception:
-            self.session.rollback()
-
             raise
 
     def update_usuario(self, id: int, usuario_data: UsuarioUpdate) -> Usuario:
         usuario = self.get_usuario(id)
 
-        if self.get_usuario_by_email(usuario_data.email):
-            raise ConflictException("Já existe um usuário cadastrado com esse email")
-
+        if usuario_data.email and usuario_data.email != usuario.email:
+            if self.get_usuario_by_email(usuario_data.email):
+                raise ConflictException("Já existe um usuário cadastrado com esse email")
+            usuario.email = usuario_data.email
         if usuario_data.nome:
             usuario.nome = usuario_data.nome
-        if usuario_data.email:
-            usuario.email = usuario_data.email
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
 
-        try:
-            self.session.commit()
-            self.session.refresh(usuario)
-
-            return usuario
-        except Exception:
-            self.session.rollback()
-
-            raise
+        return self.usuario_repository.update_usuario(usuario)
 
     def update_foto_perfil(self, id: int, foto_perfil: UploadFile) -> Usuario:
         usuario = self.get_usuario(id)
@@ -130,47 +128,22 @@ class UsuarioServiceImpl(UsuarioService):
         usuario.foto_perfil_path = caminho_foto_nova
 
         try:
-            self.session.commit()
-            self.session.refresh(usuario)
+            usuario = self.usuario_repository.update_foto_perfil(usuario)
         except Exception:
-            self.session.rollback()
             deletar_imagem(caminho_foto_nova)
-
             raise
         deletar_imagem(caminho_foto_antiga)
 
         return usuario
 
-    def list_usuario(
-        self, last_id: int, limit: int
-    ) -> tuple[Sequence[Usuario], CursorPaging]:
-        last_id_table = self.session.scalar(
-            select(Usuario.id).order_by(Usuario.id.desc()).limit(1)
-        )
+    def list_usuarios(self, last_id: int, limit: int) -> tuple[Sequence[Usuario], CursorPaging]:
+        usuarios, has_more = self.usuario_repository.list_usuarios(last_id, limit)
 
-        usuarios = []
-        if last_id < last_id_table:
-            usuarios = self.session.scalars(
-                select(Usuario).where(Usuario.id > last_id).limit(limit + 1)
-            ).all()
-
-        has_more = len(usuarios) > limit
-        if has_more:
-            usuarios[:limit]
-        cursor = usuarios[len(usuarios) - 1].id if usuarios else None
+        cursor = usuarios[-1].id if usuarios else None
 
         paging = CursorPaging(cursor=cursor, has_more=has_more)
 
         return usuarios, paging
 
-    def get_usuario(self, id: int) -> Usuario:
-        usuario = self.session.get(Usuario, id)
-        if not usuario:
-            raise NotFoundException("Usuário", id)
 
-        return usuario
-
-    def get_usuario_by_email(self, email) -> Usuario | None:
-        usuario = self.session.scalar(select(Usuario).where(Usuario.email == email))
-
-        return usuario
+UsuarioServiceDep = Annotated[UsuarioService, Depends(UsuarioService)]
