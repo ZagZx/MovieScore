@@ -53,6 +53,7 @@ def get_data(url: str, params: dict | None = None, headers: dict | None = None) 
             status_code=502,
         )
     except HTTPError as exc:
+        print(exc)
         status = exc.response.status_code if exc.response is not None else 0
         if status == 401:
             raise ExternalAPIException(

@@ -8,7 +8,7 @@ from services.schemas.usuario import (
 )
 from services.schemas.avaliacao import AvaliacaoRead
 from services.schemas.favorito import FavoritoRead
-from services.schemas.pagination import CursorParams, CursorPage
+from services.schemas.pagination.cursor import CursorPaginationParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
@@ -16,13 +16,13 @@ usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 @usuario_router.get("", response_model=CursorPage[UsuarioRead])
 def listar_usuarios(
-    usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()
+    usuario_service: UsuarioServiceDep, pagingParams: CursorPaginationParams = Depends()
 ):
     usuarios, paging = usuario_service.list_usuarios(
         pagingParams.cursor, pagingParams.limit
     )
 
-    return CursorPage(data=usuarios, paging=paging)
+    return CursorPage(data=usuarios, pagination=paging)
 
 
 @usuario_router.post(
