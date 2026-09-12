@@ -2,8 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from constants import KITSU_API_URL, HEADERS_KITSU
 from utils import get_data, ExternalAPIException
-from schemas.anime import AnimeRead
-from schemas.pagination.kitsu import KitsuPaginationParams, KitsuPage, KitsuPagination
+from services.schemas.anime import AnimeRead
+from services.schemas.pagination.kitsu import (
+    KitsuPaginationParams,
+    KitsuPage,
+    KitsuPagination,
+)
 from mappers.anime import AnimeMapper
 
 animes_router = APIRouter(prefix="/animes", tags=["animes"])
