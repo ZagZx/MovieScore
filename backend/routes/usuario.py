@@ -1,14 +1,14 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
 from services import UsuarioServiceDep, AvaliacaoServiceDep, FavoritoServiceDep
-from schemas.usuario import (
+from services.schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate,
 )
-from schemas.avaliacao import AvaliacaoRead
-from schemas.favorito import FavoritoRead
-from schemas.pagination import CursorParams, CursorPage
+from services.schemas.avaliacao import AvaliacaoRead
+from services.schemas.favorito import FavoritoRead
+from services.schemas.pagination import CursorParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
