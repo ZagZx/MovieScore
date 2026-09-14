@@ -1,13 +1,14 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
-from services import UsuarioServiceDep, AvaliacaoServiceDep
-from schemas.usuario import (
+from services import UsuarioServiceDep, AvaliacaoServiceDep, FavoritoServiceDep
+from services.schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
     UsuarioUpdate,
 )
-from schemas.avaliacao import AvaliacaoRead
-from schemas.pagination import CursorParams, CursorPage
+from services.schemas.avaliacao import AvaliacaoRead
+from services.schemas.favorito import FavoritoRead
+from services.schemas.pagination.cursor import CursorPaginationParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
@@ -15,18 +16,13 @@ usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 @usuario_router.get("", response_model=CursorPage[UsuarioRead])
 def listar_usuarios(
-    usuario_service: UsuarioServiceDep, pagingParams: CursorParams = Depends()
+    usuario_service: UsuarioServiceDep, pagingParams: CursorPaginationParams = Depends()
 ):
     usuarios, paging = usuario_service.list_usuarios(
         pagingParams.cursor, pagingParams.limit
     )
 
-    return CursorPage(data=usuarios, paging=paging)
-
-
-@usuario_router.get("/{id}", response_model=UsuarioRead)
-def buscar_usuario(id: int, usuario_service: UsuarioServiceDep):
-    return usuario_service.get_usuario(id)
+    return CursorPage(data=usuarios, pagination=paging)
 
 
 @usuario_router.post(
@@ -36,15 +32,38 @@ def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDe
     return usuario_service.create_usuario(usuario_json)
 
 
-# ── rotas que exigem autenticação ──────────────────────────────────────────────
-
-
 @usuario_router.get("/avaliacoes", response_model=list[AvaliacaoRead])
 def listar_avaliacoes_do_usuario_logado(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
     return avaliacao_service.list_avaliacoes_usuario(current_user.id)
+
+
+@usuario_router.get("/favoritos", response_model=list[FavoritoRead])
+def listar_favoritos_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    return favorito_service.list_favoritos_usuario(current_user.id)
+
+
+@usuario_router.post("/favoritos/{conteudo_id}", response_model=FavoritoRead, status_code=status.HTTP_201_CREATED)
+def adicionar_favorito_do_usuario_logado(
+    conteudo_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    return favorito_service.add_favorito_usuario(current_user.id, conteudo_id)
+
+
+@usuario_router.delete("/favoritos/{conteudo_id}", status_code=status.HTTP_204_NO_CONTENT)
+def remover_favorito_do_usuario_logado(
+    conteudo_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    favorito_service.remove_favorito_usuario(current_user.id, conteudo_id)
 
 
 @usuario_router.patch("", response_model=UsuarioRead)
@@ -75,3 +94,7 @@ def atualizar_foto_perfil(
     id = current_user.id
     return usuario_service.update_foto_perfil(id, foto_perfil)
 
+
+@usuario_router.get("/{id}", response_model=UsuarioRead)
+def buscar_usuario(id: int, usuario_service: UsuarioServiceDep):
+    return usuario_service.get_usuario(id)

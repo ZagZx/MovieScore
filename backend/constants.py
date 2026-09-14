@@ -10,6 +10,7 @@ if not BASE_URL:
 
 KITSU_API_URL = "https://kitsu.io/api/edge"
 TMDB_API_URL = "https://api.themoviedb.org/3"
+TMDB_IMAGE_STORAGE = "https://image.tmdb.org/t/p"
 
 TMDB_KEY = getenv("TMDB_API_KEY")
 if not TMDB_KEY:

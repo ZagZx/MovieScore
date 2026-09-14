@@ -21,15 +21,16 @@ from sqlalchemy.orm import Session
 from database import SessionFactory
 from models import Assistido, Avaliacao, Conteudo, Favorito, Usuario
 from models.conteudo import TipoConteudo
-from utils import get_password_hash
+from constants import KITSU_API_URL, TMDB_API_URL
+from auth.utils import get_password_hash
 
 fake = Faker("pt_BR")
 
 SENHA_PADRAO = get_password_hash("12345678")
 FONTES_POR_TIPO = {
-    TipoConteudo.ANIME: "https://kitsu.io/api/edge",
-    TipoConteudo.FILME: "https://api.themoviedb.org/3",
-    TipoConteudo.SERIE: "https://api.themoviedb.org/3",
+    TipoConteudo.ANIME: KITSU_API_URL,
+    TipoConteudo.FILME: TMDB_API_URL,
+    TipoConteudo.SERIE: TMDB_API_URL,
 }
 TIPOS_CONTEUDO = list(TipoConteudo)
 VALORES_ESTRELAS = [
