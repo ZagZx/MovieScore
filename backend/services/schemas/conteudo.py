@@ -4,8 +4,10 @@ from models.conteudo import TipoConteudo
 from .base import Base
 
 
-# class ConteudoCreate(BaseModel):
-#     pass
+class ConteudoCreate(Base):
+    id_externo: int
+    api_fonte: str
+    tipo: TipoConteudo
 
 
 class ConteudoRead(Base):
