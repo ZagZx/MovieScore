@@ -40,6 +40,16 @@ def listar_filmes_populares():
         raise HTTPException(status_code=exc.status_code, detail=exc.message)
 
 
+@filmes_router.get("/em-breve")
+def listar_filmes_em_breve():
+    url = TMDB_API_URL + "/movie/upcoming"
+
+    try:
+        return get_data(url, PARAMS_TMDB, HEADERS_TMDB)
+    except ExternalAPIException as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message)
+
+
 @filmes_router.get("/{filme_id}")
 def buscar_filme_id(filme_id: int):
     url = TMDB_API_URL + f"/movie/{filme_id}"
