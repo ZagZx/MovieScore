@@ -1,4 +1,4 @@
-import HeaderHome from "@/components/features/home/HeaderHome";
+import Header from "@/components/ui/Header";
 import Image from "next/image";
 import filmesImage from "@/public/filmes-landing.jpeg";
 
@@ -7,7 +7,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <HeaderHome />
+      <Header />
 
       <main className="px-8 py-8">
         
