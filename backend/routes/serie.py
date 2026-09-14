@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from constants import TMDB_API_URL, PARAMS_TMDB, HEADERS_TMDB
 from mappers.serie import SerieMapper
+from services import SerieServiceDep
 from services.schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from services.schemas.serie import SerieListRead, SerieRead
 from utils import get_data, ExternalAPIException
@@ -30,6 +31,52 @@ def buscar_series(
                 page=paginacao.page,
                 total_pages=total_pages,
                 total_results=data.get("total_results", 0),
+                has_more=paginacao.page < total_pages,
+            ),
+        )
+    except ExternalAPIException as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message)
+
+
+@series_router.get("/em-alta", response_model=TmdbPage[SerieListRead])
+def listar_series_em_alta(
+    serie_service: SerieServiceDep,
+    paginacao: TmdbPaginationParams = Depends(),
+):
+    try:
+        series, total_pages, total_results = serie_service.listar_em_alta(
+            page=paginacao.page
+        )
+
+        return TmdbPage(
+            data=series,
+            pagination=TmdbPagination(
+                page=paginacao.page,
+                total_pages=total_pages,
+                total_results=total_results,
+                has_more=paginacao.page < total_pages,
+            ),
+        )
+    except ExternalAPIException as exc:
+        raise HTTPException(status_code=exc.status_code, detail=exc.message)
+
+
+@series_router.get("/populares", response_model=TmdbPage[SerieListRead])
+def listar_series_populares(
+    serie_service: SerieServiceDep,
+    paginacao: TmdbPaginationParams = Depends(),
+):
+    try:
+        series, total_pages, total_results = serie_service.listar_populares(
+            page=paginacao.page
+        )
+
+        return TmdbPage(
+            data=series,
+            pagination=TmdbPagination(
+                page=paginacao.page,
+                total_pages=total_pages,
+                total_results=total_results,
                 has_more=paginacao.page < total_pages,
             ),
         )
