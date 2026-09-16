@@ -17,6 +17,10 @@
   --neutral-foreground: #d6d6d6; 
   --neutral-hover: #434343;
   --neutral-border: #0a0a0a;
+
+  --surface: #121212;
+  --surface-hover: #1f1f1f;
+  --surface-border: #2b2b2b;
 }
 
 @theme inline {
@@ -33,11 +37,17 @@
   --color-neutral-hover: var(--neutral-hover);
   --color-neutral-border: var(--neutral-border);
 
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-border: var(--surface-border);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
 
-  --font-sans: var(--font-poppins);
+  --font-sans: var(--font-family-poppins);
+  --font-poppins: var(--font-family-poppins);
+  --font-sansation: var(--font-family-sansation);
 }
 
 @layer base {
