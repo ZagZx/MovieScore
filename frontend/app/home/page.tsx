@@ -25,7 +25,7 @@ export default async function HomePage() {
           pagination={page?.pagination ?? emptyPagination}
           loadNextPage={getFilmesEmAlta}
         />
-        <FilmesEmAltaBackup filmes={result.data.data}/>
+        <FilmesEmAltaBackup filmes={page?.data ?? []}/>
       </main>
     </div>
   );

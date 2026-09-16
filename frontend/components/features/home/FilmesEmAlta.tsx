@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import Carousel from "react-multi-carousel";
+import "react-multi-carousel/lib/styles.css";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { FilmeListagem } from "@/lib/types/filme";
 import type { ActionResult } from "@/lib/types/action-result";
@@ -14,47 +16,35 @@ interface FilmesEmAltaProps {
   ) => Promise<ActionResult<TmdbPage<FilmeListagem>>>;
 }
 
+// Mesmos breakpoints usados nas classes Tailwind (sm/md/lg), agora
+// controlando quantos itens o carrossel mostra e quantos ele avança
+// por clique nas setinhas.
+const RESPONSIVE = {
+  desktop: { breakpoint: { max: 4000, min: 1024 }, items: 5, slidesToSlide: 5 },
+  laptop: { breakpoint: { max: 1023, min: 768 }, items: 4, slidesToSlide: 4 },
+  tablet: { breakpoint: { max: 767, min: 640 }, items: 3, slidesToSlide: 3 },
+  mobile: { breakpoint: { max: 639, min: 0 }, items: 2, slidesToSlide: 2 },
+};
+
 export default function FilmesEmAlta({
   filmes: filmesIniciais,
   pagination: paginationInicial,
   loadNextPage,
 }: FilmesEmAltaProps) {
+  const carouselRef = useRef<Carousel>(null);
   const [filmes, setFilmes] = useState(filmesIniciais);
-  const [itemsPerBlock, setItemsPerBlock] = useState(2);
-  const [currentBlock, setCurrentBlock] = useState(0);
   const [pagination, setPagination] = useState(paginationInicial);
   const [isLoading, setIsLoading] = useState(false);
-
-  function getItemsPerBlock() {
-    if (window.matchMedia("(min-width: 1024px)").matches) return 5;
-    if (window.matchMedia("(min-width: 768px)").matches) return 4;
-    if (window.matchMedia("(min-width: 640px)").matches) return 3;
-    return 2;
-  }
+  const [canScrollPrevious, setCanScrollPrevious] = useState(false);
+  const [canScrollNext, setCanScrollNext] = useState(
+    filmesIniciais.length > 0,
+  );
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    const updateItemsPerBlock = () => {
-      setItemsPerBlock(getItemsPerBlock());
-      setCurrentBlock(0);
-    };
-
-    updateItemsPerBlock();
-    window.addEventListener("resize", updateItemsPerBlock);
-
-    return () => {
-      window.removeEventListener("resize", updateItemsPerBlock);
-    };
-  }, []);
-
-  const totalBlocks = Math.max(Math.ceil(filmes.length / itemsPerBlock), 1);
-  const safeCurrentBlock = Math.min(currentBlock, totalBlocks - 1);
-  const isLastBlock = safeCurrentBlock >= totalBlocks - 1;
-  const canScrollPrevious = safeCurrentBlock > 0;
-  const canScrollNext = !isLastBlock || Boolean(pagination?.has_more && loadNextPage);
-  const filmesDoBloco = filmes.slice(
-    safeCurrentBlock * itemsPerBlock,
-    (safeCurrentBlock + 1) * itemsPerBlock,
-  );
+    setIsMounted(true);
+  }, [isMounted]);
+  
 
   function appendFilmes(novosFilmes: FilmeListagem[]) {
     setFilmes((filmesAtuais) => {
@@ -66,17 +56,24 @@ export default function FilmesEmAlta({
     });
   }
 
-  async function scrollCarousel(direction: number) {
-    if (direction < 0) {
-      setCurrentBlock((block) => Math.max(block - 1, 0));
-      return;
-    }
+  // Chamado pelo próprio carrossel após qualquer mudança de slide,
+  // seja por clique nas setinhas ou por swipe/drag do usuário.
+  function handleAfterChange(
+    _previousSlide: number,
+    state: { currentSlide: number; slidesToShow: number },
+  ) {
+    const { currentSlide, slidesToShow } = state;
+    const chegouNoFim = currentSlide + slidesToShow >= filmes.length;
 
-    if (!isLastBlock) {
-      setCurrentBlock((block) => block + 1);
-      return;
-    }
+    setCanScrollPrevious(currentSlide > 0);
+    setCanScrollNext(!chegouNoFim || Boolean(pagination?.has_more && loadNextPage));
 
+    if (chegouNoFim) {
+      void tentarCarregarProximaPagina();
+    }
+  }
+
+  async function tentarCarregarProximaPagina() {
     if (!loadNextPage || !pagination?.has_more || isLoading) return;
 
     setIsLoading(true);
@@ -86,7 +83,6 @@ export default function FilmesEmAlta({
       if (result.success && result.data) {
         appendFilmes(result.data.data);
         setPagination(result.data.pagination);
-        setCurrentBlock((block) => block + 1);
       }
     } finally {
       setIsLoading(false);
@@ -108,8 +104,8 @@ export default function FilmesEmAlta({
             type="button"
             aria-label="Filmes anteriores"
             title="Filmes anteriores"
-            onClick={() => scrollCarousel(-1)}
-            disabled={!canScrollPrevious || isLoading}
+            onClick={() => carouselRef.current?.previous()}
+            disabled={(!canScrollPrevious || isLoading) && isMounted}
             className="flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronLeft aria-hidden="true" className="size-5" />
@@ -118,8 +114,8 @@ export default function FilmesEmAlta({
             type="button"
             aria-label="Próximos filmes"
             title="Próximos filmes"
-            onClick={() => scrollCarousel(1)}
-            disabled={!canScrollNext || isLoading}
+            onClick={() => carouselRef.current?.next()}
+            disabled={(!canScrollNext || isLoading) && isMounted}
             className="flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronRight aria-hidden="true" className="size-5" />
@@ -127,8 +123,18 @@ export default function FilmesEmAlta({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 justify-items-center gap-3 px-1 pb-3 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 md:gap-6 lg:grid-cols-5 lg:gap-8 xl:gap-10 2xl:gap-12">
-        {filmesDoBloco.map((filme) => {
+      <Carousel
+        ref={carouselRef}
+        responsive={RESPONSIVE}
+        arrows={false}
+        swipeable
+        draggable
+        infinite={false}
+        afterChange={handleAfterChange}
+        itemClass="flex justify-center px-1.5"
+        containerClass="pb-3"
+      >
+        {filmes.map((filme) => {
           const titulo = filme.titulo || filme.titulo_original;
 
           return (
@@ -151,7 +157,7 @@ export default function FilmesEmAlta({
             </article>
           );
         })}
-      </div>
+      </Carousel>
     </section>
   );
 }

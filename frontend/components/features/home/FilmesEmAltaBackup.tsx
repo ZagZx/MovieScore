@@ -14,6 +14,12 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
   const [canScrollPrevious, setCanScrollPrevious] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, [isMounted])
+
   function updateScrollState() {
     const carousel = carouselRef.current;
 
@@ -23,7 +29,7 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
 
     const maximumScrollLeft = carousel.scrollWidth - carousel.clientWidth;
 
-    setCanScrollPrevious(carousel.scrollLeft > 1);
+    setCanScrollPrevious(carousel.scrollLeft > 10);
     setCanScrollNext(carousel.scrollLeft < maximumScrollLeft - 1);
   }
 
@@ -55,9 +61,10 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
     };
   }, [filmes.length]);
 
-  function scrollCarousel(direction: number) {
+  function scrollCarousel(e: React.MouseEvent<HTMLButtonElement>) {
+    e.preventDefault()
     const carousel = carouselRef.current;
-
+    const direction = Number(e.currentTarget.id)
     if (!carousel) {
       return;
     }
@@ -75,7 +82,8 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
     });
 
     // Atualização otimista para resposta imediata do botão...
-    setCanScrollPrevious(targetScrollLeft > 1);
+    setCanScrollPrevious(targetScrollLeft > 10);
+
     setCanScrollNext(targetScrollLeft < maximumScrollLeft - 1);
     // ...mas confirmamos com o valor real assim que o scroll assentar.
     scheduleSettledCheck();
@@ -96,8 +104,9 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
             type="button"
             aria-label="Filmes anteriores"
             title="Filmes anteriores"
-            onClick={() => scrollCarousel(-1)}
-            disabled={!canScrollPrevious}
+            id="-1"
+            onClick={scrollCarousel}
+            disabled={!canScrollPrevious && isMounted}
             className="flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronLeft aria-hidden="true" className="size-5" />
@@ -106,8 +115,9 @@ export default function FilmesEmAltaBackup({ filmes }: FilmesEmAltaProps) {
             type="button"
             aria-label="Próximos filmes"
             title="Próximos filmes"
-            onClick={() => scrollCarousel(1)}
-            disabled={!canScrollNext}
+            id="1"
+            onClick={scrollCarousel}
+            disabled={!canScrollNext && isMounted}
             className="flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronRight aria-hidden="true" className="size-5" />
