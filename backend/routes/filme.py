@@ -46,6 +46,7 @@ def listar_filmes_em_alta(paginacao: TmdbPaginationParams = Depends()):
     url = TMDB_API_URL + "/trending/movie/week"
 
     params = PARAMS_TMDB.copy()
+    params["page"] = paginacao.page
 
     data = get_data(url, params, HEADERS_TMDB)
 
