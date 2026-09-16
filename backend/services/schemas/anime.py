@@ -26,7 +26,7 @@ class StatusAnime(str, Enum):
 
 class AnimeRead(Base):
     id: int
-    titulos: dict[str, str]
+    titulos: dict[str, str] = Field(default_factory=dict)
     titulo_canonico: str
     descricao: str | None = None
     status: StatusAnime

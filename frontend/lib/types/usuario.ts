@@ -1,4 +1,4 @@
-import { CursorPaging } from "./paging"
+import { CursorPagination } from "./pagination"
 
 export interface Usuario {
     id: number;
@@ -15,7 +15,7 @@ export interface GetUsuariosBody {
 
 export interface GetUsuariosResponse {
     data: Usuario[];
-    paging: CursorPaging;
+    pagination: CursorPagination;
 }
 
 export interface CreateUsuarioBody {
