@@ -10,6 +10,11 @@ export interface TmdbPagination {
     has_more: boolean;
 }
 
+export interface TmdbPage<T> {
+    data: T[];
+    pagination: TmdbPagination;
+}
+
 export interface KitsuPagination {
     limit: number;
     offset: number;

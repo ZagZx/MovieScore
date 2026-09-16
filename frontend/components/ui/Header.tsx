@@ -29,13 +29,13 @@ export default function HeaderHome() {
         <div className="ml-auto flex items-center gap-4">
           <SearchBar />
 
-          <button
+          {/* <button
             type="button"
             aria-label="Perfil do usuário"
             className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-white/10 bg-[radial-gradient(circle_at_30%_30%,#f7d3a4,#b47634_30%,#3b2d1e_80%)] text-sm font-bold text-[#111111] shadow-sm shadow-black/40"
           >
             U
-          </button>
+          </button> */}
         </div>
       </div>
 
