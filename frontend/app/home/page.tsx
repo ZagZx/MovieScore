@@ -1,16 +1,16 @@
 import Header from "@/components/ui/Header";
-import Image from "next/image";
-import filmesImage from "@/public/filmes-landing.jpeg";
+import FilmesEmAlta from "@/components/features/home/FilmesEmAlta";
+import FilmesEmAltaBackup from "@/components/features/home/FilmesEmAltaBackup";
+import { filmesListagemMock } from "@/lib/mocks/filme";
 
 export default async function HomePage() {
-  const mockCards = new Array(5).fill(0);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header />
 
-      <main className="px-8 py-8">
-        
+      <main className="px-5 py-8 md:px-8">
+        <FilmesEmAlta filmes={filmesListagemMock} />
+        <FilmesEmAltaBackup filmes={filmesListagemMock} />
       </main>
     </div>
   );

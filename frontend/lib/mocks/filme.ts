@@ -16,6 +16,14 @@ export const filmeListagemMock: FilmeListagem = {
     generos_ids: [18, 9648],
 };
 
+export const filmesListagemMock: FilmeListagem[] = Array.from(
+    { length: 20 },
+    (_, index) => ({
+        ...filmeListagemMock,
+        id: filmeListagemMock.id + index,
+    }),
+);
+
 export const filmeMock: Filme = {
     id: filmeListagemMock.id,
     titulo: filmeListagemMock.titulo,
