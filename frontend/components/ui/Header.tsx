@@ -1,12 +1,12 @@
 "use client";
 
 import Logo from "@/components/ui/Logo";
+import SearchBar from "@/components/ui/SearchBar";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { FiSearch } from "react-icons/fi";
+import clsx from "clsx";
 import { HiFilm, HiHome, HiUser, HiTv } from "react-icons/hi2";
 import { GiSharpShuriken } from "react-icons/gi";
-import clsx from "clsx";
+import { usePathname } from "next/navigation";
 
 const navItems = [
   { href: "/home", label: "Início", icon: HiHome },
@@ -23,24 +23,11 @@ export default function HeaderHome() {
   const pathname = usePathname();
 
   return (
-    <header className="bg-surface font-sansation px-5 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.35)]">
+    <header className="bg-surface font-sansation px-5 py-3 shadow-lg ">
       <div className="mx-auto flex max-w-375 items-center gap-8">
         <Link href="/home"><Logo /></Link>
         <div className="ml-auto flex items-center gap-4">
-          <div className="flex w-full max-w-140 items-center gap-3 rounded-full border border-white/10 bg-[#2b2b2b] px-4 py-2 shadow-inner shadow-black/20">
-            <input
-              type="text"
-              placeholder="Pesquisar"
-              className="w-full bg-transparent text-foreground placeholder:text-[#b0b0b0] outline-none"
-            />
-            <button
-              type="button"
-              aria-label="Pesquisar"
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-[#3a3a3a] text-xl text-foreground transition-colors hover:bg-[#4a4a4a] cursor-pointer"
-            >
-              <FiSearch />
-            </button>
-          </div>
+          <SearchBar />
 
           <button
             type="button"
@@ -52,7 +39,7 @@ export default function HeaderHome() {
         </div>
       </div>
 
-      <nav className="mx-auto mt-4 flex max-w-375 items-center justify-between gap-3 rounded-b-md border-t border-surface-border pt-3 font-medium">
+      <nav className="mx-auto mt-4 flex max-w-375 items-center justify-between gap-3 rounded-b-md border-t border-surface-border pt-3">
         {navItems.map(({ href, label, icon: Icon }) => (
           <Link
             key={label}
@@ -66,7 +53,7 @@ export default function HeaderHome() {
               pathname === href && "text-primary bg-surface-hover hover:text-primary underline" 
             )}
           >
-            <Icon className="h-4 w-4 text-current" />
+            <Icon className="size-4" />
             <span>{label}</span>
           </Link>
         ))}
