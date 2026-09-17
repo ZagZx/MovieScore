@@ -7,14 +7,16 @@ const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-family-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  fallback: ["Arial", "sans-serif"]
 });
 
 const sansation = Sansation({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-family-sansation',
-  weight: "400"
+  weight: ["300", "400", "700"],
+  fallback: ["Arial", "sans-serif"]
 });
 
 export const metadata: Metadata = {
