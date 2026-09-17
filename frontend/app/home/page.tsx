@@ -1,4 +1,5 @@
 import FilmesEmAlta from "@/components/features/home/FilmesEmAlta";
+import SeriesEmAlta from "@/components/features/home/SeriesEmAlta";
 import Header from "@/components/ui/Header";
 
 export default async function HomePage() {
@@ -9,6 +10,7 @@ export default async function HomePage() {
 
       <main className="px-5 py-8 md:px-8">
         <FilmesEmAlta />
+        <SeriesEmAlta />
       </main>
     </div>
   );
