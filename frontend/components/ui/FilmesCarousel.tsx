@@ -5,6 +5,7 @@ import CarouselSection from "@/components/ui/CarouselSection";
 import type { FilmeListagem } from "@/lib/types/filme";
 import type { ActionResult } from "@/lib/types/action-result";
 import type { TmdbPage, TmdbPagination } from "@/lib/types/pagination";
+import Image from "next/image";
 import { useState } from "react";
 
 interface FilmesCarouselProps {
@@ -70,16 +71,17 @@ export default function FilmesCarousel({
 
         return (
           <article className="select-none cursor-pointer group relative aspect-2/3 w-44 overflow-hidden rounded-xl bg-surface-border shadow-lg shadow-black/20">
-            <div
-              role="img"
-              aria-label={`Capa de ${titulo}`}
-              className="absolute inset-0 bg-cover bg-center transition-transform duration-300 group-hover:scale-105 group-focus-within:scale-105"
-              style={
-                filme.imagens.capa
-                  ? { backgroundImage: `url(${filme.imagens.capa})` }
-                  : undefined
-              }
-            />
+            {filme.imagens.capa && (
+              <div className="absolute inset-0 overflow-hidden">
+                <Image
+                  src={filme.imagens.capa}
+                  alt={`Capa de ${titulo}`}
+                  fill
+                  sizes="176px"
+                  className="object-cover object-center transition-transform duration-300 group-hover:scale-105 group-focus-within:scale-105"
+                />
+              </div>
+            )}
             <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/65 group-focus-within:bg-black/65" />
             <div className="absolute inset-x-0 bottom-0 translate-y-3 p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100">
               <h2 className="font-sansation text-center text-sm font-bold leading-tight text-white sm:text-base lg:text-lg">
