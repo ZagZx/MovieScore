@@ -8,6 +8,7 @@ export default async function FilmesEmAlta() {
   return (
     <FilmesCarousel
       title="Filmes em Alta"
+      loading="eager"
       filmes={page?.data ?? []}
       pagination={page?.pagination}
       loadNextPage={getFilmesEmAlta}

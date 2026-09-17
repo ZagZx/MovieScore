@@ -10,6 +10,7 @@ import Image from "next/image";
 
 interface SeriesCarouselProps {
   title?: string;
+  loading?: "eager" | "lazy";
   series: FilmeListagem[];
   pagination?: TmdbPagination;
   loadNextPage?: (
@@ -19,6 +20,7 @@ interface SeriesCarouselProps {
 
 export default function SeriesCarousel({
   title="Séries",
+  loading,
   series,
   pagination,
   loadNextPage,
@@ -76,6 +78,7 @@ export default function SeriesCarousel({
                 <Image
                   src={serie.imagens.capa}
                   alt={`Capa de ${titulo}`}
+                  loading={loading}
                   fill
                   sizes="176px"
                   className="object-cover object-center transition-transform duration-300 group-hover:scale-105 group-focus-within:scale-105"

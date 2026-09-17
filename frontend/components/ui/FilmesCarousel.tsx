@@ -10,6 +10,7 @@ import { useState } from "react";
 
 interface FilmesCarouselProps {
   title?: string;
+  loading?: "eager" | "lazy";
   filmes: FilmeListagem[];
   pagination?: TmdbPagination;
   loadNextPage?: (
@@ -19,6 +20,7 @@ interface FilmesCarouselProps {
 
 export default function FilmesCarousel({
   title="Filmes",
+  loading,
   filmes,
   pagination,
   loadNextPage,
@@ -76,6 +78,7 @@ export default function FilmesCarousel({
                 <Image
                   src={filme.imagens.capa}
                   alt={`Capa de ${titulo}`}
+                  loading={loading}
                   fill
                   sizes="176px"
                   className="object-cover object-center transition-transform duration-300 group-hover:scale-105 group-focus-within:scale-105"
