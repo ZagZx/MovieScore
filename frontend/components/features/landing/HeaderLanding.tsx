@@ -18,7 +18,7 @@ export default function HeaderLanding() {
       "
     >
       <div>
-        <a href=""> {/* LINK PARA /home */}
+        <a href="/home">
           <Logo />
         </a>
       </div>
@@ -37,7 +37,6 @@ export default function HeaderLanding() {
             </Button>
           </a>)
         }
-        
       </div>
     </header>
   );

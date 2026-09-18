@@ -1,13 +1,22 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Sansation } from "next/font/google";
 import "./globals.css";
 
 
 const poppins = Poppins({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-poppins',
-  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
+  variable: '--font-family-poppins',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+  fallback: ["Arial", "sans-serif"]
+});
+
+const sansation = Sansation({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-family-sansation',
+  weight: ["300", "400", "700"],
+  fallback: ["Arial", "sans-serif"]
 });
 
 export const metadata: Metadata = {
@@ -23,10 +32,10 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${poppins.variable} h-full antialiased`}
+      className={`${poppins.variable} ${sansation.variable} h-full antialiased`}
       cz-shortcut-listen="true"
     >
-      <body className="min-h-full min-w-screen flex flex-col">
+      <body className="min-h-full min-w-screen flex flex-col font-sans">
         {children}
       </body>
     </html>

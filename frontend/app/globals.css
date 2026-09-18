@@ -17,9 +17,19 @@
   --neutral-foreground: #d6d6d6; 
   --neutral-hover: #434343;
   --neutral-border: #0a0a0a;
+
+  --surface: #121212;
+  --surface-hover: #1f1f1f;
+  --surface-border: #2b2b2b;
+
+  --input: #2b2b2b;
+  --input-hover: #4a4a4a;
+  --input-border: #414141;
+  --input-shadow: oklch(0 0 0 / 20%);
 }
 
 @theme inline {
+  /* Botões */
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary-hover: var(--primary-hover);
@@ -33,11 +43,26 @@
   --color-neutral-hover: var(--neutral-hover);
   --color-neutral-border: var(--neutral-border);
 
+  /* Superfícies */
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  --color-surface-border: var(--surface-border);
+
+  --color-input: var(--input);
+  --color-input-hover: var(--input-hover);
+  --color-input-border: var(--input-border);
+  --color-input-shadow: var(--input-shadow);
+  
   --color-background: var(--background);
+
+  /* Cores de texto */
   --color-foreground: var(--foreground);
   --color-foreground-muted: var(--foreground-muted);
 
-  --font-sans: var(--font-poppins);
+  /* Fontes */
+  --font-sans: var(--font-family-poppins);
+  --font-poppins: var(--font-family-poppins);
+  --font-sansation: var(--font-family-sansation);
 }
 
 @layer base {
