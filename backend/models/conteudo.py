@@ -50,5 +50,5 @@ class Conteudo(Base):
     assistidos: Mapped[list["Assistido"]] = relationship(back_populates="conteudo")
     avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
 
-    filme: Mapped["Filme" | None] = relationship(back_populates="conteudo")
-    serie: Mapped["Serie" | None] = relationship(back_populates="conteudo")
+    filme: Mapped["Filme | None"] = relationship(back_populates="conteudo")
+    serie: Mapped["Serie | None" ] = relationship(back_populates="conteudo")
