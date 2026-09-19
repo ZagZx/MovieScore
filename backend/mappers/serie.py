@@ -1,4 +1,5 @@
-from services.schemas.serie import SerieListRead, SerieRead, ImagensSerie, TemporadaSerie
+from schemas.serie import SerieListRead, SerieRead, TemporadaSerie
+from schemas.conteudo import ImagensConteudo
 from constants import TMDB_IMAGE_STORAGE
 
 class SerieMapper:
@@ -47,7 +48,7 @@ class SerieMapper:
             descricao=item.get("overview"),
             status=item.get("status") or "",
             data_lancamento=item.get("first_air_date") or None,
-            imagens=ImagensSerie(
+            imagens=ImagensConteudo(
                 capa=SerieMapper._map_image(item.get("poster_path"), "w500"),
                 banner=SerieMapper._map_image(item.get("backdrop_path"), "original"),
             ),
@@ -72,7 +73,7 @@ class SerieMapper:
                 descricao=item.get("overview"),
                 status=item.get("status") or "",
                 data_lancamento=item.get("first_air_date") or None,
-                imagens=ImagensSerie(
+                imagens=ImagensConteudo(
                     capa=SerieMapper._map_image(item.get("poster_path"), "w500"),
                     banner=SerieMapper._map_image(item.get("backdrop_path"), "original"),
                 ),

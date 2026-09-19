@@ -10,8 +10,8 @@ if TYPE_CHECKING:
     from .conteudo import Conteudo
 
 
-class Filme(Base):
-    __tablename__ = "filme"
+class Serie(Base):
+    __tablename__ = "serie"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), primary_key=True)
@@ -23,4 +23,4 @@ class Filme(Base):
     data_lancamento: Mapped[Optional[date]] = mapped_column(Date(timezone=True))
     data_atualizacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=get_now_datetime_utc, onupdate=get_now_datetime_utc(), nullable=False)
 
-    conteudo: Mapped["Conteudo"] = relationship(back_populates="filmes")
+    conteudo: Mapped["Conteudo"] = relationship(back_populates="series")

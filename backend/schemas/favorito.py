@@ -17,6 +17,15 @@ class FilmeFavoritoRead(Base):
     data_lancamento: date | None = None
     data_adicao: datetime
 
+class SerieFavoritaRead(Base):
+    id: int
+    titulo: str
+    titulo_original: str
+    status: str
+    imagens: ImagensConteudo
+    data_lancamento: date | None = None
+    data_adicao: datetime
+
 # class FavoritoRead(Base):
 #     id: int
 #     conteudo_id: int

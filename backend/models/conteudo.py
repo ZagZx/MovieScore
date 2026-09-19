@@ -48,3 +48,5 @@ class Conteudo(Base):
     assistidos: Mapped[list["Assistido"]] = relationship(back_populates="conteudo")
     avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
 
+    filmes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
+    series: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")

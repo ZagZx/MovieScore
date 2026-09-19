@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends
 
 from utils import get_data
 from constants import TMDB_API_URL, HEADERS_TMDB, PARAMS_TMDB
-from services.schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
-from services.schemas.filme import FilmeListRead, FilmeRead
+from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
+from schemas.filme import FilmeListRead, FilmeRead
 from mappers.filme import FilmeMapper
 from exceptions import NotFoundException
 

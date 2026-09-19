@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 
 from repositories import SerieRepositoryDep
-from services.schemas.serie import SerieListRead, SerieRead
+from schemas.serie import SerieListRead, SerieRead
 from exceptions import NotFoundException
 
 

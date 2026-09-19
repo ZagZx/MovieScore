@@ -1,4 +1,5 @@
-from services.schemas.filme import FilmeListRead, FilmeRead, ImagensFilme
+from schemas.filme import FilmeListRead, FilmeRead
+from schemas.conteudo import ImagensConteudo
 from constants import TMDB_IMAGE_STORAGE
 
 class FilmeMapper:
@@ -30,7 +31,7 @@ class FilmeMapper:
             status=item.get("status") or "",
             data_lancamento=item.get("release_date") or None,
             duracao_minutos=item.get("runtime") or 0,
-            imagens=ImagensFilme(
+            imagens=ImagensConteudo(
                 capa=FilmeMapper._map_image(item.get("poster_path"), "w500"),
                 banner=FilmeMapper._map_image(item.get("backdrop_path"), "original"),
             ),
@@ -48,7 +49,7 @@ class FilmeMapper:
                 descricao=item.get("overview"),
                 status=item.get("status") or "",
                 data_lancamento=item.get("release_date") or None,
-                imagens=ImagensFilme(
+                imagens=ImagensConteudo(
                     capa=FilmeMapper._map_image(item.get("poster_path"), "w500"),
                     banner=FilmeMapper._map_image(item.get("backdrop_path"), "original"),
                 ),

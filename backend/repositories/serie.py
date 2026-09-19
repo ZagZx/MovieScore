@@ -4,7 +4,7 @@ from fastapi import Depends
 
 from constants import TMDB_API_URL, PARAMS_TMDB, HEADERS_TMDB
 from mappers.serie import SerieMapper
-from services.schemas.serie import SerieListRead, SerieRead
+from schemas.serie import SerieListRead, SerieRead
 from utils import get_data
 
 

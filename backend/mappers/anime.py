@@ -1,4 +1,4 @@
-from services.schemas.anime import StatusAnime, AnimeRead, ImagensAnime
+from schemas.anime import StatusAnime, AnimeRead, ImagensAnime
 
 class AnimeMapper:
     STATUS_MAP = {

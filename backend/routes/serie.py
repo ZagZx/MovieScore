@@ -3,8 +3,8 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from constants import TMDB_API_URL, PARAMS_TMDB, HEADERS_TMDB
 from mappers.serie import SerieMapper
 from services import SerieServiceDep
-from services.schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
-from services.schemas.serie import SerieListRead, SerieRead
+from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
+from schemas.serie import SerieListRead, SerieRead
 from utils import get_data, ExternalAPIException
 
 series_router = APIRouter(prefix="/series", tags=["Séries"])
