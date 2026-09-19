@@ -9,6 +9,11 @@ from requests.exceptions import (
 )
 
 from exceptions import ExternalAPIException
+from enum import Enum
+
+
+def get_enum_values(enum_class: type[Enum]) -> list: 
+    return [member.value for member in enum_class]
 
 
 def get_now_datetime_utc():

@@ -1,11 +1,11 @@
 import enum
 from typing import TYPE_CHECKING
-from sqlalchemy import BigInteger, String, DateTime, Enum, UniqueConstraint
+from sqlalchemy import BigInteger, DateTime, Enum, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from datetime import datetime
 
 from constants import KITSU_API_URL, TMDB_API_URL
-from utils import get_now_datetime_utc
+from utils import get_now_datetime_utc, get_enum_values
 from .base import Base
 
 if TYPE_CHECKING:
@@ -38,8 +38,8 @@ class Conteudo(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     id_externo: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    api_fonte: Mapped[ApiFonte] = mapped_column(Enum(ApiFonte), nullable=False)
-    tipo: Mapped[TipoConteudo] = mapped_column(Enum(TipoConteudo), nullable=False)
+    api_fonte: Mapped[ApiFonte] = mapped_column(Enum(ApiFonte, values_callable=get_enum_values, name="api_fonte_enum"), nullable=False)
+    tipo: Mapped[TipoConteudo] = mapped_column(Enum(TipoConteudo, values_callable=get_enum_values, name="tipo_conteudo_enum"), nullable=False)
     data_adicao: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
