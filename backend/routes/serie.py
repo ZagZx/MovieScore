@@ -16,7 +16,7 @@ def buscar_series(
     serie_service: SerieServiceDep,
     paginacao: TmdbPaginationParams = Depends(),
 ):
-    series, total_pages, total_results = serie_service.buscar_series(
+    series, total_pages, total_results = serie_service.search_series(
         busca=busca,
         page=paginacao.page
     )
@@ -37,7 +37,7 @@ def listar_series_em_alta(
     serie_service: SerieServiceDep,
     paginacao: TmdbPaginationParams = Depends(),
 ):
-    series, total_pages, total_results = serie_service.listar_em_alta(
+    series, total_pages, total_results = serie_service.list_series_em_alta(
         page=paginacao.page
     )
 
@@ -57,7 +57,7 @@ def listar_series_populares(
     serie_service: SerieServiceDep,
     paginacao: TmdbPaginationParams = Depends(),
 ):
-    series, total_pages, total_results = serie_service.listar_populares(
+    series, total_pages, total_results = serie_service.list_series_populares(
         page=paginacao.page
     )
 
@@ -74,5 +74,5 @@ def listar_series_populares(
 
 @series_router.get("/{serie_id}", response_model=SerieRead)
 def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
-    return serie_service.buscar_serie(serie_id=serie_id)
+    return serie_service.get_serie(serie_id=serie_id)
 

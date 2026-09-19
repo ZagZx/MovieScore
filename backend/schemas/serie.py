@@ -1,14 +1,13 @@
 from pydantic import Field
 
+from schemas.conteudo import ImagensConteudo
+
 from .base import Base
 
 class GeneroSerie(Base):
     id: int
     nome: str
 
-class ImagensSerie(Base):
-    capa: str | None = None #storage+poster_path
-    banner: str | None = None #storage+backdrop_path
 
 class TemporadaSerie(Base):
     id: int
@@ -27,7 +26,7 @@ class SerieListRead(Base):
     descricao: str | None = None
     status: str # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
     data_lancamento: str | None = None
-    imagens: ImagensSerie
+    imagens: ImagensConteudo
     generos_ids: list[int] = Field(default_factory=list)
 
 class SerieRead(Base):
@@ -38,7 +37,7 @@ class SerieRead(Base):
     descricao: str | None = None
     status: str # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
     data_lancamento: str | None = None
-    imagens: ImagensSerie
+    imagens: ImagensConteudo
     generos: list[GeneroSerie] = Field(default_factory=list)
     duracao_episodios: list[int]= Field(default_factory=list)
     quantidade_episodios: int = 0

@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from .avaliacao import Avaliacao
     from .favorito import Favorito
     from .assistido import Assistido
+    from .filme import Filme
+    from .serie import Serie
 
 
 class TipoConteudo(enum.Enum):
@@ -48,5 +50,5 @@ class Conteudo(Base):
     assistidos: Mapped[list["Assistido"]] = relationship(back_populates="conteudo")
     avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
 
-    filmes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
-    series: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
+    filme: Mapped[list["Filme"]] = relationship(back_populates="conteudo")
+    serie: Mapped[list["Serie"]] = relationship(back_populates="conteudo")
