@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 class Serie(Base):
     __tablename__ = "serie"
 
-    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    # id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), primary_key=True)
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     titulo_original: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -21,6 +21,6 @@ class Serie(Base):
     capa: Mapped[Optional[str]] = mapped_column(String(255))
     banner: Mapped[Optional[str]] = mapped_column(String(255))
     data_lancamento: Mapped[Optional[date]] = mapped_column(Date)
-    data_atualizacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=get_now_datetime_utc, onupdate=get_now_datetime_utc(), nullable=False)
+    data_atualizacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=get_now_datetime_utc, onupdate=get_now_datetime_utc, nullable=False)
 
     conteudo: Mapped["Conteudo"] = relationship(back_populates="serie")
