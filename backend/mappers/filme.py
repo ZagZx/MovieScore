@@ -2,24 +2,9 @@ from schemas.filme import FilmeListRead, FilmeRead
 from schemas.conteudo import ImagensConteudo
 from constants import TMDB_IMAGE_STORAGE
 
-class FilmeMapper:
-    @staticmethod
-    def _map_image(path: str | None, size: str) -> str | None:
-        if not path:
-            return None
+from .tmdb import TmdbMapper
 
-        return f"{TMDB_IMAGE_STORAGE}/{size}{path}"
-
-    @staticmethod
-    def _map_genres(item: dict) -> list[dict]:
-        genres: list[dict] = item.get("genres", [])
-
-        return [
-            {"id": int(genre["id"]), "nome": genre["name"]}
-            for genre in genres
-            if genre.get("id") is not None and genre.get("name")
-        ]
-
+class FilmeMapper(TmdbMapper):
     @staticmethod
     def map_filme(item: dict) -> FilmeRead:
         return FilmeRead(
@@ -32,10 +17,10 @@ class FilmeMapper:
             data_lancamento=item.get("release_date") or None,
             duracao_minutos=item.get("runtime") or 0,
             imagens=ImagensConteudo(
-                capa=FilmeMapper._map_image(item.get("poster_path"), "w500"),
-                banner=FilmeMapper._map_image(item.get("backdrop_path"), "original"),
+                capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),
+                banner=FilmeMapper.map_image(item.get("backdrop_path"), "original"),
             ),
-            generos=FilmeMapper._map_genres(item),
+            generos=FilmeMapper.map_genres(item),
         )
 
     @staticmethod
@@ -50,10 +35,11 @@ class FilmeMapper:
                 status=item.get("status") or "",
                 data_lancamento=item.get("release_date") or None,
                 imagens=ImagensConteudo(
-                    capa=FilmeMapper._map_image(item.get("poster_path"), "w500"),
-                    banner=FilmeMapper._map_image(item.get("backdrop_path"), "original"),
+                    capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),
+                    banner=FilmeMapper.map_image(item.get("backdrop_path"), "original"),
                 ),
                 generos_ids=[int(genre_id) for genre_id in item.get("genre_ids", [])],
             )
             for item in items
         ]
+

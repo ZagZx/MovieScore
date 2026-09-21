@@ -75,8 +75,8 @@ class SerieRepository:
             serie_db.titulo = serie.titulo
             serie_db.titulo_original = serie.titulo_original
             serie_db.status = serie.status
-            serie_db.capa = serie.imagens.capa
-            serie_db.banner = serie.imagens.banner
+            serie_db.capa = SerieMapper.unmap_image(serie.imagens.capa)
+            serie_db.banner = SerieMapper.unmap_image(serie.imagens.banner)
             serie_db.data_lancamento = serie.data_lancamento
 
             self.update_serie(serie_db)
@@ -86,8 +86,8 @@ class SerieRepository:
                 titulo = serie.titulo,
                 titulo_original = serie.titulo_original,
                 status = serie.status,
-                capa = serie.imagens.capa,
-                banner = serie.imagens.banner,
+                capa = SerieMapper.unmap_image(serie.imagens.capa),
+                banner = SerieMapper.unmap_image(serie.imagens.banner),
                 data_lancamento = serie.data_lancamento
             )
             self.create_serie(serie_db)

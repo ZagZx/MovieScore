@@ -70,8 +70,8 @@ class FilmeRepository:
             filme_db.titulo = filme.titulo
             filme_db.titulo_original = filme.titulo_original
             filme_db.status = filme.status
-            filme_db.capa = filme.imagens.capa
-            filme_db.banner = filme.imagens.banner
+            filme_db.capa = FilmeMapper.unmap_image(filme.imagens.capa)
+            filme_db.banner = FilmeMapper.unmap_image(filme.imagens.banner)
             filme_db.data_lancamento = filme.data_lancamento
             self.update_filme(filme_db)
         else:
@@ -80,8 +80,8 @@ class FilmeRepository:
                 titulo=filme.titulo,
                 titulo_original=filme.titulo_original,
                 status=filme.status,
-                capa=filme.imagens.capa,
-                banner=filme.imagens.banner,
+                capa=FilmeMapper.unmap_image(filme.imagens.capa),
+                banner=FilmeMapper.unmap_image(filme.imagens.banner),
                 data_lancamento=filme.data_lancamento,
             )
             self.create_filme(filme_db)
