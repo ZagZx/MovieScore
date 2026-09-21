@@ -6,6 +6,21 @@ from .tmdb import TmdbMapper
 
 class SerieMapper(TmdbMapper):
     @staticmethod
+    def map_status(status: str | None):
+        STATUS_MAP = {
+            "Returning Series": "Em exibição",
+            "Planned": "Planejada",
+            "In Production": "Em produção",
+            "Ended": "Finalizada",
+            "Canceled": "Cancelada",
+            "Pilot": "Piloto",
+        }
+        if status not in STATUS_MAP.keys():
+            print(f"Status desconhecido recebido do TMDB: {status}")
+
+        return STATUS_MAP.get(status, "Desconhecido")
+
+    @staticmethod
     def map_seasons(item: dict) -> list[TemporadaSerie]:
         seasons: list[dict] = item.get("seasons", [])
 
@@ -31,7 +46,7 @@ class SerieMapper(TmdbMapper):
             titulo_original=item.get("original_name") or "",
             idioma_original=item.get("original_language") or "",
             descricao=item.get("overview"),
-            status=item.get("status") or "",
+            status=SerieMapper.map_status(item.get("status")),
             data_lancamento=item.get("first_air_date") or None,
             imagens=ImagensConteudo(
                 capa=SerieMapper.map_image(item.get("poster_path"), "w500"),
@@ -56,7 +71,7 @@ class SerieMapper(TmdbMapper):
                 titulo_original=item.get("original_name") or "",
                 idioma_original=item.get("original_language") or "",
                 descricao=item.get("overview"),
-                status=item.get("status") or "",
+                # status=SerieMapper.map_status(item.get("status")),
                 data_lancamento=item.get("first_air_date") or None,
                 imagens=ImagensConteudo(
                     capa=SerieMapper.map_image(item.get("poster_path"), "w500"),

@@ -6,6 +6,21 @@ from .tmdb import TmdbMapper
 
 class FilmeMapper(TmdbMapper):
     @staticmethod
+    def map_status(status: str | None):
+        STATUS_MAP = {
+            "Rumored": "Em rumores",
+            "Planned": "Planejado",
+            "In Production": "Em produção",
+            "Post Production": "Em pós-produção",
+            "Released": "Lançado",
+            "Canceled": "Cancelado",
+        }
+        if status not in STATUS_MAP.keys():
+            print(f"Status desconhecido recebido do TMDB: {status}")
+
+        return STATUS_MAP.get(status, "Desconhecido")
+
+    @staticmethod
     def map_filme(item: dict) -> FilmeRead:
         return FilmeRead(
             id=int(item["id"]),
@@ -13,7 +28,7 @@ class FilmeMapper(TmdbMapper):
             titulo_original=item.get("original_title") or "",
             idioma_original=item.get("original_language") or "",
             descricao=item.get("overview"),
-            status=item.get("status") or "",
+            status=FilmeMapper.map_status(item.get("status")),
             data_lancamento=item.get("release_date") or None,
             duracao_minutos=item.get("runtime") or 0,
             imagens=ImagensConteudo(
@@ -32,7 +47,7 @@ class FilmeMapper(TmdbMapper):
                 titulo_original=item.get("original_title") or "",
                 idioma_original=item.get("original_language") or "",
                 descricao=item.get("overview"),
-                status=item.get("status") or "",
+                # status=FilmeMapper.map_status(item.get("status")),
                 data_lancamento=item.get("release_date") or None,
                 imagens=ImagensConteudo(
                     capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),

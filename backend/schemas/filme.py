@@ -17,7 +17,7 @@ class FilmeListRead(Base):
     titulo_original: str
     idioma_original: str
     descricao: str | None = None
-    status: str # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
+    # status: str # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
     data_lancamento: str | None = None
     imagens: ImagensConteudo
     generos_ids: list[int] = Field(default_factory=list)

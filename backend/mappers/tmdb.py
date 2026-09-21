@@ -1,8 +1,13 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from constants import TMDB_IMAGE_STORAGE
 
-class TmdbMapper:
+class TmdbMapper(ABC):
+    @staticmethod
+    @abstractmethod
+    def map_status(status: str | None) -> str:
+        pass
+
     @staticmethod
     def map_image(path: str | None, size: str) -> str | None:
         if not path:
