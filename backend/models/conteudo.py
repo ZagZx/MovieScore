@@ -34,9 +34,9 @@ class Conteudo(Base):
     __tablename__ = "conteudo"
     __table_args__ = (
         UniqueConstraint(
-            "id_externo", "api_fonte", name="uq_conteudo_id_externo_api_fonte"
+            "id_externo", "api_fonte", "tipo", name="uq_conteudo_id_externo_api_fonte_tipo"
         ),
-    )  # equivalente a UNIQUE (id_externo, api_fonte)
+    )  # equivalente a UNIQUE (id_externo, api_fonte, tipo)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     id_externo: Mapped[int] = mapped_column(BigInteger, nullable=False)
