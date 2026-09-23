@@ -37,14 +37,9 @@ class ConteudoRepository:
             return conteudo
 
         conteudo = Conteudo(id_externo=id_externo, api_fonte=api_fonte, tipo=tipo)
-        try:
-            self.session.add(conteudo)
-            self.session.commit()
-            self.session.refresh(conteudo)
-            return conteudo
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.add(conteudo)
+        self.session.flush()
+        return conteudo
 
 ConteudoRepositoryDep = Annotated[
     ConteudoRepository, Depends(ConteudoRepository)

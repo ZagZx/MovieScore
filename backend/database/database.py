@@ -30,7 +30,11 @@ metadata.reflect(bind=engine)
 
 def get_session():
     with SessionFactory() as session:
-        yield session
-
+        try:
+            yield session
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
 
 SessionDep = Annotated[Session, Depends(get_session)]

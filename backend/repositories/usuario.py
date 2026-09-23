@@ -20,41 +20,21 @@ class UsuarioRepository:
         return usuario
     
     def create_usuario(self, usuario: Usuario):
-        try:
-            self.session.add(usuario)
-            self.session.commit()
-            self.session.refresh(usuario)
-            return usuario
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.add(usuario)
+        self.session.flush()
+        return usuario
 
     def delete_usuario(self, usuario: Usuario):
-        try:
-            self.session.delete(usuario)
-            self.session.commit()
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.delete(usuario)
+        self.session.flush()
 
     def update_usuario(self, usuario: Usuario):
-        try:
-            self.session.commit()
-            self.session.refresh(usuario)
-
-            return usuario
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.flush()
+        return usuario
 
     def update_foto_perfil(self, usuario: Usuario) -> Usuario:
-        try:
-            self.session.commit()
-            self.session.refresh(usuario)
-            return usuario
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.flush()
+        return usuario
 
     def list_usuarios(self, last_id: int, limit: int) -> tuple[list[Usuario], bool]:
         "Retorna a lista de usuários e um booleano indicando se existem mais usuários"

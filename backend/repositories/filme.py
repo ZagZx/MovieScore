@@ -36,23 +36,13 @@ class FilmeRepository:
         )
 
     def create_filme(self, filme: Filme) -> Filme:
-        try:
-            self.session.add(filme)
-            self.session.commit()
-            self.session.refresh(filme)
-            return filme
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.add(filme)
+        self.session.flush()
+        return filme
 
     def update_filme(self, filme: Filme) -> Filme:
-        try:
-            self.session.commit()
-            self.session.refresh(filme)
-            return filme
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.flush()
+        return filme
 
     def get_filme_and_update_database(self, filme_id: int) -> FilmeRead | None:
         filme = self.get_filme_from_api(filme_id)

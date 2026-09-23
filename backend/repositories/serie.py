@@ -39,25 +39,13 @@ class SerieRepository:
         )
 
     def create_serie(self, serie: Serie) -> Serie:
-        try:
-            self.session.add(serie)
-            self.session.commit()
-            self.session.refresh(serie)
-
-            return serie
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.add(serie)
+        self.session.flush()
+        return serie
 
     def update_serie(self, serie: Serie) -> Serie:
-        try:
-            self.session.commit()
-            self.session.refresh(serie)
-
-            return serie
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.flush()
+        return serie
 
     def get_serie_and_update_database(self, serie_id: int) -> SerieRead | None:
         serie = self.get_serie_from_api(serie_id)

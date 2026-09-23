@@ -37,22 +37,13 @@ class FavoritoRepository:
         )
 
     def create_favorito(self, favorito: Favorito) -> Favorito:
-        try:
-            self.session.add(favorito)
-            self.session.commit()
-            self.session.refresh(favorito)
-            return favorito
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.add(favorito)
+        self.session.flush()
+        return favorito
 
     def delete_favorito(self, favorito: Favorito):
-        try:
-            self.session.delete(favorito)
-            self.session.commit()
-        except Exception:
-            self.session.rollback()
-            raise
+        self.session.delete(favorito)
+        self.session.flush()
 
 
 FavoritoRepositoryDep = Annotated[
