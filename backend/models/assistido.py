@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING
-from sqlalchemy import BigInteger, DateTime, ForeignKey
+from sqlalchemy import BigInteger, DateTime, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from datetime import datetime
 
@@ -24,6 +24,11 @@ class Assistido(Base):
     """
 
     __tablename__ = "assistido"
+    __table_args__ = (
+        UniqueConstraint(
+            "conteudo_id", "usuario_id", name="uq_conteudo_id_usuario_id"
+        ),
+    )  # equivalente a UNIQUE (conteudo_id, usuario_id)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), nullable=False)
