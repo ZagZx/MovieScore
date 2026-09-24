@@ -1,4 +1,4 @@
-from .not_found import NotFoundException
+from .not_found import NotFoundException, EntityNotFoundException
 from .conflict import ConflictException
 from .unsupported_media_type import UnsupportedMediaTypeException
 from .external_api import ExternalAPIException

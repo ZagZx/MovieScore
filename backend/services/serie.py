@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from exceptions import NotFoundException
+from exceptions import EntityNotFoundException
 from repositories import SerieRepositoryDep
 from schemas.serie import SerieListRead, SerieRead
 from models.serie import Serie
@@ -30,7 +30,7 @@ class SerieService:
         )
         result = self.serie_repository.get_serie_and_update_database(serie_id, conteudo)
         if not result:
-            raise NotFoundException("Série", serie_id)
+            raise EntityNotFoundException("Série", serie_id)
 
         return result
 

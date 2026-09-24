@@ -12,7 +12,7 @@ from schemas.usuario import UsuarioCreate, UsuarioUpdate
 from schemas.pagination.cursor import CursorPagination
 from repositories import UsuarioRepositoryDep
 from exceptions import (
-    NotFoundException,
+    EntityNotFoundException,
     ConflictException,
     UnsupportedMediaTypeException,
 )
@@ -72,7 +72,7 @@ class UsuarioService:
     def get_usuario(self, id: int) -> Usuario:
         usuario = self.usuario_repository.get_usuario(id)
         if not usuario:
-            raise NotFoundException("Usuário", id)
+            raise EntityNotFoundException("Usuário", id)
 
         return usuario
 

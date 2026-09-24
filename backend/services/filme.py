@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from exceptions import NotFoundException
+from exceptions import EntityNotFoundException
 from repositories import FilmeRepositoryDep
 from schemas.filme import FilmeListRead, FilmeRead
 
@@ -14,7 +14,7 @@ class FilmeService:
     def get_filme(self, filme_id: int) -> FilmeRead:
         filme = self.filme_repository.get_filme_and_update_database(filme_id)
         if not filme:
-            raise NotFoundException("Filme", filme_id)
+            raise EntityNotFoundException("Filme", filme_id)
 
         return filme
 

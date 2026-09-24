@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends
 
-from exceptions import NotFoundException
+from exceptions import EntityNotFoundException
 from models.conteudo import ApiFonte, Conteudo, TipoConteudo
 from repositories import ConteudoRepositoryDep
 
@@ -14,7 +14,7 @@ class ConteudoService:
     def get_conteudo(self, id: int) -> Conteudo:
         conteudo = self.conteudo_repository.get_conteudo(id)
         if not conteudo:
-            raise NotFoundException("Conteúdo", id)
+            raise EntityNotFoundException("Conteúdo", id)
 
         return conteudo
 

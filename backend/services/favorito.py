@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import Depends
 
 from mappers.favorito import FavoritoMapper
-from exceptions import ConflictException, NotFoundException
+from exceptions import ConflictException, EntityNotFoundException, NotFoundException
 from models import Favorito
 from repositories import FavoritoRepositoryDep
 from schemas.favorito import SerieFavoritaRead
-from .usuario import UsuarioService, UsuarioServiceDep
+from .usuario import UsuarioServiceDep
 from .serie import SerieServiceDep
 from .conteudo import ConteudoServiceDep
 
@@ -28,7 +28,7 @@ class FavoritoService:
     def get_favorito(self, favorito_id: int) -> Favorito:
         favorito = self.favorito_repository.get_favorito(favorito_id)
         if not favorito:
-            raise NotFoundException("Favorito", favorito_id)
+            raise EntityNotFoundException("Favorito", favorito_id)
         return favorito
 
     def list_favoritos_serie(self, usuario_id: int) -> list[SerieFavoritaRead]:
@@ -54,20 +54,15 @@ class FavoritoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
-            raise NotFoundException("Série", serie_id)
+            raise EntityNotFoundException("Série", serie_id)
 
         favorito = self.favorito_repository.get_favorito_by_conteudo_id_and_usuario_id(
             conteudo_id=serie.conteudo_id,
             usuario_id=usuario.id
         )
 
-        # TODO
-        # arrumar essa gambiarra
         if not favorito:
-            exception = NotFoundException("Favorito", id=0)
-            exception.message = "Série não encontrada nos favoritos"
-
-            raise exception
+            raise NotFoundException("Série não encontrada nos favoritos")
         
         self.favorito_repository.delete_favorito(favorito)
 
