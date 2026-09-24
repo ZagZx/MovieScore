@@ -13,6 +13,20 @@ if TYPE_CHECKING:
 
 
 class Usuario(Base):
+    """Representa um usuario da aplicacao.
+
+    Args:
+        id: Identificador unico gerado automaticamente.
+        nome: Nome do usuario.
+        email: Endereco de email unico do usuario.
+        senha_hash: Hash da senha do usuario.
+        foto_perfil_path: Caminho da foto de perfil, quando houver.
+        data_criacao: Data e hora em que o usuario foi criado.
+        favoritos: Favoritos associados ao usuario.
+        assistidos: Registros de conteudos assistidos pelo usuario.
+        avaliacoes: Avaliacoes feitas pelo usuario.
+    """
+
     __tablename__ = "usuario"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

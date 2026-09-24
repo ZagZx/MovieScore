@@ -11,6 +11,20 @@ if TYPE_CHECKING:
 
 
 class Serie(Base):
+    """Representa os dados de uma serie associada a um conteudo.
+
+    Args:
+        conteudo_id: Identificador do conteudo associado e chave primaria.
+        titulo: Titulo principal da serie.
+        titulo_original: Titulo original da serie.
+        status: Status atual da serie.
+        capa: Caminho ou URL da imagem de capa, quando houver.
+        banner: Caminho ou URL da imagem de banner, quando houver.
+        data_lancamento: Data de lancamento da serie, quando conhecida.
+        data_atualizacao: Data e hora da ultima atualizacao dos dados.
+        conteudo: Relacionamento com o conteudo associado.
+    """
+
     __tablename__ = "serie"
 
     # id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

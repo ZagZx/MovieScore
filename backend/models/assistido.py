@@ -12,6 +12,17 @@ if TYPE_CHECKING:
 
 
 class Assistido(Base):
+    """Representa um conteudo marcado como assistido por um usuario.
+
+    Args:
+        id: Identificador unico gerado automaticamente.
+        conteudo_id: Identificador do conteudo assistido.
+        usuario_id: Identificador do usuario que assistiu ao conteudo.
+        data_adicao: Data e hora em que o registro foi criado.
+        conteudo: Relacionamento com o conteudo assistido.
+        usuario: Relacionamento com o usuario que assistiu ao conteudo.
+    """
+
     __tablename__ = "assistido"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

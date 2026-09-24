@@ -13,6 +13,20 @@ if TYPE_CHECKING:
 
 
 class Avaliacao(Base):
+    """Representa a avaliacao de um conteudo feita por um usuario.
+
+    Args:
+        id: Identificador unico gerado automaticamente.
+        usuario_id: Identificador do usuario que fez a avaliacao.
+        conteudo_id: Identificador do conteudo avaliado.
+        estrelas: Nota atribuida ao conteudo.
+        comentario: Comentario opcional sobre o conteudo.
+        data_criacao: Data e hora em que a avaliacao foi criada.
+        data_atualizacao: Data e hora da ultima atualizacao, quando houver.
+        conteudo: Relacionamento com o conteudo avaliado.
+        usuario: Relacionamento com o usuario que fez a avaliacao.
+    """
+
     __tablename__ = "avaliacao"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

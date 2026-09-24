@@ -31,6 +31,21 @@ URL_POR_FONTE = {
 }
 
 class Conteudo(Base):
+    """Representa um conteudo disponivel em uma fonte externa.
+
+    Args:
+        id: Identificador unico gerado automaticamente.
+        id_externo: Identificador do conteudo na fonte externa.
+        api_fonte: Fonte externa que fornece o conteudo.
+        tipo: Tipo do conteudo, como anime, filme ou serie.
+        data_adicao: Data e hora em que o conteudo foi adicionado.
+        favoritos: Favoritos associados ao conteudo.
+        assistidos: Registros que marcam o conteudo como assistido.
+        avaliacoes: Avaliacoes associadas ao conteudo.
+        filme: Filme associado ao conteudo, quando houver.
+        serie: Serie associada ao conteudo, quando houver.
+    """
+
     __tablename__ = "conteudo"
     __table_args__ = (
         UniqueConstraint(

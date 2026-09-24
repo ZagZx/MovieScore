@@ -12,6 +12,17 @@ if TYPE_CHECKING:
 
 
 class Favorito(Base):
+    """Representa um conteudo favorito de um usuario.
+
+    Args:
+        id: Identificador unico gerado automaticamente.
+        conteudo_id: Identificador do conteudo favoritado.
+        usuario_id: Identificador do usuario que favoritou o conteudo.
+        data_adicao: Data e hora em que o favorito foi criado.
+        conteudo: Relacionamento com o conteudo favoritado.
+        usuario: Relacionamento com o usuario dono do favorito.
+    """
+
     __tablename__ = "favorito"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
