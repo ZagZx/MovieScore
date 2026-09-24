@@ -22,17 +22,17 @@ class SerieService:
     def get_serie_from_db(self, serie_id: int) -> Serie | None:
         return self.serie_repository.get_serie_by_id_externo(serie_id)
 
-    def get_serie_from_api_and_update_database(self, serie_id: int) -> SerieRead:
+    def get_serie_from_api_and_update_database(self, serie_id: int) -> tuple[SerieRead, Serie]:
         conteudo = self.conteudo_service.get_or_create_conteudo(
             id_externo=serie_id,
             api_fonte=ApiFonte.TMDB,
             tipo=TipoConteudo.SERIE
         )
-        serie = self.serie_repository.get_serie_and_update_database(serie_id, conteudo)
-        if not serie:
+        result = self.serie_repository.get_serie_and_update_database(serie_id, conteudo)
+        if not result:
             raise NotFoundException("Série", serie_id)
 
-        return serie
+        return result
 
     def search_series(self, busca: str, page: int=1) -> tuple[list[SerieListRead], int, int]:
         return self.serie_repository.search_series(busca=busca, page=page)

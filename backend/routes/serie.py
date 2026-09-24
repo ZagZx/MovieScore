@@ -70,18 +70,18 @@ def listar_series_populares(
             has_more=paginacao.page < total_pages,
         ),
     )
-
-@series_router.get("/{serie_id}", response_model=SerieRead)
-def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
-    return serie_service.get_serie_from_api_and_update_database(serie_id=serie_id)
-
-
-@series_router.get("/{serie_id}/favoritos", response_model=list[SerieFavoritaRead])
+@series_router.get("/favoritas", response_model=list[SerieFavoritaRead])
 def listar_series_favoritas(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep
 ):
     return favorito_service.list_favoritos_serie(current_user.id)
+
+
+@series_router.get("/{serie_id}", response_model=SerieRead)
+def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
+    serie, _ = serie_service.get_serie_from_api_and_update_database(serie_id=serie_id)
+    return serie
 
 
 @series_router.post("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)

@@ -1,8 +1,8 @@
 from typing import Annotated
-from venv import create
 
 from fastapi import Depends
 from sqlalchemy import select
+from sqlalchemy.orm import contains_eager
 
 from database import SessionDep
 from models import Favorito, Usuario, Conteudo, Serie
@@ -37,12 +37,12 @@ class FavoritoRepository:
             select(Serie, Favorito)
             .select_from(Favorito)
             .join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
-            .where(
-                Favorito.usuario == usuario
-            )
+            .join(Serie.conteudo)
+            .options(contains_eager(Serie.conteudo))
+            .where(Favorito.usuario == usuario)
         ).all()
 
-    def add_favorito_serie(self, serie: Serie, usuario: Usuario) -> Favorito | None: 
+    def add_favorito_serie(self, serie: Serie, usuario: Usuario) -> Favorito:
         favorito = Favorito(
             conteudo=serie.conteudo,
             usuario=usuario,

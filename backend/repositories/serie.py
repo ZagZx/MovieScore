@@ -79,14 +79,14 @@ class SerieRepository:
         )
         return self.create_serie(serie_db)
 
-    def get_serie_and_update_database(self, serie_id: int, conteudo: Conteudo) -> SerieRead | None:
-        serie = self.get_serie_from_api(serie_id)
-        if not serie:
+    def get_serie_and_update_database(self, serie_id: int, conteudo: Conteudo) -> tuple[SerieRead, Serie] | None:
+        serie_api = self.get_serie_from_api(serie_id)
+        if not serie_api:
             return
 
-        self.create_or_update_serie(serie, conteudo)
+        serie_db = self.create_or_update_serie(serie_api, conteudo)
         
-        return serie    
+        return serie_api, serie_db
 
     def search_series(
         self, 

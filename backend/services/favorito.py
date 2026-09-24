@@ -41,8 +41,9 @@ class FavoritoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
-            self.serie_service.get_serie_from_api_and_update_database(serie_id)
-            serie = self.serie_service.get_serie_from_db(serie_id)
+            result = self.serie_service.get_serie_from_api_and_update_database(serie_id)
+        
+            _, serie = result
 
         if self.favorito_repository.get_favorito_by_conteudo_id_and_usuario_id(serie.conteudo_id, usuario.id):
             raise ConflictException("A série já está na lista de favoritos")
