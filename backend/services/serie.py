@@ -2,17 +2,33 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from exceptions import NotFoundException
 from repositories import SerieRepositoryDep
 from schemas.serie import SerieListRead, SerieRead
-from exceptions import NotFoundException
+from models.serie import Serie
+from models.conteudo import ApiFonte, TipoConteudo
+from .conteudo import ConteudoServiceDep
 
 
 class SerieService:
-    def __init__(self, serie_repository: SerieRepositoryDep):
+    def __init__(
+        self, 
+        serie_repository: SerieRepositoryDep,
+        conteudo_service: ConteudoServiceDep
+    ):
         self.serie_repository = serie_repository
+        self.conteudo_service = conteudo_service
 
-    def get_serie(self, serie_id: int) -> SerieRead:
-        serie = self.serie_repository.get_serie_and_update_database(serie_id)
+    def get_serie_from_db(self, serie_id: int) -> Serie | None:
+        return self.serie_repository.get_serie_by_id_externo(serie_id)
+
+    def get_serie_from_api_and_update_database(self, serie_id: int) -> SerieRead:
+        conteudo = self.conteudo_service.get_or_create_conteudo(
+            id_externo=serie_id,
+            api_fonte=ApiFonte.TMDB,
+            tipo=TipoConteudo.SERIE
+        )
+        serie = self.serie_repository.get_serie_and_update_database(serie_id, conteudo)
         if not serie:
             raise NotFoundException("Série", serie_id)
 

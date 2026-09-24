@@ -8,15 +8,13 @@ from constants import TMDB_API_URL, PARAMS_TMDB, HEADERS_TMDB
 from mappers.serie import SerieMapper
 from schemas.serie import SerieListRead, SerieRead
 from models.serie import Serie
-from models.conteudo import ApiFonte, TipoConteudo
+from models.conteudo import ApiFonte, Conteudo, TipoConteudo
 from database import SessionDep
-from repositories.conteudo import ConteudoRepositoryDep
 
 
 class SerieRepository:
-    def __init__(self, session: SessionDep, conteudo_repository: ConteudoRepositoryDep):
+    def __init__(self, session: SessionDep):
         self.session = session
-        self.conteudo_repository = conteudo_repository
 
     def get_serie_from_api(self, serie_id: int) -> SerieRead | None:
         data = get_data(
@@ -30,6 +28,18 @@ class SerieRepository:
             return None
 
         return SerieMapper.map_serie(data)
+
+
+    def get_serie_by_id_externo(self, id_externo: int) -> Serie | None:
+        return self.session.scalar(
+            select(Serie)
+            .join(Serie.conteudo)
+            .where(
+                Conteudo.id_externo == id_externo,
+                Conteudo.api_fonte == ApiFonte.TMDB,
+                Conteudo.tipo == TipoConteudo.SERIE,
+            )
+        )
 
     def get_serie_by_conteudo_id(self, conteudo_id: int) -> Serie | None:
         return self.session.scalar(
@@ -47,38 +57,35 @@ class SerieRepository:
         self.session.flush()
         return serie
 
-    def get_serie_and_update_database(self, serie_id: int) -> SerieRead | None:
+    def create_or_update_serie(self, serie_from_api: SerieRead, conteudo: Conteudo) -> Serie:
+        serie = self.get_serie_by_conteudo_id(conteudo.id)
+        if serie:
+            serie.titulo = serie_from_api.titulo
+            serie.titulo_original = serie_from_api.titulo_original
+            serie.status = serie_from_api.status
+            serie.capa = SerieMapper.unmap_image(serie_from_api.imagens.capa)
+            serie.banner = SerieMapper.unmap_image(serie_from_api.imagens.banner)
+            serie.data_lancamento = serie_from_api.data_lancamento
+
+            return self.update_serie(serie)
+        serie_db = Serie(
+            conteudo_id = conteudo.id,
+            titulo = serie_from_api.titulo,
+            titulo_original = serie_from_api.titulo_original,
+            status = serie_from_api.status,
+            capa = SerieMapper.unmap_image(serie_from_api.imagens.capa),
+            banner = SerieMapper.unmap_image(serie_from_api.imagens.banner),
+            data_lancamento = serie_from_api.data_lancamento
+        )
+        return self.create_serie(serie_db)
+
+    def get_serie_and_update_database(self, serie_id: int, conteudo: Conteudo) -> SerieRead | None:
         serie = self.get_serie_from_api(serie_id)
         if not serie:
             return
 
-        conteudo = self.conteudo_repository.get_or_create_conteudo(
-            id_externo=serie_id,
-            api_fonte=ApiFonte.TMDB,
-            tipo=TipoConteudo.SERIE
-        )
-
-        serie_db = self.get_serie_by_conteudo_id(conteudo.id)
-        if serie_db:
-            serie_db.titulo = serie.titulo
-            serie_db.titulo_original = serie.titulo_original
-            serie_db.status = serie.status
-            serie_db.capa = SerieMapper.unmap_image(serie.imagens.capa)
-            serie_db.banner = SerieMapper.unmap_image(serie.imagens.banner)
-            serie_db.data_lancamento = serie.data_lancamento
-
-            self.update_serie(serie_db)
-        else:
-            serie_db = Serie(
-                conteudo_id = conteudo.id,
-                titulo = serie.titulo,
-                titulo_original = serie.titulo_original,
-                status = serie.status,
-                capa = SerieMapper.unmap_image(serie.imagens.capa),
-                banner = SerieMapper.unmap_image(serie.imagens.banner),
-                data_lancamento = serie.data_lancamento
-            )
-            self.create_serie(serie_db)
+        self.create_or_update_serie(serie, conteudo)
+        
         return serie    
 
     def search_series(
