@@ -6,10 +6,10 @@ from mappers.favorito import FavoritoMapper
 from exceptions import ConflictException, EntityNotFoundException, NotFoundException
 from models import Favorito
 from repositories import FavoritoRepositoryDep
-from schemas.favorito import SerieFavoritaRead
+from schemas.favorito import FilmeFavoritoRead, SerieFavoritaRead
 from .usuario import UsuarioServiceDep
 from .serie import SerieServiceDep
-from .conteudo import ConteudoServiceDep
+from .filme import FilmeServiceDep
 
 
 class FavoritoService:
@@ -18,12 +18,12 @@ class FavoritoService:
         favorito_repository: FavoritoRepositoryDep,
         usuario_service: UsuarioServiceDep,
         serie_service: SerieServiceDep,
-        conteudo_service: ConteudoServiceDep,
+        filme_service: FilmeServiceDep,
     ):
         self.favorito_repository = favorito_repository
         self.usuario_service = usuario_service
         self.serie_service = serie_service
-        self.conteudo_service = conteudo_service
+        self.filme_service = filme_service
 
     def get_favorito(self, favorito_id: int) -> Favorito:
         favorito = self.favorito_repository.get_favorito(favorito_id)
@@ -36,19 +36,37 @@ class FavoritoService:
 
         return FavoritoMapper.map_series(self.favorito_repository.list_series_favoritas(usuario))
 
+    def list_favoritos_filme(self, usuario_id: int) -> list[FilmeFavoritoRead]:
+        usuario = self.usuario_service.get_usuario(usuario_id)
+
+        return FavoritoMapper.map_filmes(self.favorito_repository.list_filmes_favoritos(usuario))
+
     def add_favorito_serie(self, serie_id: int, usuario_id: int):
-        # pega a serie do banco, se não houver, busca na API
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
             result = self.serie_service.get_serie_from_api_and_update_database(serie_id)
-        
             _, serie = result
 
         if self.favorito_repository.get_favorito_by_conteudo_id_and_usuario_id(serie.conteudo_id, usuario.id):
             raise ConflictException("A série já está na lista de favoritos")
 
         self.favorito_repository.add_favorito_serie(serie, usuario)
+
+    def add_favorito_filme(self, filme_id: int, usuario_id: int):
+        usuario = self.usuario_service.get_usuario(usuario_id)
+        filme = self.filme_service.get_filme_from_db(filme_id)
+        if not filme:
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
+            filme = self.filme_service.get_filme_from_db(filme_id)
+
+        if not filme:
+            raise EntityNotFoundException("Filme", filme_id)
+
+        if self.favorito_repository.get_favorito_by_conteudo_id_and_usuario_id(filme.conteudo_id, usuario.id):
+            raise ConflictException("O filme já está na lista de favoritos")
+
+        self.favorito_repository.add_favorito_filme(filme, usuario)
 
     def remove_favorito_serie(self, serie_id: int, usuario_id: int):
         usuario = self.usuario_service.get_usuario(usuario_id)
@@ -63,7 +81,23 @@ class FavoritoService:
 
         if not favorito:
             raise NotFoundException("Série não encontrada nos favoritos")
-        
+
+        self.favorito_repository.delete_favorito(favorito)
+
+    def remove_favorito_filme(self, filme_id: int, usuario_id: int):
+        usuario = self.usuario_service.get_usuario(usuario_id)
+        filme = self.filme_service.get_filme_from_db(filme_id)
+        if not filme:
+            raise EntityNotFoundException("Filme", filme_id)
+
+        favorito = self.favorito_repository.get_favorito_by_conteudo_id_and_usuario_id(
+            conteudo_id=filme.conteudo_id,
+            usuario_id=usuario.id,
+        )
+
+        if not favorito:
+            raise NotFoundException("Filme não encontrado nos favoritos")
+
         self.favorito_repository.delete_favorito(favorito)
 
 

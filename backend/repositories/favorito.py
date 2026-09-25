@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import contains_eager
 
 from database import SessionDep
-from models import Favorito, Usuario, Conteudo, Serie
+from models import Favorito, Usuario, Conteudo, Filme, Serie
 
 
 class FavoritoRepository:
@@ -42,9 +42,26 @@ class FavoritoRepository:
             .where(Favorito.usuario == usuario)
         ).all()
 
+    def list_filmes_favoritos(self, usuario: Usuario) -> list[tuple[Filme, Favorito]]:
+        return self.session.execute(
+            select(Filme, Favorito)
+            .select_from(Favorito)
+            .join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
+            .join(Filme.conteudo)
+            .options(contains_eager(Filme.conteudo))
+            .where(Favorito.usuario == usuario)
+        ).all()
+
     def add_favorito_serie(self, serie: Serie, usuario: Usuario) -> Favorito:
         favorito = Favorito(
             conteudo=serie.conteudo,
+            usuario=usuario,
+        )
+        return self.create_favorito(favorito)
+
+    def add_favorito_filme(self, filme: Filme, usuario: Usuario) -> Favorito:
+        favorito = Favorito(
+            conteudo=filme.conteudo,
             usuario=usuario,
         )
         return self.create_favorito(favorito)

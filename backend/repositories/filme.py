@@ -6,7 +6,7 @@ from sqlalchemy import select
 from constants import HEADERS_TMDB, PARAMS_TMDB, TMDB_API_URL
 from database import SessionDep
 from mappers.filme import FilmeMapper
-from models.conteudo import ApiFonte, TipoConteudo
+from models.conteudo import ApiFonte, Conteudo, TipoConteudo
 from models.filme import Filme
 from repositories.conteudo import ConteudoRepositoryDep
 from schemas.filme import FilmeListRead, FilmeRead
@@ -30,6 +30,17 @@ class FilmeRepository:
 
         return FilmeMapper.map_filme(data)
 
+    def get_filme_by_id_externo(self, id_externo: int) -> Filme | None:
+        return self.session.scalar(
+            select(Filme)
+            .join(Filme.conteudo)
+            .where(
+                Conteudo.id_externo == id_externo,
+                Conteudo.api_fonte == ApiFonte.TMDB,
+                Conteudo.tipo == TipoConteudo.FILME,
+            )
+        )
+
     def get_filme_by_conteudo_id(self, conteudo_id: int) -> Filme | None:
         return self.session.scalar(
             select(Filme).where(Filme.conteudo_id == conteudo_id)
@@ -44,39 +55,38 @@ class FilmeRepository:
         self.session.flush()
         return filme
 
-    def get_filme_and_update_database(self, filme_id: int) -> FilmeRead | None:
-        filme = self.get_filme_from_api(filme_id)
-        if not filme:
+    def create_or_update_filme(self, filme_from_api: FilmeRead, conteudo: Conteudo) -> Filme:
+        filme = self.get_filme_by_conteudo_id(conteudo.id)
+        if filme:
+            filme.titulo = filme_from_api.titulo
+            filme.titulo_original = filme_from_api.titulo_original
+            filme.status = filme_from_api.status
+            filme.capa = FilmeMapper.unmap_image(filme_from_api.imagens.capa)
+            filme.banner = FilmeMapper.unmap_image(filme_from_api.imagens.banner)
+            filme.data_lancamento = str_to_date(filme_from_api.data_lancamento)
+            return self.update_filme(filme)
+
+        filme_db = Filme(
+            conteudo_id=conteudo.id,
+            titulo=filme_from_api.titulo,
+            titulo_original=filme_from_api.titulo_original,
+            status=filme_from_api.status,
+            capa=FilmeMapper.unmap_image(filme_from_api.imagens.capa),
+            banner=FilmeMapper.unmap_image(filme_from_api.imagens.banner),
+            data_lancamento=str_to_date(filme_from_api.data_lancamento),
+        )
+        return self.create_filme(filme_db)
+
+    def get_filme_and_update_database(
+        self, filme_id: int, conteudo: Conteudo
+    ) -> tuple[FilmeRead, Filme] | None:
+        filme_api = self.get_filme_from_api(filme_id)
+        if not filme_api:
             return None
 
-        conteudo = self.conteudo_repository.get_or_create_conteudo(
-            id_externo=filme_id,
-            api_fonte=ApiFonte.TMDB,
-            tipo=TipoConteudo.FILME,
-        )
+        filme_db = self.create_or_update_filme(filme_api, conteudo)
 
-        filme_db = self.get_filme_by_conteudo_id(conteudo.id)
-        if filme_db:
-            filme_db.titulo = filme.titulo
-            filme_db.titulo_original = filme.titulo_original
-            filme_db.status = filme.status
-            filme_db.capa = FilmeMapper.unmap_image(filme.imagens.capa)
-            filme_db.banner = FilmeMapper.unmap_image(filme.imagens.banner)
-            filme_db.data_lancamento = str_to_date(filme.data_lancamento)
-            self.update_filme(filme_db)
-        else:
-            filme_db = Filme(
-                conteudo_id=conteudo.id,
-                titulo=filme.titulo,
-                titulo_original=filme.titulo_original,
-                status=filme.status,
-                capa=FilmeMapper.unmap_image(filme.imagens.capa),
-                banner=FilmeMapper.unmap_image(filme.imagens.banner),
-                data_lancamento=str_to_date(filme.data_lancamento),
-            )
-            self.create_filme(filme_db)
-
-        return filme
+        return filme_api, filme_db
 
     def search_filmes(
         self, busca: str, page: int = 1

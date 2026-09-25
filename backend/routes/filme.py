@@ -1,8 +1,11 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
+from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.filme import FilmeListRead, FilmeRead
+from schemas.favorito import FilmeFavoritoRead
 from services import FilmeServiceDep
+from services.favorito import FavoritoServiceDep
 
 filmes_router = APIRouter(prefix="/filmes", tags=["filmes"])
 
@@ -89,6 +92,32 @@ def listar_filmes_em_breve(
     )
 
 
+@filmes_router.get("/favoritos", response_model=list[FilmeFavoritoRead])
+def listar_filmes_favoritos(
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    return favorito_service.list_favoritos_filme(current_user.id)
+
+
 @filmes_router.get("/{filme_id}", response_model=FilmeRead)
 def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
     return filme_service.get_filme(filme_id=filme_id)
+
+
+@filmes_router.post("/{filme_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
+def adicionar_filme_aos_favoritos(
+    filme_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    favorito_service.add_favorito_filme(filme_id, current_user.id)
+
+
+@filmes_router.delete("/{filme_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
+def remover_filme_dos_favoritos(
+    filme_id: int,
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+):
+    favorito_service.remove_favorito_filme(filme_id, current_user.id)
