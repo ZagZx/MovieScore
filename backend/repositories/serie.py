@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import Depends
 from sqlalchemy import select
 
-from utils import get_data
+from utils import get_data, str_to_date
 from constants import TMDB_API_URL, PARAMS_TMDB, HEADERS_TMDB
 from mappers.serie import SerieMapper
 from schemas.serie import SerieListRead, SerieRead
@@ -65,7 +65,7 @@ class SerieRepository:
             serie.status = serie_from_api.status
             serie.capa = SerieMapper.unmap_image(serie_from_api.imagens.capa)
             serie.banner = SerieMapper.unmap_image(serie_from_api.imagens.banner)
-            serie.data_lancamento = serie_from_api.data_lancamento
+            serie.data_lancamento = str_to_date(serie_from_api.data_lancamento)
 
             return self.update_serie(serie)
         serie_db = Serie(
@@ -75,7 +75,7 @@ class SerieRepository:
             status = serie_from_api.status,
             capa = SerieMapper.unmap_image(serie_from_api.imagens.capa),
             banner = SerieMapper.unmap_image(serie_from_api.imagens.banner),
-            data_lancamento = serie_from_api.data_lancamento
+            data_lancamento = str_to_date(serie_from_api.data_lancamento)
         )
         return self.create_serie(serie_db)
 

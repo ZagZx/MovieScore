@@ -1,5 +1,5 @@
 import requests
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from requests.exceptions import (
     ConnectionError,
     Timeout,
@@ -10,6 +10,10 @@ from requests.exceptions import (
 
 from exceptions import ExternalAPIException
 from enum import Enum
+
+
+def str_to_date(date_string: str | None) -> date | None:
+    return date.fromisoformat(date_string) if date_string else None
 
 
 def get_enum_values(enum_class: type[Enum]) -> list: 

@@ -1,3 +1,4 @@
+from utils import str_to_date
 from schemas.serie import SerieListRead, SerieRead, TemporadaSerie
 from schemas.conteudo import ImagensConteudo
 from constants import TMDB_IMAGE_STORAGE
@@ -31,7 +32,7 @@ class SerieMapper(TmdbMapper):
                 numero_temporada=season.get("season_number") or 0,
                 quantidade_episodios=season.get("episode_count") or 0,
                 descricao=season.get("overview"),
-                data_lancamento=season.get("air_date") or None,
+                data_lancamento=str_to_date(season.get("air_date")),
                 capa=SerieMapper.map_image(season.get("poster_path"), "w500"),
             )
             for season in seasons
@@ -47,7 +48,7 @@ class SerieMapper(TmdbMapper):
             idioma_original=item.get("original_language") or "",
             descricao=item.get("overview"),
             status=SerieMapper.map_status(item.get("status")),
-            data_lancamento=item.get("first_air_date") or None,
+            data_lancamento=str_to_date(item.get("first_air_date")),
             imagens=ImagensConteudo(
                 capa=SerieMapper.map_image(item.get("poster_path"), "w500"),
                 banner=SerieMapper.map_image(item.get("backdrop_path"), "original"),
@@ -72,7 +73,7 @@ class SerieMapper(TmdbMapper):
                 idioma_original=item.get("original_language") or "",
                 descricao=item.get("overview"),
                 # status=SerieMapper.map_status(item.get("status")),
-                data_lancamento=item.get("first_air_date") or None,
+                data_lancamento=str_to_date(item.get("first_air_date")),
                 imagens=ImagensConteudo(
                     capa=SerieMapper.map_image(item.get("poster_path"), "w500"),
                     banner=SerieMapper.map_image(item.get("backdrop_path"), "original"),

@@ -10,7 +10,7 @@ from models.conteudo import ApiFonte, TipoConteudo
 from models.filme import Filme
 from repositories.conteudo import ConteudoRepositoryDep
 from schemas.filme import FilmeListRead, FilmeRead
-from utils import get_data
+from utils import get_data, str_to_date
 
 
 class FilmeRepository:
@@ -62,7 +62,7 @@ class FilmeRepository:
             filme_db.status = filme.status
             filme_db.capa = FilmeMapper.unmap_image(filme.imagens.capa)
             filme_db.banner = FilmeMapper.unmap_image(filme.imagens.banner)
-            filme_db.data_lancamento = filme.data_lancamento
+            filme_db.data_lancamento = str_to_date(filme.data_lancamento)
             self.update_filme(filme_db)
         else:
             filme_db = Filme(
@@ -72,7 +72,7 @@ class FilmeRepository:
                 status=filme.status,
                 capa=FilmeMapper.unmap_image(filme.imagens.capa),
                 banner=FilmeMapper.unmap_image(filme.imagens.banner),
-                data_lancamento=filme.data_lancamento,
+                data_lancamento=str_to_date(filme.data_lancamento),
             )
             self.create_filme(filme_db)
 

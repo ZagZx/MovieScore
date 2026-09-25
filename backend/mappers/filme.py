@@ -1,3 +1,4 @@
+from utils import str_to_date
 from schemas.filme import FilmeListRead, FilmeRead
 from schemas.conteudo import ImagensConteudo
 from constants import TMDB_IMAGE_STORAGE
@@ -29,7 +30,7 @@ class FilmeMapper(TmdbMapper):
             idioma_original=item.get("original_language") or "",
             descricao=item.get("overview"),
             status=FilmeMapper.map_status(item.get("status")),
-            data_lancamento=item.get("release_date") or None,
+            data_lancamento=str_to_date(item.get("release_date")) ,
             duracao_minutos=item.get("runtime") or 0,
             imagens=ImagensConteudo(
                 capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),
@@ -48,7 +49,7 @@ class FilmeMapper(TmdbMapper):
                 idioma_original=item.get("original_language") or "",
                 descricao=item.get("overview"),
                 # status=FilmeMapper.map_status(item.get("status")),
-                data_lancamento=item.get("release_date") or None,
+                data_lancamento=str_to_date(item.get("release_date")),
                 imagens=ImagensConteudo(
                     capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),
                     banner=FilmeMapper.map_image(item.get("backdrop_path"), "original"),
