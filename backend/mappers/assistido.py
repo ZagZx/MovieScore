@@ -1,6 +1,7 @@
 from schemas.conteudo import ImagensConteudo
-from schemas.assistido import SerieAssistidaRead
-from models import Assistido, Serie
+from schemas.assistido import FilmeAssistidoRead, SerieAssistidaRead
+from models import Assistido, Filme, Serie
+from .filme import FilmeMapper
 from .serie import SerieMapper
 
 
@@ -25,4 +26,26 @@ class AssistidoMapper:
         return [
             AssistidoMapper.map_serie(serie, assistido)
             for serie, assistido in items
+        ]
+
+    @staticmethod
+    def map_filme(filme: Filme, assistido: Assistido) -> FilmeAssistidoRead:
+        return FilmeAssistidoRead(
+            id=filme.conteudo.id_externo,
+            titulo=filme.titulo,
+            titulo_original=filme.titulo_original,
+            status=filme.status,
+            imagens=ImagensConteudo(
+                capa=FilmeMapper.map_image(filme.capa, "w500"),
+                banner=FilmeMapper.map_image(filme.banner, "original"),
+            ),
+            data_lancamento=filme.data_lancamento,
+            data_adicao=assistido.data_adicao,
+        )
+
+    @staticmethod
+    def map_filmes(items: list[tuple[Filme, Assistido]]) -> list[FilmeAssistidoRead]:
+        return [
+            AssistidoMapper.map_filme(filme, assistido)
+            for filme, assistido in items
         ]

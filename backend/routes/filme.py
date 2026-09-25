@@ -4,7 +4,8 @@ from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.filme import FilmeListRead, FilmeRead
 from schemas.favorito import FilmeFavoritoRead
-from services import FilmeServiceDep
+from schemas.assistido import FilmeAssistidoRead
+from services import AssistidoServiceDep, FilmeServiceDep
 from services.favorito import FavoritoServiceDep
 
 filmes_router = APIRouter(prefix="/filmes", tags=["filmes"])
@@ -100,6 +101,14 @@ def listar_filmes_favoritos(
     return favorito_service.list_favoritos_filme(current_user.id)
 
 
+@filmes_router.get("/assistidos", response_model=list[FilmeAssistidoRead])
+def listar_filmes_assistidos(
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    return assistido_service.list_assistidos_filme(current_user.id)
+
+
 @filmes_router.get("/{filme_id}", response_model=FilmeRead)
 def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
     return filme_service.get_filme(filme_id=filme_id)
@@ -114,6 +123,15 @@ def adicionar_filme_aos_favoritos(
     favorito_service.add_favorito_filme(filme_id, current_user.id)
 
 
+@filmes_router.post("/{filme_id}/assistidos", status_code=status.HTTP_204_NO_CONTENT)
+def adicionar_filme_aos_assistidos(
+    filme_id: int,
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    assistido_service.add_assistido_filme(filme_id, current_user.id)
+
+
 @filmes_router.delete("/{filme_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
 def remover_filme_dos_favoritos(
     filme_id: int,
@@ -121,3 +139,12 @@ def remover_filme_dos_favoritos(
     favorito_service: FavoritoServiceDep,
 ):
     favorito_service.remove_favorito_filme(filme_id, current_user.id)
+
+
+@filmes_router.delete("/{filme_id}/assistidos", status_code=status.HTTP_204_NO_CONTENT)
+def remover_filme_dos_assistidos(
+    filme_id: int,
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    assistido_service.remove_assistido_filme(filme_id, current_user.id)
