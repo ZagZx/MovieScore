@@ -13,6 +13,9 @@ from enum import Enum
 
 
 def str_to_date(date_string: str | None) -> date | None:
+    if date_string and type(date_string) == date:
+        return date_string
+    
     return date.fromisoformat(date_string) if date_string else None
 
 
