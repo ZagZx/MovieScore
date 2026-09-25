@@ -1,19 +1,15 @@
-from datetime import datetime
+from datetime import date, datetime
 
 from .base import Base
+from .conteudo import ImagensConteudo
 
 
-class AssistidoCreate(Base):
-    conteudo_id: int
-    usuario_id: int
-
-
-class AssistidoRead(Base):
+class SerieAssistidaRead(Base):
     id: int
-    conteudo_id: int
-    usuario_id: int
+    titulo: str
+    titulo_original: str
+    status: str
+    imagens: ImagensConteudo
+    data_lancamento: date | None = None
     data_adicao: datetime
 
-
-# class AssistidoUpdate(BaseModel):
-# pass

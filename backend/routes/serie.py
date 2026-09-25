@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, status
 
-from services import SerieServiceDep
+from services import SerieServiceDep, AssistidoServiceDep
 from services.favorito import FavoritoServiceDep
 from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.serie import SerieListRead, SerieRead
 from schemas.favorito import SerieFavoritaRead
+from schemas.assistido import SerieAssistidaRead
 
 
 series_router = APIRouter(prefix="/series", tags=["Séries"])
@@ -78,6 +79,14 @@ def listar_series_favoritas(
     return favorito_service.list_favoritos_serie(current_user.id)
 
 
+@series_router.get("/assistidas", response_model=list[SerieAssistidaRead])
+def listar_series_assistidas(
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    return assistido_service.list_assistidos_serie(current_user.id)
+
+
 @series_router.get("/{serie_id}", response_model=SerieRead)
 def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
     serie, _ = serie_service.get_serie_from_api_and_update_database(serie_id=serie_id)
@@ -93,6 +102,15 @@ def adicionar_serie_aos_favoritos(
     favorito_service.add_favorito_serie(serie_id, current_user.id)
 
 
+@series_router.post("/{serie_id}/assistidos", status_code=status.HTTP_204_NO_CONTENT)
+def adicionar_serie_aos_assistidos(
+    serie_id: int,
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    assistido_service.add_assistido_serie(serie_id, current_user.id)
+
+
 @series_router.delete("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
 def remover_serie_dos_favoritos(
     serie_id: int,
@@ -100,3 +118,12 @@ def remover_serie_dos_favoritos(
     favorito_service: FavoritoServiceDep
 ):
     favorito_service.remove_favorito_serie(serie_id, current_user.id)
+
+
+@series_router.delete("/{serie_id}/assistidos", status_code=status.HTTP_204_NO_CONTENT)
+def remover_serie_dos_assistidos(
+    serie_id: int,
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+):
+    assistido_service.remove_assistido_serie(serie_id, current_user.id)
