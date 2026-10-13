@@ -8,6 +8,7 @@ from schemas.serie import GeneroSerie, SerieFiltros, SerieListRead, SerieRead
 from schemas.favorito import SerieFavoritaRead
 from schemas.assistido import SerieAssistidaRead
 from schemas.avaliacao import (
+    AvaliacaoConteudoRead,
     AvaliacaoCreate,
     AvaliacaoReadBase,
     AvaliacaoUpdate,
@@ -106,12 +107,12 @@ def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
     return serie
 
 
-@series_router.get("/{serie_id}/avaliacoes", response_model=list[AvaliacaoSerieRead])
+@series_router.get("/{serie_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
 def listar_avaliacoes_da_serie(
     serie_id: int,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.list_avaliacoes_conteudo(serie_id)
+    return avaliacao_service.list_avaliacoes_serie(serie_id)
 
 
 @series_router.post(

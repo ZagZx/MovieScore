@@ -2,10 +2,12 @@ from typing import Annotated
 
 from fastapi import Depends
 
+from mappers.avaliacao import AvaliacaoMapper
+from models.conteudo import TipoConteudo
 from exceptions import ConflictException, NotFoundException
 from models import Avaliacao
 from repositories import AvaliacaoRepositoryDep
-from schemas.avaliacao import AvaliacaoCreate, AvaliacaoUpdate, AvaliacaoSerieRead, AvaliacaoFilmeRead, AvaliacaoAnimeRead
+from schemas.avaliacao import AvaliacaoConteudoRead, AvaliacaoCreate, AvaliacaoUpdate, AvaliacaoSerieRead, AvaliacaoFilmeRead, AvaliacaoAnimeRead
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 from services.serie import SerieServiceDep
@@ -33,29 +35,17 @@ class AvaliacaoService:
     def list_avaliacoes_usuario(self, usuario_id: int) -> list[Avaliacao]:
         """Retorna as avaliações do usuário autenticado."""
         usuario = self.usuario_service.get_usuario(usuario_id)
-        return self.avaliacao_repository.list_avaliacoes_by_usuario(usuario)
+        avaliacoes = self.avaliacao_repository.list_avaliacoes_by_usuario(usuario)
+        return AvaliacaoMapper.map_avaliacoes_usuario(avaliacoes)
 
-    def list_avaliacoes_conteudo(self, serie_id: int) -> list[Avaliacao]:
+    def list_avaliacoes_conteudo(self, id_externo: int, tipo: TipoConteudo) -> list[AvaliacaoConteudoRead]:
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo)
+        avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(conteudo)
+        return AvaliacaoMapper.map_avaliacoes_conteudo(avaliacoes)
+
+    def list_avaliacoes_serie(self, serie_id: int) -> list[AvaliacaoConteudoRead]:
         """Retorna todas as avaliações de uma série específica."""
-        serie = self.serie_service.get_serie_from_db(serie_id)
-        if not serie:
-            _, serie = self.serie_service.get_serie_from_api_and_update_database(serie_id)
-        avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(
-            serie.conteudo
-        )
-
-        return [
-            AvaliacaoSerieRead(
-                id=a.id,
-                usuario_id=a.usuario_id,
-                estrelas=a.estrelas,
-                comentario=a.comentario,
-                data_criacao=a.data_criacao,
-                data_atualizacao=a.data_atualizacao,
-                serie_id=serie_id,
-            )
-            for a in avaliacoes
-        ]
+        return self.list_avaliacoes_conteudo(serie_id, tipo="serie")
 
     # --- Filme evaluations ---
     def list_avaliacoes_filme(self, filme_id: int) -> list[Avaliacao]:
