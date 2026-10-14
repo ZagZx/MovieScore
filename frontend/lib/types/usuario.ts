@@ -24,4 +24,4 @@ export interface CreateUsuarioBody {
     senha: string;
 }
 
-export interface CreateUsuarioResponse extends Usuario {}
+export type CreateUsuarioResponse = Usuario;
