@@ -28,7 +28,6 @@ SessionFactory = sessionmaker(bind=engine)
 metadata = MetaData()
 metadata.reflect(bind=engine)
 
-
 def get_session():
     with SessionFactory() as session:
         try:
@@ -37,6 +36,5 @@ def get_session():
         except Exception:
             session.rollback()
             raise
-
 
 SessionDep = Annotated[Session, Depends(get_session)]

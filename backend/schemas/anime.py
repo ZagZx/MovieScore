@@ -9,19 +9,16 @@ from .conteudo import Ordem
 
 
 class ImagensAnime(Base):
-    capa: str | None = None  # posterImage
-    banner: str | None = None  # coverImage
-
+    capa: str | None = None #posterImage
+    banner: str | None = None #coverImage
 
 class GeneroAnime(Base):
     id: int
     nome: str
 
-
 class CategoriaAnime(Base):
     id: int
     nome: str
-
 
 class CategoriaRead(Base):
     """Categoria do Kitsu retornada pela listagem de /animes/categorias."""
@@ -32,15 +29,13 @@ class CategoriaRead(Base):
     descricao: str | None = None
     total_midias: int | None = None
 
-
 class StatusAnime(str, Enum):
-    ANDAMENTO = "Em andamento"  # current
-    FINALIZADO = "Finalizado"  # finished
-    A_SER_ANUNCIADO = "A ser anunciado"  # tba
-    NAO_LANCADO = "Não lançado"  # unreleased
-    POR_VIR = "Por vir"  # upcoming
-    DESCONHECIDO = "Desconhecido"  # fallback para status não mapeados
-
+    ANDAMENTO = "Em andamento" #current
+    FINALIZADO = "Finalizado" #finished
+    A_SER_ANUNCIADO = "A ser anunciado" #tba
+    NAO_LANCADO = "Não lançado" #unreleased
+    POR_VIR = "Por vir" #upcoming
+    DESCONHECIDO = "Desconhecido" #fallback para status não mapeados
 
 class FormatoAnime(str, Enum):
     TV = "TV"
@@ -50,13 +45,11 @@ class FormatoAnime(str, Enum):
     ESPECIAL = "special"
     MUSICA = "music"
 
-
 class ClassificacaoEtaria(str, Enum):
     LIVRE = "G"
     PG = "PG"
     R = "R"
     R18 = "R18"
-
 
 class TemporadaAnime(str, Enum):
     INVERNO = "winter"
@@ -64,14 +57,12 @@ class TemporadaAnime(str, Enum):
     VERAO = "summer"
     OUTONO = "fall"
 
-
 class OrdenacaoAnime(str, Enum):
     POPULARIDADE = "popularityRank"
     NOTA = "ratingRank"
     MEDIA = "averageRating"
     DATA_INICIO = "startDate"
     USUARIOS = "userCount"
-
 
 class AnimeRead(Base):
     id: int
@@ -87,7 +78,6 @@ class AnimeRead(Base):
     generos: list[GeneroAnime] = Field(default_factory=list)
     categorias: list[CategoriaAnime] = Field(default_factory=list)
 
-
 class AnimeFiltros(Base):
     """Filtros de pesquisa de animes, montados como query params da rota /animes.
 
@@ -99,9 +89,7 @@ class AnimeFiltros(Base):
     """
 
     busca: str | None = None
-    categorias: list[str] | None = (
-        None  # slugs do Kitsu, ex: categorias=action&categorias=drama
-    )
+    categorias: list[str] | None = None # slugs do Kitsu, ex: categorias=action&categorias=drama
     formato: FormatoAnime | None = None
     status: StatusAnime | None = None
     classificacao_etaria: ClassificacaoEtaria | None = None
@@ -109,14 +97,10 @@ class AnimeFiltros(Base):
     ano_inicio: int | None = Field(default=None, ge=1900, le=2100)
     ano_fim: int | None = Field(default=None, ge=1900, le=2100)
     temporada: TemporadaAnime | None = None
-    nota_minima: float | None = Field(
-        default=None, ge=0, le=100
-    )  # escala 0-100 do Kitsu
+    nota_minima: float | None = Field(default=None, ge=0, le=100) # escala 0-100 do Kitsu
     ordenar_por: OrdenacaoAnime = OrdenacaoAnime.POPULARIDADE
-    ordem: Ordem = Ordem.ASC  # ranks do Kitsu: asc = melhor posição primeiro
-    ordenacao_explicita: bool = Field(
-        default=False, exclude=True
-    )  # preenchido pelo as_dependency
+    ordem: Ordem = Ordem.ASC # ranks do Kitsu: asc = melhor posição primeiro
+    ordenacao_explicita: bool = Field(default=False, exclude=True) # preenchido pelo as_dependency
 
     @classmethod
     def as_dependency(

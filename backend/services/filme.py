@@ -22,9 +22,7 @@ class FilmeService:
     def get_filme_from_db(self, filme_id: int) -> Filme | None:
         return self.filme_repository.get_filme_by_id_externo(filme_id)
 
-    def get_filme_from_api_and_update_database(
-        self, filme_id: int
-    ) -> tuple[FilmeRead, Filme]:
+    def get_filme_from_api_and_update_database(self, filme_id: int) -> tuple[FilmeRead, Filme]:
         conteudo = self.conteudo_service.get_or_create_conteudo(
             id_externo=filme_id,
             api_fonte=ApiFonte.TMDB,
@@ -43,9 +41,7 @@ class FilmeService:
     def search_filmes(
         self, busca: str | None, filtros: FilmeFiltros, page: int = 1
     ) -> tuple[list[FilmeListRead], int, int]:
-        return self.filme_repository.search_filmes(
-            busca=busca, filtros=filtros, page=page
-        )
+        return self.filme_repository.search_filmes(busca=busca, filtros=filtros, page=page)
 
     def list_generos(self) -> list[GeneroFilme]:
         return self.filme_repository.list_generos()

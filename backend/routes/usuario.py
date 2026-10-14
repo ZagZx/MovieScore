@@ -7,7 +7,6 @@ from schemas.usuario import (
     UsuarioUpdate,
 )
 from schemas.avaliacao import AvaliacaoRead
-
 # from schemas.favorito import FavoritoRead
 from schemas.pagination.cursor import CursorPaginationParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
