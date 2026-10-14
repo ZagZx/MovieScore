@@ -10,7 +10,7 @@ from schemas.assistido import SerieAssistidaRead
 from schemas.avaliacao import (
     AvaliacaoConteudoRead,
     AvaliacaoCreate,
-    AvaliacaoReadBase,
+    AvaliacaoBase,
     AvaliacaoUpdate,
     AvaliacaoSerieRead,
 )
@@ -117,7 +117,7 @@ def listar_avaliacoes_da_serie(
 
 @series_router.post(
     "/{serie_id}/avaliacoes",
-    response_model=AvaliacaoSerieRead,
+    response_model=AvaliacaoBase,
     status_code=status.HTTP_201_CREATED,
 )
 def criar_avaliacao_da_serie(
@@ -126,17 +126,17 @@ def criar_avaliacao_da_serie(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao(serie_id, current_user.id, avaliacao)
+    return avaliacao_service.create_avaliacao(avaliacao, serie_id, current_user.id, tipo_conteudo="serie")
 
 
-@series_router.patch("/{serie_id}/avaliacoes", response_model=AvaliacaoSerieRead)
+@series_router.patch("/{serie_id}/avaliacoes", response_model=AvaliacaoBase)
 def atualizar_avaliacao_da_serie(
     serie_id: int,
     avaliacao: AvaliacaoUpdate,
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao(serie_id, current_user.id, avaliacao)
+    return avaliacao_service.update_avaliacao(avaliacao, serie_id, current_user.id, tipo_conteudo="serie")
 
 
 @series_router.delete("/{serie_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
@@ -145,7 +145,7 @@ def remover_avaliacao_da_serie(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    avaliacao_service.delete_avaliacao(serie_id, current_user.id)
+    avaliacao_service.delete_avaliacao(serie_id, current_user.id, "serie")
 
 
 @series_router.post("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)

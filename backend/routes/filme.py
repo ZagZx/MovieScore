@@ -9,7 +9,8 @@ from services import AssistidoServiceDep, FilmeServiceDep, AvaliacaoServiceDep
 from services.favorito import FavoritoServiceDep
 from schemas.avaliacao import (
     AvaliacaoCreate,
-    AvaliacaoFilmeRead,
+    AvaliacaoBase,
+    AvaliacaoConteudoRead,
     AvaliacaoUpdate,
 )
 
@@ -126,7 +127,7 @@ def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
     return filme_service.get_filme(filme_id=filme_id)
 
 
-@filmes_router.get("/{filme_id}/avaliacoes", response_model=list[AvaliacaoFilmeRead])
+@filmes_router.get("/{filme_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
 def listar_avaliacoes_do_filme(
     filme_id: int,
     avaliacao_service: AvaliacaoServiceDep,
@@ -136,7 +137,7 @@ def listar_avaliacoes_do_filme(
 
 @filmes_router.post(
     "/{filme_id}/avaliacoes",
-    response_model=AvaliacaoFilmeRead,
+    response_model=AvaliacaoBase,
     status_code=status.HTTP_201_CREATED,
 )
 def criar_avaliacao_do_filme(
@@ -145,17 +146,17 @@ def criar_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao_filme(filme_id, current_user.id, avaliacao)
+    return avaliacao_service.create_avaliacao(avaliacao, filme_id, current_user.id, tipo_conteudo="filme")
 
 
-@filmes_router.patch("/{filme_id}/avaliacoes", response_model=AvaliacaoFilmeRead)
+@filmes_router.patch("/{filme_id}/avaliacoes", response_model=AvaliacaoBase)
 def atualizar_avaliacao_do_filme(
     filme_id: int,
     avaliacao: AvaliacaoUpdate,
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao_filme(filme_id, current_user.id, avaliacao)
+    return avaliacao_service.update_avaliacao(avaliacao, filme_id, current_user.id, tipo_conteudo="filme")
 
 
 @filmes_router.delete("/{filme_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
@@ -164,7 +165,8 @@ def remover_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    avaliacao_service.delete_avaliacao_filme(filme_id, current_user.id)
+    
+    avaliacao_service.delete_avaliacao(filme_id, current_user.id, tipo_conteudo="filme")
 
 
 @filmes_router.post("/{filme_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
