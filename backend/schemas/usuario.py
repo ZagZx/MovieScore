@@ -16,6 +16,7 @@ class UsuarioRead(Base):
     id: int
     nome: str
     email: EmailStr
+    sobre_mim: Optional[str] = Field(default=None)
     foto_perfil_url: Optional[str] = Field(
         default=None, validation_alias="foto_perfil_path"
     )
@@ -30,3 +31,4 @@ class UsuarioUpdate(Base):
     nome: Optional[str] = Field(default=None, min_length=3, max_length=50)
     email: Optional[EmailStr] = Field(default=None)
     senha: Optional[str] = Field(default=None, min_length=8)
+    sobre_mim: Optional[str] = Field(default=None, max_length=1000)
