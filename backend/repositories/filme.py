@@ -55,7 +55,9 @@ class FilmeRepository:
         self.session.flush()
         return filme
 
-    def create_or_update_filme(self, filme_from_api: FilmeRead, conteudo: Conteudo) -> Filme:
+    def create_or_update_filme(
+        self, filme_from_api: FilmeRead, conteudo: Conteudo
+    ) -> Filme:
         filme = self.get_filme_by_conteudo_id(conteudo.id)
         if filme:
             filme.titulo = filme_from_api.titulo
@@ -102,7 +104,9 @@ class FilmeRepository:
             # Sem busca, lista por /discover aplicando os filtros
             url = f"{TMDB_API_URL}/discover/movie"
             if filtros.generos:
-                params["with_genres"] = ",".join(str(genero_id) for genero_id in filtros.generos)
+                params["with_genres"] = ",".join(
+                    str(genero_id) for genero_id in filtros.generos
+                )
             if filtros.ano is not None:
                 params["primary_release_year"] = filtros.ano
             if filtros.nota_minima is not None:

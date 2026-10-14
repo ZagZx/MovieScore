@@ -1,5 +1,6 @@
 from schemas.anime import AnimeRead, CategoriaRead, ImagensAnime, StatusAnime
 
+
 class AnimeMapper:
     STATUS_MAP = {
         "current": StatusAnime.ANDAMENTO,
@@ -96,10 +97,7 @@ class AnimeMapper:
 
     @staticmethod
     def map_animes(items: list[dict], included: list[dict]) -> list[AnimeRead]:
-        return [
-            AnimeMapper.map_anime(item, included)
-            for item in items
-        ]
+        return [AnimeMapper.map_anime(item, included) for item in items]
 
     @staticmethod
     def map_categoria(item: dict) -> CategoriaRead:
@@ -115,7 +113,4 @@ class AnimeMapper:
 
     @staticmethod
     def map_categorias(items: list[dict]) -> list[CategoriaRead]:
-        return [
-            AnimeMapper.map_categoria(item)
-            for item in items
-        ]
+        return [AnimeMapper.map_categoria(item) for item in items]

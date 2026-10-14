@@ -7,8 +7,14 @@ from repositories import AvaliacaoRepositoryDep
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 
+
 class AvaliacaoService:
-    def __init__(self, avaliacao_repository: AvaliacaoRepositoryDep, usuario_service: UsuarioServiceDep, conteudo_service: ConteudoServiceDep):
+    def __init__(
+        self,
+        avaliacao_repository: AvaliacaoRepositoryDep,
+        usuario_service: UsuarioServiceDep,
+        conteudo_service: ConteudoServiceDep,
+    ):
         self.avaliacao_repository = avaliacao_repository
         self.usuario_service = usuario_service
         self.conteudo_service = conteudo_service
@@ -25,8 +31,7 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         conteudo = self.conteudo_service.get_conteudo(conteudo_id)
         return self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario, 
-            conteudo
+            usuario, conteudo
         )
 
 
