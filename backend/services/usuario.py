@@ -115,8 +115,6 @@ class UsuarioService:
             usuario.nome = usuario_data.nome
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
-        if usuario_data.sobre_mim is not None:
-            usuario.sobre_mim = usuario_data.sobre_mim
 
         return self.usuario_repository.update_usuario(usuario)
 
