@@ -34,7 +34,9 @@ class AnimeRepository:
 
         return animes, total_results
 
-    def _build_filter_params(self, filtros: AnimeFiltros, limit: int, offset: int) -> dict:
+    def _build_filter_params(
+        self, filtros: AnimeFiltros, limit: int, offset: int
+    ) -> dict:
         params: dict = {"page[limit]": limit, "page[offset]": offset}
 
         if filtros.busca:
@@ -118,7 +120,9 @@ class AnimeRepository:
             "sort": "-totalMediaCount",
         }
 
-        data = get_data(f"{KITSU_API_URL}/categories", params=params, headers=HEADERS_KITSU)
+        data = get_data(
+            f"{KITSU_API_URL}/categories", params=params, headers=HEADERS_KITSU
+        )
 
         categorias = AnimeMapper.map_categorias(data.get("data", []))
         total_results = data.get("meta", {}).get("count", 0)
@@ -176,7 +180,9 @@ class AnimeRepository:
         self.session.flush()
         return anime
 
-    def create_or_update_anime(self, anime_from_api: AnimeRead, conteudo: Conteudo) -> Anime:
+    def create_or_update_anime(
+        self, anime_from_api: AnimeRead, conteudo: Conteudo
+    ) -> Anime:
         titulo_original = (
             anime_from_api.titulos.get("ja_jp")
             or anime_from_api.titulos.get("en_jp")
