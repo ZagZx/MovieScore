@@ -21,7 +21,7 @@ export default function useStepForm<T extends z.ZodObject<z.ZodRawShape>>(
     if (currentField) {
       setFocus(currentField);
     }
-  }, [schema, step, setFocus]);
+  }, [fields, step, setFocus]);
 
   async function handleNextStep() {
     const currentField = fields[step];
