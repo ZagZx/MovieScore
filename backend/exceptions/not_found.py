@@ -9,6 +9,7 @@ class NotFoundException(Exception):
         self.message = message
         super().__init__(self.message)
 
+
 class EntityNotFoundException(NotFoundException):
     def __init__(self, entity: str, id: int):
         """

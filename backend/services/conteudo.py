@@ -32,9 +32,7 @@ class ConteudoService:
         self, id_externo: int, api_fonte: ApiFonte, tipo: TipoConteudo
     ) -> Conteudo:
         return self.conteudo_repository.get_or_create_conteudo(
-            id_externo=id_externo,
-            api_fonte=api_fonte,
-            tipo=tipo
+            id_externo=id_externo, api_fonte=api_fonte, tipo=tipo
         )
 
 

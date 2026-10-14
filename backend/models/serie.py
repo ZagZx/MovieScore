@@ -38,6 +38,11 @@ class Serie(Base):
     capa: Mapped[Optional[str]] = mapped_column(String(255))
     banner: Mapped[Optional[str]] = mapped_column(String(255))
     data_lancamento: Mapped[Optional[date]] = mapped_column(Date)
-    data_atualizacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=get_now_datetime_utc, onupdate=get_now_datetime_utc, nullable=False)
+    data_atualizacao: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        insert_default=get_now_datetime_utc,
+        onupdate=get_now_datetime_utc,
+        nullable=False,
+    )
 
     conteudo: Mapped["Conteudo"] = relationship(back_populates="serie")
