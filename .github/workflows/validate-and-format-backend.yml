@@ -1,0 +1,40 @@
+name: Validate and format backend
+
+on: [pull_request]
+
+permissions: 
+  contents: write
+
+jobs:
+  validate-and-format:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+      - uses: actions/checkout@v6
+      
+      - name: Setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Check syntax
+        run: python -m compileall -q .
+      
+      - name: Install black
+        run: pip install black
+
+      - name: Format code
+        run: black .
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -u
+          git diff --cached --quiet || git commit -m "style: format Python code"
+          git push
