@@ -8,11 +8,9 @@ from pydantic import Field
 from .base import Base
 from .conteudo import ImagensConteudo, Ordem
 
-
 class GeneroFilme(Base):
     id: int
     nome: str
-
 
 class OrdenacaoFilme(str, Enum):
     POPULARIDADE = "popularity"
@@ -20,7 +18,6 @@ class OrdenacaoFilme(str, Enum):
     DATA_LANCAMENTO = "primary_release_date"
     TITULO = "title"
     RECEITA = "revenue"
-
 
 class FilmeFiltros(Base):
     """Filtros de listagem de filmes (usados no /discover/movie do TMDB).
@@ -32,9 +29,9 @@ class FilmeFiltros(Base):
     do tipo lista como query params.
     """
 
-    generos: list[int] | None = None  # ids do TMDB, ex: generos=28&generos=12
+    generos: list[int] | None = None # ids do TMDB, ex: generos=28&generos=12
     ano: int | None = Field(default=None, ge=1900, le=2100)
-    nota_minima: float | None = Field(default=None, ge=0, le=10)  # escala 0-10 do TMDB
+    nota_minima: float | None = Field(default=None, ge=0, le=10) # escala 0-10 do TMDB
     ordenar_por: OrdenacaoFilme = OrdenacaoFilme.POPULARIDADE
     ordem: Ordem = Ordem.DESC
 
@@ -55,11 +52,9 @@ class FilmeFiltros(Base):
             ordem=ordem,
         )
 
-
 # class ImagensFilme(Base):
 #     capa: str | None = None #storage+poster_path
 #     banner: str | None = None #storage+backdrop_path
-
 
 class FilmeListRead(Base):
     id: int
@@ -72,15 +67,14 @@ class FilmeListRead(Base):
     imagens: ImagensConteudo
     generos_ids: list[int] = Field(default_factory=list)
 
-
 class FilmeRead(Base):
     id: int
     titulo: str
     titulo_original: str
     idioma_original: str
     descricao: str | None = None
-    status: str  # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
+    status: str # TMDB não disponibiliza explicitamente a lista com todos os valores possíveis para Status
     data_lancamento: date | None = None
-    duracao_minutos: int = 0  # 0 é o padrão da api do TMDB
+    duracao_minutos: int = 0 # 0 é o padrão da api do TMDB
     imagens: ImagensConteudo
     generos: list[GeneroFilme] = Field(default_factory=list)

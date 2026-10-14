@@ -40,12 +40,6 @@ class Usuario(Base):
         DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
 
-    favoritos: Mapped[list["Favorito"]] = relationship(
-        back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True
-    )
-    assistidos: Mapped[list["Assistido"]] = relationship(
-        back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True
-    )
-    avaliacoes: Mapped[list["Avaliacao"]] = relationship(
-        back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True
-    )
+    favoritos: Mapped[list["Favorito"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)
+    assistidos: Mapped[list["Assistido"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)
+    avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)

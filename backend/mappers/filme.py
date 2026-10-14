@@ -5,7 +5,6 @@ from constants import TMDB_IMAGE_STORAGE
 
 from .tmdb import TmdbMapper
 
-
 class FilmeMapper(TmdbMapper):
     @staticmethod
     def map_status(status: str | None):
@@ -31,7 +30,7 @@ class FilmeMapper(TmdbMapper):
             idioma_original=item.get("original_language") or "",
             descricao=item.get("overview"),
             status=FilmeMapper.map_status(item.get("status")),
-            data_lancamento=str_to_date(item.get("release_date")),
+            data_lancamento=str_to_date(item.get("release_date")) ,
             duracao_minutos=item.get("runtime") or 0,
             imagens=ImagensConteudo(
                 capa=FilmeMapper.map_image(item.get("poster_path"), "w500"),
@@ -59,3 +58,4 @@ class FilmeMapper(TmdbMapper):
             )
             for item in items
         ]
+

@@ -8,7 +8,6 @@ class FavoritoCreate(Base):
     conteudo_id: int
     usuario_id: int
 
-
 class FilmeFavoritoRead(Base):
     id: int
     titulo: str
@@ -17,7 +16,6 @@ class FilmeFavoritoRead(Base):
     imagens: ImagensConteudo
     data_lancamento: date | None = None
     data_adicao: datetime
-
 
 class SerieFavoritaRead(Base):
     id: int
@@ -28,7 +26,6 @@ class SerieFavoritaRead(Base):
     data_lancamento: date | None = None
     data_adicao: datetime
 
-
 class AnimeFavoritoRead(Base):
     id: int
     titulo: str
@@ -37,7 +34,6 @@ class AnimeFavoritoRead(Base):
     imagens: ImagensConteudo
     data_lancamento: date | None = None
     data_adicao: datetime
-
 
 # class FavoritoRead(Base):
 #     id: int

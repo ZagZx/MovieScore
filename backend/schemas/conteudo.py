@@ -14,12 +14,10 @@ class ImagensConteudo(Base):
     capa: str | None
     banner: str | None
 
-
 class ConteudoCreate(Base):
     id_externo: int
     api_fonte: ApiFonte
     tipo: TipoConteudo
-
 
 class ConteudoRead(Base):
     id: int

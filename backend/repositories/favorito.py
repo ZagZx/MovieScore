@@ -15,17 +15,22 @@ class FavoritoRepository:
     def get_favorito(self, id: int) -> Favorito | None:
         return self.session.get(Favorito, id)
 
-    def get_favorito_by_conteudo_id_and_usuario_id(
-        self, conteudo_id: int, usuario_id: int
-    ) -> Favorito | None:
+    def get_favorito_by_conteudo_id_and_usuario_id(self, conteudo_id: int, usuario_id: int) -> Favorito | None:
         return self.session.scalar(
-            select(Favorito).where(
-                Favorito.conteudo_id == conteudo_id, Favorito.usuario_id == usuario_id
+            select(Favorito)
+            .where(
+                Favorito.conteudo_id == conteudo_id,
+                Favorito.usuario_id == usuario_id
             )
         )
 
     def get_favoritos_usuario(self, usuario: Usuario) -> list[Favorito]:
-        return self.session.scalars(select(Favorito).where(Favorito.usuario == usuario))
+        return self.session.scalars(
+            select(Favorito)
+            .where(
+                Favorito.usuario == usuario
+            )
+        )
 
     def list_series_favoritas(self, usuario: Usuario) -> list[tuple[Serie, Favorito]]:
         return self.session.execute(
@@ -88,4 +93,6 @@ class FavoritoRepository:
         self.session.flush()
 
 
-FavoritoRepositoryDep = Annotated[FavoritoRepository, Depends(FavoritoRepository)]
+FavoritoRepositoryDep = Annotated[
+    FavoritoRepository, Depends(FavoritoRepository)
+]

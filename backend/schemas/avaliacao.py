@@ -14,7 +14,6 @@ class AvaliacaoCreate(Base):
     )  # >= 0.5 e <= 5, step de 0.5
     comentario: Optional[str] = None
 
-
 class AvaliacaoUpdate(Base):
     estrelas: Optional[Decimal] = Field(
         default=None, ge=0.5, le=5, multiple_of=0.5, decimal_places=1
@@ -23,17 +22,15 @@ class AvaliacaoUpdate(Base):
 
 
 class ConteudoAvaliacao(Base):
-    id: int  # id externo
+    id: int # id externo
     tipo: TipoConteudo
     titulo: str
     imagens: ImagensConteudo
-
 
 class UsuarioAvaliacao(Base):
     id: int
     nome: str
     foto_perfil_url: Optional[str] = None
-
 
 class AvaliacaoBase(Base):
     id: int
@@ -42,18 +39,15 @@ class AvaliacaoBase(Base):
     data_criacao: datetime
     data_atualizacao: Optional[datetime]
 
-
 class AvaliacaoConteudoRead(AvaliacaoBase):
     usuario: UsuarioAvaliacao
-
 
 class AvaliacaoUsuarioRead(AvaliacaoBase):
     conteudo: ConteudoAvaliacao
 
-
 # ── saída (legados: remover quando as rotas de filme/série/anime migrarem) ──
-
-
+ 
+ 
 class AvaliacaoReadBase(Base):
     id: int
     usuario_id: int
@@ -61,15 +55,14 @@ class AvaliacaoReadBase(Base):
     comentario: Optional[str]
     data_criacao: datetime
     data_atualizacao: Optional[datetime]
-
-
+ 
+ 
 class AvaliacaoSerieRead(AvaliacaoReadBase):
     serie_id: int
-
-
+ 
 class AvaliacaoFilmeRead(AvaliacaoReadBase):
     filme_id: int
-
-
+ 
 class AvaliacaoAnimeRead(AvaliacaoReadBase):
     anime_id: int
+ 
