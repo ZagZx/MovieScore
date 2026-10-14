@@ -3,30 +3,66 @@ from typing import Optional
 from datetime import datetime
 from decimal import Decimal
 
+from models.conteudo import TipoConteudo
+from schemas.conteudo import ImagensConteudo
 from .base import Base
 
 
 class AvaliacaoCreate(Base):
-    conteudo_id: int
-    usuario_id: int
     estrelas: Decimal = Field(
-        ge=1, le=5, multiple_of=0.5, decimal_places=1
-    )  # >= 1 e <= 5, step de 0.5
+        ge=0.5, le=5, multiple_of=0.5, decimal_places=1
+    )  # >= 0.5 e <= 5, step de 0.5
+    comentario: Optional[str] = None
+
+class AvaliacaoUpdate(Base):
+    estrelas: Optional[Decimal] = Field(
+        default=None, ge=0.5, le=5, multiple_of=0.5, decimal_places=1
+    )  # >= 0.5 e <= 5, step de 0.5
     comentario: Optional[str] = None
 
 
-class AvaliacaoRead(Base):
+class ConteudoAvaliacao(Base):
+    id: int # id externo
+    tipo: TipoConteudo
+    titulo: str
+    imagens: ImagensConteudo
+
+class UsuarioAvaliacao(Base):
     id: int
-    conteudo_id: int
+    nome: str
+    foto_perfil_url: Optional[str] = None
+
+class AvaliacaoBase(Base):
+    id: int
+    estrelas: float
+    comentario: Optional[str] = None
+    data_criacao: datetime
+    data_atualizacao: Optional[datetime]
+
+class AvaliacaoConteudoRead(AvaliacaoBase):
+    usuario: UsuarioAvaliacao
+
+class AvaliacaoUsuarioRead(AvaliacaoBase):
+    conteudo: ConteudoAvaliacao
+
+# ── saída (legados: remover quando as rotas de filme/série/anime migrarem) ──
+ 
+ 
+class AvaliacaoReadBase(Base):
+    id: int
     usuario_id: int
     estrelas: Decimal
     comentario: Optional[str]
     data_criacao: datetime
     data_atualizacao: Optional[datetime]
-
-
-class AvaliacaoUpdate(Base):
-    estrelas: Optional[Decimal] = Field(
-        default=None, ge=1, le=5, multiple_of=0.5, decimal_places=1
-    )  # >= 1 e <= 5, step de 0.5
-    comentario: Optional[str] = None
+ 
+ 
+class AvaliacaoSerieRead(AvaliacaoReadBase):
+    serie_id: int
+ 
+class AvaliacaoFilmeRead(AvaliacaoReadBase):
+    filme_id: int
+ 
+class AvaliacaoAnimeRead(AvaliacaoReadBase):
+    anime_id: int
+ 
