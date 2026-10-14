@@ -29,9 +29,7 @@ class Avaliacao(Base):
 
     __tablename__ = "avaliacao"
     __table_args__ = (
-        UniqueConstraint(
-            "conteudo_id", "usuario_id", name="uq_conteudo_id_usuario_id"
-        ),
+        UniqueConstraint("conteudo_id", "usuario_id", name="uq_conteudo_id_usuario_id"),
     )  # equivalente a UNIQUE (conteudo_id, usuario_id)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
@@ -40,9 +38,7 @@ class Avaliacao(Base):
         nullable=False,
     )
     conteudo_id: Mapped[int] = mapped_column(
-        ForeignKey(
-            "conteudo.id", name="fk_avaliacao_conteudo", ondelete="CASCADE"
-        ),
+        ForeignKey("conteudo.id", name="fk_avaliacao_conteudo", ondelete="CASCADE"),
         nullable=False,
     )
     estrelas: Mapped[Decimal] = mapped_column(DECIMAL(2, 1), nullable=False)

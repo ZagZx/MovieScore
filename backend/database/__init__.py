@@ -1,8 +1,1 @@
-from .database import (
-    engine,
-    SessionDep,
-    get_session,
-    SessionFactory,
-    metadata,
-    DB_URL
-)
+from .database import engine, SessionDep, get_session, SessionFactory, metadata, DB_URL

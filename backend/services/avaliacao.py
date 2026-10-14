@@ -7,7 +7,14 @@ from models.conteudo import TipoConteudo
 from exceptions import ConflictException, NotFoundException
 from models import Avaliacao
 from repositories import AvaliacaoRepositoryDep
-from schemas.avaliacao import AvaliacaoConteudoRead, AvaliacaoCreate, AvaliacaoUpdate, AvaliacaoSerieRead, AvaliacaoFilmeRead, AvaliacaoAnimeRead
+from schemas.avaliacao import (
+    AvaliacaoConteudoRead,
+    AvaliacaoCreate,
+    AvaliacaoUpdate,
+    AvaliacaoSerieRead,
+    AvaliacaoFilmeRead,
+    AvaliacaoAnimeRead,
+)
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 from services.serie import SerieServiceDep
@@ -38,8 +45,12 @@ class AvaliacaoService:
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_usuario(usuario)
         return AvaliacaoMapper.map_avaliacoes_usuario(avaliacoes)
 
-    def list_avaliacoes_conteudo(self, id_externo: int, tipo: TipoConteudo) -> list[AvaliacaoConteudoRead]:
-        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo)
+    def list_avaliacoes_conteudo(
+        self, id_externo: int, tipo: TipoConteudo
+    ) -> list[AvaliacaoConteudoRead]:
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
+            id_externo, tipo
+        )
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(conteudo)
         return AvaliacaoMapper.map_avaliacoes_conteudo(avaliacoes)
 
@@ -51,7 +62,9 @@ class AvaliacaoService:
     def list_avaliacoes_filme(self, filme_id: int) -> list[Avaliacao]:
         filme = self.filme_service.get_filme_from_db(filme_id)
         if not filme:
-            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(
+                filme_id
+            )
 
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(
             filme.conteudo
@@ -78,11 +91,15 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         filme = self.filme_service.get_filme_from_db(filme_id)
         if not filme:
-            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(
+                filme_id
+            )
 
-        avaliacao_existente = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            filme.conteudo,
+        avaliacao_existente = (
+            self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
+                usuario,
+                filme.conteudo,
+            )
         )
         if avaliacao_existente:
             raise ConflictException("Você já avaliou este filme")
@@ -114,14 +131,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         filme = self.filme_service.get_filme_from_db(filme_id)
         if not filme:
-            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(
+                filme_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             filme.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do filme não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do filme não encontrada para o usuário atual"
+            )
 
         if avaliacao_data.estrelas is not None:
             avaliacao.estrelas = avaliacao_data.estrelas
@@ -146,14 +167,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         filme = self.filme_service.get_filme_from_db(filme_id)
         if not filme:
-            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(
+                filme_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             filme.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do filme não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do filme não encontrada para o usuário atual"
+            )
 
         self.avaliacao_repository.delete_avaliacao(avaliacao)
 
@@ -161,7 +186,9 @@ class AvaliacaoService:
     def list_avaliacoes_anime(self, anime_id: int) -> list[Avaliacao]:
         anime = self.anime_service.get_anime_from_db(anime_id)
         if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
+            _, anime = self.anime_service.get_anime_from_api_and_update_database(
+                anime_id
+            )
 
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(
             anime.conteudo
@@ -188,11 +215,15 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         anime = self.anime_service.get_anime_from_db(anime_id)
         if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
+            _, anime = self.anime_service.get_anime_from_api_and_update_database(
+                anime_id
+            )
 
-        avaliacao_existente = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            anime.conteudo,
+        avaliacao_existente = (
+            self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
+                usuario,
+                anime.conteudo,
+            )
         )
         if avaliacao_existente:
             raise ConflictException("Você já avaliou este anime")
@@ -224,14 +255,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         anime = self.anime_service.get_anime_from_db(anime_id)
         if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
+            _, anime = self.anime_service.get_anime_from_api_and_update_database(
+                anime_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             anime.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do anime não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do anime não encontrada para o usuário atual"
+            )
 
         if avaliacao_data.estrelas is not None:
             avaliacao.estrelas = avaliacao_data.estrelas
@@ -256,14 +291,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         anime = self.anime_service.get_anime_from_db(anime_id)
         if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
+            _, anime = self.anime_service.get_anime_from_api_and_update_database(
+                anime_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             anime.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do anime não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do anime não encontrada para o usuário atual"
+            )
 
         self.avaliacao_repository.delete_avaliacao(avaliacao)
 
@@ -284,11 +323,15 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
-            _, serie = self.serie_service.get_serie_from_api_and_update_database(serie_id)
+            _, serie = self.serie_service.get_serie_from_api_and_update_database(
+                serie_id
+            )
 
-        avaliacao_existente = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            serie.conteudo,
+        avaliacao_existente = (
+            self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
+                usuario,
+                serie.conteudo,
+            )
         )
         if avaliacao_existente:
             raise ConflictException("Você já avaliou esta série")
@@ -318,14 +361,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
-            _, serie = self.serie_service.get_serie_from_api_and_update_database(serie_id)
+            _, serie = self.serie_service.get_serie_from_api_and_update_database(
+                serie_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             serie.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação da série não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação da série não encontrada para o usuário atual"
+            )
 
         if avaliacao_data.estrelas is not None:
             avaliacao.estrelas = avaliacao_data.estrelas
@@ -348,14 +395,18 @@ class AvaliacaoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)
         if not serie:
-            _, serie = self.serie_service.get_serie_from_api_and_update_database(serie_id)
+            _, serie = self.serie_service.get_serie_from_api_and_update_database(
+                serie_id
+            )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             serie.conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação da série não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação da série não encontrada para o usuário atual"
+            )
 
         self.avaliacao_repository.delete_avaliacao(avaliacao)
 

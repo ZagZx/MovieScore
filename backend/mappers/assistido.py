@@ -24,8 +24,7 @@ class AssistidoMapper:
     @staticmethod
     def map_series(items: list[tuple[Serie, Assistido]]) -> list[SerieAssistidaRead]:
         return [
-            AssistidoMapper.map_serie(serie, assistido)
-            for serie, assistido in items
+            AssistidoMapper.map_serie(serie, assistido) for serie, assistido in items
         ]
 
     @staticmethod
@@ -46,8 +45,7 @@ class AssistidoMapper:
     @staticmethod
     def map_filmes(items: list[tuple[Filme, Assistido]]) -> list[FilmeAssistidoRead]:
         return [
-            AssistidoMapper.map_filme(filme, assistido)
-            for filme, assistido in items
+            AssistidoMapper.map_filme(filme, assistido) for filme, assistido in items
         ]
 
     @staticmethod
@@ -69,6 +67,5 @@ class AssistidoMapper:
     @staticmethod
     def map_animes(items: list[tuple[Anime, Assistido]]) -> list[AnimeAssistidoRead]:
         return [
-            AssistidoMapper.map_anime(anime, assistido)
-            for anime, assistido in items
+            AssistidoMapper.map_anime(anime, assistido) for anime, assistido in items
         ]

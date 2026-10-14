@@ -20,18 +20,15 @@ class FavoritoMapper:
             status=serie.status,
             imagens=ImagensConteudo(
                 capa=SerieMapper.map_image(serie.capa, "w500"),
-                banner=SerieMapper.map_image(serie.banner, "original")
+                banner=SerieMapper.map_image(serie.banner, "original"),
             ),
             data_lancamento=serie.data_lancamento,
-            data_adicao=favorito.data_adicao
+            data_adicao=favorito.data_adicao,
         )
 
     @staticmethod
     def map_series(items: list[tuple[Serie, Favorito]]) -> list[SerieFavoritaRead]:
-        return [
-            FavoritoMapper.map_serie(serie, favorito)
-            for serie, favorito in items
-        ]
+        return [FavoritoMapper.map_serie(serie, favorito) for serie, favorito in items]
 
     @staticmethod
     def map_filme(filme: Filme, favorito: Favorito) -> FilmeFavoritoRead:
@@ -42,7 +39,7 @@ class FavoritoMapper:
             status=filme.status,
             imagens=ImagensConteudo(
                 capa=FilmeMapper.map_image(filme.capa, "w500"),
-                banner=FilmeMapper.map_image(filme.banner, "original")
+                banner=FilmeMapper.map_image(filme.banner, "original"),
             ),
             data_lancamento=filme.data_lancamento,
             data_adicao=favorito.data_adicao,
@@ -50,10 +47,7 @@ class FavoritoMapper:
 
     @staticmethod
     def map_filmes(items: list[tuple[Filme, Favorito]]) -> list[FilmeFavoritoRead]:
-        return [
-            FavoritoMapper.map_filme(filme, favorito)
-            for filme, favorito in items
-        ]
+        return [FavoritoMapper.map_filme(filme, favorito) for filme, favorito in items]
 
     @staticmethod
     def map_anime(anime: Anime, favorito: Favorito) -> AnimeFavoritoRead:
@@ -73,7 +67,4 @@ class FavoritoMapper:
 
     @staticmethod
     def map_animes(items: list[tuple[Anime, Favorito]]) -> list[AnimeFavoritoRead]:
-        return [
-            FavoritoMapper.map_anime(anime, favorito)
-            for anime, favorito in items
-        ]
+        return [FavoritoMapper.map_anime(anime, favorito) for anime, favorito in items]
