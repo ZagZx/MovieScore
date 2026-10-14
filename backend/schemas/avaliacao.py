@@ -44,25 +44,3 @@ class AvaliacaoConteudoRead(AvaliacaoBase):
 
 class AvaliacaoUsuarioRead(AvaliacaoBase):
     conteudo: ConteudoAvaliacao
-
-# ── saída (legados: remover quando as rotas de filme/série/anime migrarem) ──
- 
- 
-class AvaliacaoReadBase(Base):
-    id: int
-    usuario_id: int
-    estrelas: Decimal
-    comentario: Optional[str]
-    data_criacao: datetime
-    data_atualizacao: Optional[datetime]
- 
- 
-class AvaliacaoSerieRead(AvaliacaoReadBase):
-    serie_id: int
- 
-class AvaliacaoFilmeRead(AvaliacaoReadBase):
-    filme_id: int
- 
-class AvaliacaoAnimeRead(AvaliacaoReadBase):
-    anime_id: int
- 

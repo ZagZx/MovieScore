@@ -7,7 +7,7 @@ from models.conteudo import TipoConteudo
 from exceptions import ConflictException, NotFoundException
 from models import Avaliacao
 from repositories import AvaliacaoRepositoryDep
-from schemas.avaliacao import AvaliacaoConteudoRead, AvaliacaoUsuarioRead, AvaliacaoCreate, AvaliacaoUpdate, AvaliacaoSerieRead, AvaliacaoFilmeRead, AvaliacaoAnimeRead, AvaliacaoBase
+from schemas.avaliacao import AvaliacaoConteudoRead, AvaliacaoUsuarioRead, AvaliacaoCreate, AvaliacaoUpdate
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 from services.serie import SerieServiceDep
@@ -54,91 +54,6 @@ class AvaliacaoService:
     # --- Anime evaluations ---
     def list_avaliacoes_anime(self, anime_id: int) -> list[Avaliacao]:
         return self.list_avaliacoes_conteudo(anime_id, tipo="anime")
-
-    def create_avaliacao_anime(
-        self, anime_id: int, usuario_id: int, avaliacao_data: AvaliacaoCreate
-    ) -> Avaliacao:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        anime = self.anime_service.get_anime_from_db(anime_id)
-        if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
-
-        avaliacao_existente = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            anime.conteudo,
-        )
-        if avaliacao_existente:
-            raise ConflictException("Você já avaliou este anime")
-
-        avaliacao = Avaliacao(
-            conteudo=anime.conteudo,
-            usuario=usuario,
-            estrelas=avaliacao_data.estrelas,
-            comentario=avaliacao_data.comentario,
-        )
-
-        avaliacao_criada = self.avaliacao_repository.create_avaliacao(avaliacao)
-
-        from schemas.avaliacao import AvaliacaoAnimeRead
-
-        return AvaliacaoAnimeRead(
-            id=avaliacao_criada.id,
-            usuario_id=avaliacao_criada.usuario_id,
-            estrelas=avaliacao_criada.estrelas,
-            comentario=avaliacao_criada.comentario,
-            data_criacao=avaliacao_criada.data_criacao,
-            data_atualizacao=avaliacao_criada.data_atualizacao,
-            anime_id=anime_id,
-        )
-
-    def update_avaliacao_anime(
-        self, anime_id: int, usuario_id: int, avaliacao_data: AvaliacaoUpdate
-    ) -> AvaliacaoAnimeRead:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        anime = self.anime_service.get_anime_from_db(anime_id)
-        if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
-
-        avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            anime.conteudo,
-        )
-        if not avaliacao:
-            raise NotFoundException("Avaliação do anime não encontrada para o usuário atual")
-
-        if avaliacao_data.estrelas is not None:
-            avaliacao.estrelas = avaliacao_data.estrelas
-        if avaliacao_data.comentario is not None:
-            avaliacao.comentario = avaliacao_data.comentario
-
-        avaliacao_atualizada = self.avaliacao_repository.update_avaliacao(avaliacao)
-
-        from schemas.avaliacao import AvaliacaoAnimeRead
-
-        return AvaliacaoAnimeRead(
-            id=avaliacao_atualizada.id,
-            usuario_id=avaliacao_atualizada.usuario_id,
-            estrelas=avaliacao_atualizada.estrelas,
-            comentario=avaliacao_atualizada.comentario,
-            data_criacao=avaliacao_atualizada.data_criacao,
-            data_atualizacao=avaliacao_atualizada.data_atualizacao,
-            anime_id=anime_id,
-        )
-
-    def delete_avaliacao_anime(self, anime_id: int, usuario_id: int):
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        anime = self.anime_service.get_anime_from_db(anime_id)
-        if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
-
-        avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            anime.conteudo,
-        )
-        if not avaliacao:
-            raise NotFoundException("Avaliação do anime não encontrada para o usuário atual")
-
-        self.avaliacao_repository.delete_avaliacao(avaliacao)
 
     def get_avaliacao_usuario_conteudo(
         self, usuario_id: int, conteudo_id: int

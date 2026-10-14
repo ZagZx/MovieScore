@@ -12,7 +12,6 @@ from schemas.avaliacao import (
     AvaliacaoCreate,
     AvaliacaoBase,
     AvaliacaoUpdate,
-    AvaliacaoSerieRead,
 )
 
 
