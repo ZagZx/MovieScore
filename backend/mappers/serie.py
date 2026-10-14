@@ -5,7 +5,6 @@ from constants import TMDB_IMAGE_STORAGE
 
 from .tmdb import TmdbMapper
 
-
 class SerieMapper(TmdbMapper):
     @staticmethod
     def map_status(status: str | None):
@@ -56,7 +55,8 @@ class SerieMapper(TmdbMapper):
             ),
             generos=SerieMapper.map_genres(item),
             duracao_episodios=[
-                int(duration) for duration in item.get("episode_run_time", [])
+                int(duration)
+                for duration in item.get("episode_run_time", [])
             ],
             quantidade_episodios=item.get("number_of_episodes") or 0,
             quantidade_temporadas=item.get("number_of_seasons") or 0,

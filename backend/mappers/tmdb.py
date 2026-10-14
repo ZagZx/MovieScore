@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 
 from constants import TMDB_IMAGE_STORAGE
 
-
 class TmdbMapper(ABC):
     @staticmethod
     @abstractmethod

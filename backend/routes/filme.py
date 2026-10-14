@@ -16,7 +16,7 @@ def buscar_filmes(
     filme_service: FilmeServiceDep,
     filtros: FilmeFiltros = Depends(FilmeFiltros.as_dependency),
     busca: str | None = None,
-    paginacao: TmdbPaginationParams = Depends(),
+    paginacao: TmdbPaginationParams = Depends()
 ):
     filmes, total_pages, total_results = filme_service.search_filmes(
         busca=busca,
@@ -30,8 +30,8 @@ def buscar_filmes(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages,
-        ),
+            has_more=paginacao.page < total_pages
+        )
     )
 
 
@@ -50,8 +50,8 @@ def listar_filmes_em_alta(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages,
-        ),
+            has_more=paginacao.page < total_pages
+        )
     )
 
 

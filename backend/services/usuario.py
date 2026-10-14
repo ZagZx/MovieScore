@@ -109,9 +109,7 @@ class UsuarioService:
 
         if usuario_data.email and usuario_data.email != usuario.email:
             if self.get_usuario_by_email(usuario_data.email):
-                raise ConflictException(
-                    "Já existe um usuário cadastrado com esse email"
-                )
+                raise ConflictException("Já existe um usuário cadastrado com esse email")
             usuario.email = usuario_data.email
         if usuario_data.nome:
             usuario.nome = usuario_data.nome

@@ -14,9 +14,12 @@ class ConteudoRepository:
 
     def get_conteudo(self, id: int) -> Conteudo | None:
         return self.session.get(Conteudo, id)
-
+    
     def get_conteudo_by_id_externo_and_api_fonte_and_tipo(
-        self, id_externo: int, api_fonte: ApiFonte, tipo: TipoConteudo
+        self, 
+        id_externo: int, 
+        api_fonte: ApiFonte,
+        tipo: TipoConteudo
     ) -> Conteudo | None:
         return self.session.scalar(
             select(Conteudo).where(
@@ -29,9 +32,7 @@ class ConteudoRepository:
     def get_or_create_conteudo(
         self, id_externo: int, api_fonte: ApiFonte, tipo: TipoConteudo
     ) -> Conteudo:
-        conteudo = self.get_conteudo_by_id_externo_and_api_fonte_and_tipo(
-            id_externo, api_fonte, tipo
-        )
+        conteudo = self.get_conteudo_by_id_externo_and_api_fonte_and_tipo(id_externo, api_fonte, tipo)
         if conteudo:
             return conteudo
 
@@ -40,5 +41,6 @@ class ConteudoRepository:
         self.session.flush()
         return conteudo
 
-
-ConteudoRepositoryDep = Annotated[ConteudoRepository, Depends(ConteudoRepository)]
+ConteudoRepositoryDep = Annotated[
+    ConteudoRepository, Depends(ConteudoRepository)
+]
