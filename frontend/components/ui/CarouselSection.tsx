@@ -5,6 +5,8 @@ import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import type { CarouselAfterChangeState } from "@/hooks/useCarousel";
+import useMounted from "@/hooks/useMounted";
+
 
 export const DEFAULT_CAROUSEL_RESPONSIVE = {
   desktop: { breakpoint: { max: 4000, min: 1024 }, items: 5, slidesToSlide: 5 },
@@ -46,6 +48,7 @@ export default function CarouselSection<T>({
   responsive = DEFAULT_CAROUSEL_RESPONSIVE,
 }: CarouselSectionProps<T>) {
   const titleId = useId();
+  const { isMounted } = useMounted();
 
   return (
     <section aria-labelledby={titleId} className="mx-auto max-w-375">
@@ -60,7 +63,7 @@ export default function CarouselSection<T>({
             aria-label={`${title}: anteriores`}
             title="Anteriores"
             onClick={onScrollPrevious}
-            disabled={!canScrollPrevious}
+            disabled={!canScrollPrevious && isMounted}
             className="cursor-pointer flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronLeft aria-hidden="true" className="size-5" />
@@ -70,7 +73,7 @@ export default function CarouselSection<T>({
             aria-label={`${title}: próximos`}
             title="Próximos"
             onClick={onScrollNext}
-            disabled={!canScrollNext || isLoading}
+            disabled={(!canScrollNext || isLoading) && isMounted}
             className="cursor-pointer flex size-9 items-center justify-center rounded-full border border-surface-border text-foreground-muted transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-surface-border disabled:hover:bg-transparent disabled:hover:text-foreground-muted"
           >
             <FiChevronRight aria-hidden="true" className="size-5" />

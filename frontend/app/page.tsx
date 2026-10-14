@@ -1,4 +1,4 @@
-import filmesLandingImage  from "@/assets/filmes-landing.jpeg"
+import filmesLandingImage  from "@/public/filmes-landing.jpeg"
 import HeaderLanding from "@/components/features/landing/HeaderLanding";
 import Button from "@/components/ui/Button";
 

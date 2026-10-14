@@ -70,9 +70,7 @@ class AssistidoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         filme = self.filme_service.get_filme_from_db(filme_id)
         if not filme:
-            _, filme = self.filme_service.get_filme_from_api_and_update_database(
-                filme_id
-            )
+            _, filme = self.filme_service.get_filme_from_api_and_update_database(filme_id)
             filme = self.filme_service.get_filme_from_db(filme_id)
 
         if not filme:
@@ -89,9 +87,7 @@ class AssistidoService:
         usuario = self.usuario_service.get_usuario(usuario_id)
         anime = self.anime_service.get_anime_from_db(anime_id)
         if not anime:
-            _, anime = self.anime_service.get_anime_from_api_and_update_database(
-                anime_id
-            )
+            _, anime = self.anime_service.get_anime_from_api_and_update_database(anime_id)
 
         if self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
             anime.conteudo_id, usuario.id
@@ -106,11 +102,9 @@ class AssistidoService:
         if not serie:
             raise EntityNotFoundException("Série", serie_id)
 
-        assistido = (
-            self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
-                conteudo_id=serie.conteudo_id,
-                usuario_id=usuario.id,
-            )
+        assistido = self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
+            conteudo_id=serie.conteudo_id,
+            usuario_id=usuario.id,
         )
 
         if not assistido:
@@ -124,11 +118,9 @@ class AssistidoService:
         if not filme:
             raise EntityNotFoundException("Filme", filme_id)
 
-        assistido = (
-            self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
-                conteudo_id=filme.conteudo_id,
-                usuario_id=usuario.id,
-            )
+        assistido = self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
+            conteudo_id=filme.conteudo_id,
+            usuario_id=usuario.id,
         )
 
         if not assistido:
@@ -142,11 +134,9 @@ class AssistidoService:
         if not anime:
             raise EntityNotFoundException("Anime", anime_id)
 
-        assistido = (
-            self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
-                conteudo_id=anime.conteudo_id,
-                usuario_id=usuario.id,
-            )
+        assistido = self.assistido_repository.get_assistido_by_conteudo_id_and_usuario_id(
+            conteudo_id=anime.conteudo_id,
+            usuario_id=usuario.id,
         )
 
         if not assistido:

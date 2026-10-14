@@ -5,7 +5,6 @@ from fastapi import Depends
 from database import SessionDep
 from models import Usuario
 
-
 class UsuarioRepository:
     def __init__(self, session: SessionDep):
         self.session = session
@@ -15,9 +14,11 @@ class UsuarioRepository:
         return usuario
 
     def get_usuario_by_email(self, email: str) -> Usuario | None:
-        usuario = self.session.scalar(select(Usuario).where(Usuario.email == email))
+        usuario = self.session.scalar(
+            select(Usuario).where(Usuario.email == email)
+        )
         return usuario
-
+    
     def create_usuario(self, usuario: Usuario):
         self.session.add(usuario)
         self.session.flush()

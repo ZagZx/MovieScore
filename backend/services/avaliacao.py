@@ -20,7 +20,6 @@ from services.filme import FilmeServiceDep
 from services.anime import AnimeServiceDep
 
 
-
 class AvaliacaoService:
     def __init__(
         self,
