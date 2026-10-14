@@ -31,8 +31,14 @@ class Assistido(Base):
     )  # equivalente a UNIQUE (conteudo_id, usuario_id)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
-    conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), nullable=False)
-    usuario_id: Mapped[int] = mapped_column(ForeignKey("usuario.id"), nullable=False)
+    conteudo_id: Mapped[int] = mapped_column(
+        ForeignKey("conteudo.id", name="fk_assistido_conteudo", ondelete="CASCADE"),
+        nullable=False,
+    )
+    usuario_id: Mapped[int] = mapped_column(
+        ForeignKey("usuario.id", name="fk_assistido_usuario", ondelete="CASCADE"),
+        nullable=False,
+    )
     data_adicao: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )

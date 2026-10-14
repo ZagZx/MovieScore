@@ -9,7 +9,18 @@ from schemas.pagination.kitsu import (
     KitsuPage,
     KitsuPagination,
 )
-from services import AnimeServiceDep, AssistidoServiceDep, FavoritoServiceDep
+from services import (
+    AnimeServiceDep,
+    AssistidoServiceDep,
+    FavoritoServiceDep,
+    AvaliacaoServiceDep,
+)
+from schemas.avaliacao import (
+    AvaliacaoCreate,
+    AvaliacaoBase,
+    AvaliacaoConteudoRead,
+    AvaliacaoUpdate,
+)
 
 animes_router = APIRouter(prefix="/animes", tags=["animes"])
 
@@ -140,6 +151,51 @@ def listar_animes_assistidos(
 @animes_router.get("/{anime_id}", response_model=AnimeRead)
 def buscar_anime_id(anime_id: int, anime_service: AnimeServiceDep):
     return anime_service.get_anime(anime_id=anime_id)
+
+
+@animes_router.get("/{anime_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
+def listar_avaliacoes_do_anime(
+    anime_id: int,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.list_avaliacoes_anime(anime_id)
+
+
+@animes_router.post(
+    "/{anime_id}/avaliacoes",
+    response_model=AvaliacaoBase,
+    status_code=status.HTTP_201_CREATED,
+)
+def criar_avaliacao_do_anime(
+    anime_id: int,
+    avaliacao: AvaliacaoCreate,
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.create_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
+
+
+@animes_router.patch("/{anime_id}/avaliacoes", response_model=AvaliacaoBase)
+def atualizar_avaliacao_do_anime(
+    anime_id: int,
+    avaliacao: AvaliacaoUpdate,
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.update_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
+
+
+@animes_router.delete("/{anime_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
+def remover_avaliacao_do_anime(
+    anime_id: int,
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    avaliacao_service.delete_avaliacao(anime_id, current_user.id, tipo_conteudo="anime")
 
 
 @animes_router.post("/{anime_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
