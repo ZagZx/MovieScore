@@ -25,9 +25,7 @@ class Assistido(Base):
 
     __tablename__ = "assistido"
     __table_args__ = (
-        UniqueConstraint(
-            "conteudo_id", "usuario_id", name="uq_conteudo_id_usuario_id"
-        ),
+        UniqueConstraint("conteudo_id", "usuario_id", name="uq_conteudo_id_usuario_id"),
     )  # equivalente a UNIQUE (conteudo_id, usuario_id)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
