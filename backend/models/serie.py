@@ -29,7 +29,8 @@ class Serie(Base):
 
     # id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     conteudo_id: Mapped[int] = mapped_column(
-        ForeignKey("conteudo.id"), primary_key=True
+        ForeignKey("conteudo.id", name="fk_serie_conteudo", ondelete="CASCADE"),
+        primary_key=True,
     )
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     titulo_original: Mapped[str] = mapped_column(String(255), nullable=False)
