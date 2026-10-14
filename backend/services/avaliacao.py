@@ -7,7 +7,12 @@ from models.conteudo import TipoConteudo
 from exceptions import ConflictException, NotFoundException
 from models import Avaliacao
 from repositories import AvaliacaoRepositoryDep
-from schemas.avaliacao import AvaliacaoConteudoRead, AvaliacaoUsuarioRead, AvaliacaoCreate, AvaliacaoUpdate
+from schemas.avaliacao import (
+    AvaliacaoConteudoRead,
+    AvaliacaoUsuarioRead,
+    AvaliacaoCreate,
+    AvaliacaoUpdate,
+)
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 from services.serie import SerieServiceDep
@@ -38,8 +43,12 @@ class AvaliacaoService:
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_usuario(usuario)
         return AvaliacaoMapper.map_avaliacoes_usuario(avaliacoes)
 
-    def list_avaliacoes_conteudo(self, id_externo: int, tipo: TipoConteudo) -> list[AvaliacaoConteudoRead]:
-        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo)
+    def list_avaliacoes_conteudo(
+        self, id_externo: int, tipo: TipoConteudo
+    ) -> list[AvaliacaoConteudoRead]:
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
+            id_externo, tipo
+        )
         avaliacoes = self.avaliacao_repository.list_avaliacoes_by_conteudo(conteudo)
         return AvaliacaoMapper.map_avaliacoes_conteudo(avaliacoes)
 
@@ -67,14 +76,22 @@ class AvaliacaoService:
         )
 
     def create_avaliacao(
-        self, avaliacao_data: AvaliacaoCreate, id_externo: int, usuario_id: int, tipo_conteudo: TipoConteudo, 
+        self,
+        avaliacao_data: AvaliacaoCreate,
+        id_externo: int,
+        usuario_id: int,
+        tipo_conteudo: TipoConteudo,
     ) -> Avaliacao:
         usuario = self.usuario_service.get_usuario(usuario_id)
-        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo_conteudo)
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
+            id_externo, tipo_conteudo
+        )
 
-        avaliacao_existente = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
-            usuario,
-            conteudo,
+        avaliacao_existente = (
+            self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
+                usuario,
+                conteudo,
+            )
         )
         if avaliacao_existente:
             raise ConflictException("Você já avaliou este conteúdo")
@@ -89,17 +106,25 @@ class AvaliacaoService:
         return self.avaliacao_repository.create_avaliacao(avaliacao)
 
     def update_avaliacao(
-        self, avaliacao_data: AvaliacaoUpdate, id_externo: int, usuario_id: int, tipo_conteudo: TipoConteudo
+        self,
+        avaliacao_data: AvaliacaoUpdate,
+        id_externo: int,
+        usuario_id: int,
+        tipo_conteudo: TipoConteudo,
     ) -> Avaliacao:
         usuario = self.usuario_service.get_usuario(usuario_id)
-        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo_conteudo)
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
+            id_externo, tipo_conteudo
+        )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do conteúdo não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do conteúdo não encontrada para o usuário atual"
+            )
 
         if avaliacao_data.estrelas is not None:
             avaliacao.estrelas = avaliacao_data.estrelas
@@ -108,16 +133,22 @@ class AvaliacaoService:
 
         return self.avaliacao_repository.update_avaliacao(avaliacao)
 
-    def delete_avaliacao(self, id_externo: int, usuario_id: int, tipo_conteudo: TipoConteudo):
+    def delete_avaliacao(
+        self, id_externo: int, usuario_id: int, tipo_conteudo: TipoConteudo
+    ):
         usuario = self.usuario_service.get_usuario(usuario_id)
-        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(id_externo, tipo_conteudo)
+        conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
+            id_externo, tipo_conteudo
+        )
 
         avaliacao = self.avaliacao_repository.get_avaliacao_by_usuario_and_conteudo(
             usuario,
             conteudo,
         )
         if not avaliacao:
-            raise NotFoundException("Avaliação do conteúdo não encontrada para o usuário atual")
+            raise NotFoundException(
+                "Avaliação do conteúdo não encontrada para o usuário atual"
+            )
 
         self.avaliacao_repository.delete_avaliacao(avaliacao)
 

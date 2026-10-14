@@ -44,8 +44,10 @@ class AnimeService:
                 detail="'ano_inicio' não pode ser maior que 'ano_fim'.",
             )
 
-        if filtros.temporada is not None and filtros.ano is None and (
-            filtros.ano_inicio is not None or filtros.ano_fim is not None
+        if (
+            filtros.temporada is not None
+            and filtros.ano is None
+            and (filtros.ano_inicio is not None or filtros.ano_fim is not None)
         ):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -84,7 +86,9 @@ class AnimeService:
     def get_anime_from_db(self, anime_id: int) -> Anime | None:
         return self.anime_repository.get_anime_by_id_externo(anime_id)
 
-    def get_anime_from_api_and_update_database(self, anime_id: int) -> tuple[AnimeRead, Anime]:
+    def get_anime_from_api_and_update_database(
+        self, anime_id: int
+    ) -> tuple[AnimeRead, Anime]:
         conteudo = self.conteudo_service.get_or_create_conteudo(
             id_externo=anime_id,
             api_fonte=ApiFonte.KITSU,

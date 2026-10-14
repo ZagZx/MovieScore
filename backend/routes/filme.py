@@ -22,7 +22,7 @@ def buscar_filmes(
     filme_service: FilmeServiceDep,
     filtros: FilmeFiltros = Depends(FilmeFiltros.as_dependency),
     busca: str | None = None,
-    paginacao: TmdbPaginationParams = Depends()
+    paginacao: TmdbPaginationParams = Depends(),
 ):
     filmes, total_pages, total_results = filme_service.search_filmes(
         busca=busca,
@@ -36,8 +36,8 @@ def buscar_filmes(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages
-        )
+            has_more=paginacao.page < total_pages,
+        ),
     )
 
 
@@ -56,8 +56,8 @@ def listar_filmes_em_alta(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages
-        )
+            has_more=paginacao.page < total_pages,
+        ),
     )
 
 
@@ -146,7 +146,9 @@ def criar_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao(avaliacao, filme_id, current_user.id, tipo_conteudo="filme")
+    return avaliacao_service.create_avaliacao(
+        avaliacao, filme_id, current_user.id, tipo_conteudo="filme"
+    )
 
 
 @filmes_router.patch("/{filme_id}/avaliacoes", response_model=AvaliacaoBase)
@@ -156,7 +158,9 @@ def atualizar_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao(avaliacao, filme_id, current_user.id, tipo_conteudo="filme")
+    return avaliacao_service.update_avaliacao(
+        avaliacao, filme_id, current_user.id, tipo_conteudo="filme"
+    )
 
 
 @filmes_router.delete("/{filme_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
@@ -165,7 +169,7 @@ def remover_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    
+
     avaliacao_service.delete_avaliacao(filme_id, current_user.id, tipo_conteudo="filme")
 
 

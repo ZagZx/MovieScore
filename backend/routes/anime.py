@@ -9,7 +9,12 @@ from schemas.pagination.kitsu import (
     KitsuPage,
     KitsuPagination,
 )
-from services import AnimeServiceDep, AssistidoServiceDep, FavoritoServiceDep, AvaliacaoServiceDep
+from services import (
+    AnimeServiceDep,
+    AssistidoServiceDep,
+    FavoritoServiceDep,
+    AvaliacaoServiceDep,
+)
 from schemas.avaliacao import (
     AvaliacaoCreate,
     AvaliacaoBase,
@@ -167,7 +172,9 @@ def criar_avaliacao_do_anime(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao(avaliacao, anime_id, current_user.id, tipo_conteudo="anime")
+    return avaliacao_service.create_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
 
 
 @animes_router.patch("/{anime_id}/avaliacoes", response_model=AvaliacaoBase)
@@ -177,7 +184,9 @@ def atualizar_avaliacao_do_anime(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao(avaliacao, anime_id, current_user.id, tipo_conteudo="anime")
+    return avaliacao_service.update_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
 
 
 @animes_router.delete("/{anime_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
