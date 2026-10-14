@@ -1,5 +1,5 @@
 from typing import TYPE_CHECKING, Optional
-from sqlalchemy import BigInteger, String, DateTime, Text
+from sqlalchemy import BigInteger, String, DateTime
 from sqlalchemy.orm import mapped_column, Mapped, relationship
 from datetime import datetime
 
@@ -21,7 +21,6 @@ class Usuario(Base):
         email: Endereco de email unico do usuario.
         senha_hash: Hash da senha do usuario.
         foto_perfil_path: Caminho da foto de perfil, quando houver.
-        sobre_mim: Descricao pessoal opcional do usuario.
         data_criacao: Data e hora em que o usuario foi criado.
         favoritos: Favoritos associados ao usuario.
         assistidos: Registros de conteudos assistidos pelo usuario.
@@ -35,11 +34,10 @@ class Usuario(Base):
     email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
     senha_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     foto_perfil_path: Mapped[Optional[str]] = mapped_column(String(255))
-    sobre_mim: Mapped[Optional[str]] = mapped_column(Text)
     data_criacao: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
 
-    favoritos: Mapped[list["Favorito"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)
-    assistidos: Mapped[list["Assistido"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)
-    avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="usuario", cascade="all, delete-orphan", passive_deletes=True)
+    favoritos: Mapped[list["Favorito"]] = relationship(back_populates="usuario")
+    assistidos: Mapped[list["Assistido"]] = relationship(back_populates="usuario")
+    avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="usuario")

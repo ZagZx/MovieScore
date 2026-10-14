@@ -7,7 +7,6 @@ CREATE TABLE usuario(
     email VARCHAR(255) UNIQUE NOT NULL,
     senha_hash VARCHAR(255) NOT NULL,
     foto_perfil_path VARCHAR(255),
-    sobre_mim TEXT,
     data_criacao DATETIME NOT NULL
 );
 
