@@ -9,7 +9,7 @@ export type BackendValidationError = {
 export type ItemError = {
     type: string;
     loc: Array<string | number>;
-    msg: string,
-    input?: any;
-    ctx?: object;
-}
+    msg: string;
+    input?: unknown;
+    ctx?: Record<string, unknown>;
+};

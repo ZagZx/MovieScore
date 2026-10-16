@@ -22,14 +22,14 @@ class TipoConteudo(enum.Enum):
     FILME = "filme"
     SERIE = "serie"
 
+
 class ApiFonte(enum.Enum):
     KITSU = "kitsu"
     TMDB = "tmdb"
 
-URL_POR_FONTE = {
-    ApiFonte.KITSU: KITSU_API_URL,
-    ApiFonte.TMDB: TMDB_API_URL
-}
+
+URL_POR_FONTE = {ApiFonte.KITSU: KITSU_API_URL, ApiFonte.TMDB: TMDB_API_URL}
+
 
 class Conteudo(Base):
     """Representa um conteudo disponivel em uma fonte externa.
@@ -50,22 +50,43 @@ class Conteudo(Base):
     __tablename__ = "conteudo"
     __table_args__ = (
         UniqueConstraint(
-            "id_externo", "api_fonte", "tipo", name="uq_conteudo_id_externo_api_fonte_tipo"
+            "id_externo",
+            "api_fonte",
+            "tipo",
+            name="uq_conteudo_id_externo_api_fonte_tipo",
         ),
     )  # equivalente a UNIQUE (id_externo, api_fonte, tipo)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
     id_externo: Mapped[int] = mapped_column(BigInteger, nullable=False)
-    api_fonte: Mapped[ApiFonte] = mapped_column(Enum(ApiFonte, values_callable=get_enum_values, name="api_fonte_enum"), nullable=False)
-    tipo: Mapped[TipoConteudo] = mapped_column(Enum(TipoConteudo, values_callable=get_enum_values, name="tipo_conteudo_enum"), nullable=False)
+    api_fonte: Mapped[ApiFonte] = mapped_column(
+        Enum(ApiFonte, values_callable=get_enum_values, name="api_fonte_enum"),
+        nullable=False,
+    )
+    tipo: Mapped[TipoConteudo] = mapped_column(
+        Enum(TipoConteudo, values_callable=get_enum_values, name="tipo_conteudo_enum"),
+        nullable=False,
+    )
     data_adicao: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), insert_default=get_now_datetime_utc, nullable=False
     )
 
-    favoritos: Mapped[list["Favorito"]] = relationship(back_populates="conteudo")
-    assistidos: Mapped[list["Assistido"]] = relationship(back_populates="conteudo")
-    avaliacoes: Mapped[list["Avaliacao"]] = relationship(back_populates="conteudo")
+    favoritos: Mapped[list["Favorito"]] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )
+    assistidos: Mapped[list["Assistido"]] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )
+    avaliacoes: Mapped[list["Avaliacao"]] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )
 
-    filme: Mapped["Filme | None"] = relationship(back_populates="conteudo")
-    serie: Mapped["Serie | None" ] = relationship(back_populates="conteudo")
-    anime: Mapped["Anime | None"] = relationship(back_populates="conteudo")
+    filme: Mapped["Filme | None"] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )
+    serie: Mapped["Serie | None"] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )
+    anime: Mapped["Anime | None"] = relationship(
+        back_populates="conteudo", cascade="all, delete-orphan", passive_deletes=True
+    )

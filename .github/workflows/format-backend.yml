@@ -1,0 +1,49 @@
+name: Format backend
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  format-backend:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout pull request branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.FORMATTER_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Black
+        run: pip install black
+
+      - name: Format code
+        working-directory: backend
+        run: black .
+
+      - name: Commit changes
+        env:
+          BRANCH_NAME: ${{ github.head_ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add -u backend/
+
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format Python code"
+            git push origin "HEAD:${BRANCH_NAME}"
+          else
+            echo "O código já está formatado."
+          fi

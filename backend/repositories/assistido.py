@@ -91,6 +91,4 @@ class AssistidoRepository:
         self.session.flush()
 
 
-AssistidoRepositoryDep = Annotated[
-    AssistidoRepository, Depends(AssistidoRepository)
-]
+AssistidoRepositoryDep = Annotated[AssistidoRepository, Depends(AssistidoRepository)]

@@ -1,9 +1,8 @@
 from pydantic import EmailStr, Field, field_serializer
 from typing import Optional
 from datetime import datetime
-from urllib.parse import urljoin
 
-from constants import BASE_URL
+from mappers.usuario import UsuarioMapper
 from .base import Base
 
 
@@ -24,7 +23,7 @@ class UsuarioRead(Base):
 
     @field_serializer("foto_perfil_url", when_used="json-unless-none")
     def adicionar_url_base_em_foto_perfil_url(self, foto_perfil_url: str):
-        return urljoin(BASE_URL, foto_perfil_url).replace("\\", "/")
+        return UsuarioMapper.map_foto_perfil(foto_perfil_url)
 
 
 class UsuarioUpdate(Base):

@@ -13,14 +13,19 @@ class AvaliacaoRepository:
 
     def list_avaliacoes_by_usuario(self, usuario: Usuario) -> list[Avaliacao]:
         """Retorna todas as avaliações de um usuário específico."""
-        return (
-            self.session.scalars(
-                select(Avaliacao)
-                .where(Avaliacao.usuario_id == usuario.id)
-                .order_by(Avaliacao.data_criacao.desc())
-            )
-            .all()
-        )
+        return self.session.scalars(
+            select(Avaliacao)
+            .where(Avaliacao.usuario_id == usuario.id)
+            .order_by(Avaliacao.data_criacao.desc())
+        ).all()
+
+    def list_avaliacoes_by_conteudo(self, conteudo: Conteudo) -> list[Avaliacao]:
+        """Retorna todas as avaliações de um conteúdo específico."""
+        return self.session.scalars(
+            select(Avaliacao)
+            .where(Avaliacao.conteudo_id == conteudo.id)
+            .order_by(Avaliacao.data_criacao.desc())
+        ).all()
 
     def get_avaliacao_by_usuario_and_conteudo(
         self, usuario: Usuario, conteudo: Conteudo
@@ -33,7 +38,18 @@ class AvaliacaoRepository:
             )
         )
 
+    def create_avaliacao(self, avaliacao: Avaliacao) -> Avaliacao:
+        self.session.add(avaliacao)
+        self.session.flush()
+        return avaliacao
 
-AvaliacaoRepositoryDep = Annotated[
-    AvaliacaoRepository, Depends(AvaliacaoRepository)
-]
+    def update_avaliacao(self, avaliacao: Avaliacao) -> Avaliacao:
+        self.session.flush()
+        return avaliacao
+
+    def delete_avaliacao(self, avaliacao: Avaliacao):
+        self.session.delete(avaliacao)
+        self.session.flush()
+
+
+AvaliacaoRepositoryDep = Annotated[AvaliacaoRepository, Depends(AvaliacaoRepository)]

@@ -27,7 +27,10 @@ class Anime(Base):
 
     __tablename__ = "anime"
 
-    conteudo_id: Mapped[int] = mapped_column(ForeignKey("conteudo.id"), primary_key=True)
+    conteudo_id: Mapped[int] = mapped_column(
+        ForeignKey("conteudo.id", name="fk_anime_conteudo", ondelete="CASCADE"),
+        primary_key=True,
+    )
     titulo: Mapped[str] = mapped_column(String(255), nullable=False)
     titulo_original: Mapped[str] = mapped_column(String(255), nullable=False)
     status: Mapped[str] = mapped_column(String(255), nullable=False)
@@ -35,6 +38,11 @@ class Anime(Base):
     capa: Mapped[Optional[str]] = mapped_column(String(512))
     banner: Mapped[Optional[str]] = mapped_column(String(512))
     data_lancamento: Mapped[Optional[date]] = mapped_column(Date)
-    data_atualizacao: Mapped[datetime] = mapped_column(DateTime(timezone=True), insert_default=get_now_datetime_utc, onupdate=get_now_datetime_utc, nullable=False)
+    data_atualizacao: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        insert_default=get_now_datetime_utc,
+        onupdate=get_now_datetime_utc,
+        nullable=False,
+    )
 
     conteudo: Mapped["Conteudo"] = relationship(back_populates="anime")

@@ -1,15 +1,21 @@
 from fastapi import APIRouter, Depends, status
 
-from services import SerieServiceDep, AssistidoServiceDep
+from services import AvaliacaoServiceDep, SerieServiceDep, AssistidoServiceDep
 from services.favorito import FavoritoServiceDep
 from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.serie import GeneroSerie, SerieFiltros, SerieListRead, SerieRead
 from schemas.favorito import SerieFavoritaRead
 from schemas.assistido import SerieAssistidaRead
-
+from schemas.avaliacao import (
+    AvaliacaoConteudoRead,
+    AvaliacaoCreate,
+    AvaliacaoBase,
+    AvaliacaoUpdate,
+)
 
 series_router = APIRouter(prefix="/series", tags=["Séries"])
+
 
 @series_router.get("", response_model=TmdbPage[SerieListRead])
 def buscar_series(
@@ -19,9 +25,7 @@ def buscar_series(
     paginacao: TmdbPaginationParams = Depends(),
 ):
     series, total_pages, total_results = serie_service.search_series(
-        busca=busca,
-        filtros=filtros,
-        page=paginacao.page
+        busca=busca, filtros=filtros, page=paginacao.page
     )
 
     return TmdbPage(
@@ -73,6 +77,8 @@ def listar_series_populares(
             has_more=paginacao.page < total_pages,
         ),
     )
+
+
 @series_router.get("/generos", response_model=list[GeneroSerie])
 def listar_generos_series(serie_service: SerieServiceDep):
     return serie_service.list_generos()
@@ -80,8 +86,7 @@ def listar_generos_series(serie_service: SerieServiceDep):
 
 @series_router.get("/favoritas", response_model=list[SerieFavoritaRead])
 def listar_series_favoritas(
-    current_user: CurrentUsuarioDep,
-    favorito_service: FavoritoServiceDep
+    current_user: CurrentUsuarioDep, favorito_service: FavoritoServiceDep
 ):
     return favorito_service.list_favoritos_serie(current_user.id)
 
@@ -100,11 +105,54 @@ def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
     return serie
 
 
-@series_router.post("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
-def adicionar_serie_aos_favoritos(
+@series_router.get("/{serie_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
+def listar_avaliacoes_da_serie(
+    serie_id: int,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.list_avaliacoes_serie(serie_id)
+
+
+@series_router.post(
+    "/{serie_id}/avaliacoes",
+    response_model=AvaliacaoBase,
+    status_code=status.HTTP_201_CREATED,
+)
+def criar_avaliacao_da_serie(
+    serie_id: int,
+    avaliacao: AvaliacaoCreate,
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.create_avaliacao(
+        avaliacao, serie_id, current_user.id, tipo_conteudo="serie"
+    )
+
+
+@series_router.patch("/{serie_id}/avaliacoes", response_model=AvaliacaoBase)
+def atualizar_avaliacao_da_serie(
+    serie_id: int,
+    avaliacao: AvaliacaoUpdate,
+    current_user: CurrentUsuarioDep,
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    return avaliacao_service.update_avaliacao(
+        avaliacao, serie_id, current_user.id, tipo_conteudo="serie"
+    )
+
+
+@series_router.delete("/{serie_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
+def remover_avaliacao_da_serie(
     serie_id: int,
     current_user: CurrentUsuarioDep,
-    favorito_service: FavoritoServiceDep
+    avaliacao_service: AvaliacaoServiceDep,
+):
+    avaliacao_service.delete_avaliacao(serie_id, current_user.id, "serie")
+
+
+@series_router.post("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
+def adicionar_serie_aos_favoritos(
+    serie_id: int, current_user: CurrentUsuarioDep, favorito_service: FavoritoServiceDep
 ):
     favorito_service.add_favorito_serie(serie_id, current_user.id)
 
@@ -120,9 +168,7 @@ def adicionar_serie_aos_assistidos(
 
 @series_router.delete("/{serie_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)
 def remover_serie_dos_favoritos(
-    serie_id: int,
-    current_user: CurrentUsuarioDep,
-    favorito_service: FavoritoServiceDep
+    serie_id: int, current_user: CurrentUsuarioDep, favorito_service: FavoritoServiceDep
 ):
     favorito_service.remove_favorito_serie(serie_id, current_user.id)
 

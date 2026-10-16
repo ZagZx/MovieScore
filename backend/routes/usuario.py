@@ -6,7 +6,8 @@ from schemas.usuario import (
     UsuarioRead,
     UsuarioUpdate,
 )
-from schemas.avaliacao import AvaliacaoRead
+from schemas.avaliacao import AvaliacaoUsuarioRead
+
 # from schemas.favorito import FavoritoRead
 from schemas.pagination.cursor import CursorPaginationParams, CursorPage
 from auth.dependencies import CurrentUsuarioDep
@@ -32,7 +33,7 @@ def criar_usuario(usuario_json: UsuarioCreate, usuario_service: UsuarioServiceDe
     return usuario_service.create_usuario(usuario_json)
 
 
-@usuario_router.get("/avaliacoes", response_model=list[AvaliacaoRead])
+@usuario_router.get("/avaliacoes", response_model=list[AvaliacaoUsuarioRead])
 def listar_avaliacoes_do_usuario_logado(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
