@@ -33,17 +33,15 @@ def buscar_animes(
 ):
     animes, total_results = anime_service.list_animes(
         filtros=filtros,
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        paginacao=paginacao
     )
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=True,
         ),
     )
 
@@ -54,17 +52,16 @@ def listar_animes_em_alta(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     animes, total_results = anime_service.list_animes_em_alta(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        paginacao=paginacao
     )
 
+    print(len(animes))
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=True,
         ),
     )
 
@@ -75,17 +72,15 @@ def listar_animes_populares(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     animes, total_results = anime_service.list_animes_populares(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        paginacao=paginacao
     )
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=True,
         ),
     )
 
@@ -96,17 +91,15 @@ def listar_animes_em_breve(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     animes, total_results = anime_service.list_animes_em_breve(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        paginacao=paginacao
     )
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=True,
         ),
     )
 
@@ -117,17 +110,15 @@ def listar_categorias(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     categorias, total_results = anime_service.list_categorias(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        paginacao=paginacao
     )
 
     return KitsuPage(
         data=categorias,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=True,
         ),
     )
 
