@@ -85,11 +85,16 @@ def listar_generos_series(serie_service: SerieServiceDep):
     return serie_service.list_generos()
 
 
-@series_router.get("/favoritas", response_model=list[SerieFavoritaRead])
+@series_router.get("/favoritas", response_model=CursorPage[SerieFavoritaRead])
 def listar_series_favoritas(
-    current_user: CurrentUsuarioDep, favorito_service: FavoritoServiceDep
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return favorito_service.list_favoritos_serie(current_user.id)
+    series, paging = favorito_service.list_favoritos_serie(
+        current_user.id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=series, pagination=paging)
 
 
 @series_router.get("/assistidas", response_model=CursorPage[SerieAssistidaRead])

@@ -107,12 +107,16 @@ def listar_generos_filmes(filme_service: FilmeServiceDep):
     return filme_service.list_generos()
 
 
-@filmes_router.get("/favoritos", response_model=list[FilmeFavoritoRead])
+@filmes_router.get("/favoritos", response_model=CursorPage[FilmeFavoritoRead])
 def listar_filmes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return favorito_service.list_favoritos_filme(current_user.id)
+    filmes, paging = favorito_service.list_favoritos_filme(
+        current_user.id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=filmes, pagination=paging)
 
 
 @filmes_router.get("/assistidos", response_model=CursorPage[FilmeAssistidoRead])

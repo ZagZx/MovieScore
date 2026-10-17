@@ -124,12 +124,16 @@ def listar_categorias(
     )
 
 
-@animes_router.get("/favoritos", response_model=list[AnimeFavoritoRead])
+@animes_router.get("/favoritos", response_model=CursorPage[AnimeFavoritoRead])
 def listar_animes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return favorito_service.list_favoritos_anime(current_user.id)
+    animes, paging = favorito_service.list_favoritos_anime(
+        current_user.id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=animes, pagination=paging)
 
 
 @animes_router.get("/assistidos", response_model=CursorPage[AnimeAssistidoRead])

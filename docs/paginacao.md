@@ -112,6 +112,14 @@ Esses endpoints recebem os mesmos parâmetros `limit` e `cursor` e retornam
 `CursorPage[T]`. O cursor corresponde ao `id` do registro de assistência, e
 não ao ID externo do filme, série ou anime.
 
+As listagens de conteúdos favoritos seguem o mesmo contrato:
+
+- `GET /filmes/favoritos`;
+- `GET /series/favoritas`;
+- `GET /animes/favoritos`.
+
+O cursor corresponde ao `id` do registro de favorito.
+
 ## Paginação do TMDB
 
 O TMDB utiliza páginas numeradas. A API recebe `page` e `limit`; o parâmetro

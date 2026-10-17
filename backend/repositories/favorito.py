@@ -27,35 +27,53 @@ class FavoritoRepository:
     def get_favoritos_usuario(self, usuario: Usuario) -> list[Favorito]:
         return self.session.scalars(select(Favorito).where(Favorito.usuario == usuario))
 
-    def list_series_favoritas(self, usuario: Usuario) -> list[tuple[Serie, Favorito]]:
-        return self.session.execute(
+    def list_series_favoritas(
+        self, usuario: Usuario, last_id: int, limit: int
+    ) -> tuple[list[tuple[Serie, Favorito]], bool]:
+        items = self.session.execute(
             select(Serie, Favorito)
             .select_from(Favorito)
             .join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
             .join(Serie.conteudo)
             .options(contains_eager(Serie.conteudo))
-            .where(Favorito.usuario == usuario)
+            .where(Favorito.usuario_id == usuario.id, Favorito.id > last_id)
+            .order_by(Favorito.id)
+            .limit(limit + 1)
         ).all()
+        has_more = len(items) > limit
+        return items[:limit], has_more
 
-    def list_filmes_favoritos(self, usuario: Usuario) -> list[tuple[Filme, Favorito]]:
-        return self.session.execute(
+    def list_filmes_favoritos(
+        self, usuario: Usuario, last_id: int, limit: int
+    ) -> tuple[list[tuple[Filme, Favorito]], bool]:
+        items = self.session.execute(
             select(Filme, Favorito)
             .select_from(Favorito)
             .join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
             .join(Filme.conteudo)
             .options(contains_eager(Filme.conteudo))
-            .where(Favorito.usuario == usuario)
+            .where(Favorito.usuario_id == usuario.id, Favorito.id > last_id)
+            .order_by(Favorito.id)
+            .limit(limit + 1)
         ).all()
+        has_more = len(items) > limit
+        return items[:limit], has_more
 
-    def list_animes_favoritos(self, usuario: Usuario) -> list[tuple[Anime, Favorito]]:
-        return self.session.execute(
+    def list_animes_favoritos(
+        self, usuario: Usuario, last_id: int, limit: int
+    ) -> tuple[list[tuple[Anime, Favorito]], bool]:
+        items = self.session.execute(
             select(Anime, Favorito)
             .select_from(Favorito)
             .join(Anime, Anime.conteudo_id == Favorito.conteudo_id)
             .join(Anime.conteudo)
             .options(contains_eager(Anime.conteudo))
-            .where(Favorito.usuario == usuario)
+            .where(Favorito.usuario_id == usuario.id, Favorito.id > last_id)
+            .order_by(Favorito.id)
+            .limit(limit + 1)
         ).all()
+        has_more = len(items) > limit
+        return items[:limit], has_more
 
     def add_favorito_serie(self, serie: Serie, usuario: Usuario) -> Favorito:
         favorito = Favorito(
