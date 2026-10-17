@@ -7,6 +7,7 @@ from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationPara
 from schemas.serie import GeneroSerie, SerieFiltros, SerieListRead, SerieRead
 from schemas.favorito import SerieFavoritaRead
 from schemas.assistido import SerieAssistidaRead
+from schemas.pagination.cursor import CursorPage, CursorPaginationParams
 from schemas.avaliacao import (
     AvaliacaoConteudoRead,
     AvaliacaoCreate,
@@ -91,12 +92,16 @@ def listar_series_favoritas(
     return favorito_service.list_favoritos_serie(current_user.id)
 
 
-@series_router.get("/assistidas", response_model=list[SerieAssistidaRead])
+@series_router.get("/assistidas", response_model=CursorPage[SerieAssistidaRead])
 def listar_series_assistidas(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return assistido_service.list_assistidos_serie(current_user.id)
+    series, paging = assistido_service.list_assistidos_serie(
+        current_user.id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=series, pagination=paging)
 
 
 @series_router.get("/{serie_id}", response_model=SerieRead)

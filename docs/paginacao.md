@@ -102,6 +102,16 @@ Quando o cursor informado ultrapassa o último ID disponível, a API retorna
 Os esquemas envolvidos são `CursorPaginationParams`, `CursorPagination` e
 `CursorPage[T]`.
 
+As listagens de conteúdos assistidos também utilizam paginação por cursor:
+
+- `GET /filmes/assistidos`;
+- `GET /series/assistidas`;
+- `GET /animes/assistidos`.
+
+Esses endpoints recebem os mesmos parâmetros `limit` e `cursor` e retornam
+`CursorPage[T]`. O cursor corresponde ao `id` do registro de assistência, e
+não ao ID externo do filme, série ou anime.
+
 ## Paginação do TMDB
 
 O TMDB utiliza páginas numeradas. A API recebe `page` e `limit`; o parâmetro

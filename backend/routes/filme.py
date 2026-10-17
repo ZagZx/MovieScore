@@ -5,6 +5,7 @@ from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationPara
 from schemas.filme import FilmeFiltros, FilmeListRead, FilmeRead, GeneroFilme
 from schemas.favorito import FilmeFavoritoRead
 from schemas.assistido import FilmeAssistidoRead
+from schemas.pagination.cursor import CursorPage, CursorPaginationParams
 from services import AssistidoServiceDep, FilmeServiceDep, AvaliacaoServiceDep
 from services.favorito import FavoritoServiceDep
 from schemas.avaliacao import (
@@ -114,12 +115,16 @@ def listar_filmes_favoritos(
     return favorito_service.list_favoritos_filme(current_user.id)
 
 
-@filmes_router.get("/assistidos", response_model=list[FilmeAssistidoRead])
+@filmes_router.get("/assistidos", response_model=CursorPage[FilmeAssistidoRead])
 def listar_filmes_assistidos(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return assistido_service.list_assistidos_filme(current_user.id)
+    filmes, paging = assistido_service.list_assistidos_filme(
+        current_user.id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=filmes, pagination=paging)
 
 
 @filmes_router.get("/{filme_id}", response_model=FilmeRead)
