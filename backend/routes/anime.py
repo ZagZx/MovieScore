@@ -42,7 +42,7 @@ def buscar_animes(
         pagination=KitsuPagination(
             page=paginacao.page,
             total_results=total_results,
-            has_more=True,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -56,13 +56,12 @@ def listar_animes_em_alta(
         paginacao=paginacao
     )
 
-    print(len(animes))
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
             page=paginacao.page,
             total_results=total_results,
-            has_more=True,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -81,7 +80,7 @@ def listar_animes_populares(
         pagination=KitsuPagination(
             page=paginacao.page,
             total_results=total_results,
-            has_more=True,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -100,7 +99,7 @@ def listar_animes_em_breve(
         pagination=KitsuPagination(
             page=paginacao.page,
             total_results=total_results,
-            has_more=True,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -119,7 +118,7 @@ def listar_categorias(
         pagination=KitsuPagination(
             page=paginacao.page,
             total_results=total_results,
-            has_more=True,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
