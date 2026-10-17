@@ -7,7 +7,7 @@ from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationPara
 from schemas.serie import GeneroSerie, SerieFiltros, SerieListRead, SerieRead
 from schemas.favorito import SerieFavoritaRead
 from schemas.assistido import SerieAssistidaRead
-from schemas.pagination.cursor import CursorPage, CursorPaginationParams
+from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from schemas.avaliacao import (
     AvaliacaoConteudoRead,
     AvaliacaoCreate,
@@ -89,10 +89,13 @@ def listar_generos_series(serie_service: SerieServiceDep):
 def listar_series_favoritas(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     series, paging = favorito_service.list_favoritos_serie(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=series, pagination=paging)
 
@@ -101,10 +104,13 @@ def listar_series_favoritas(
 def listar_series_assistidas(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     series, paging = assistido_service.list_assistidos_serie(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=series, pagination=paging)
 
@@ -121,10 +127,13 @@ def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
 def listar_avaliacoes_da_serie(
     serie_id: int,
     avaliacao_service: AvaliacaoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     avaliacoes, paging = avaliacao_service.list_avaliacoes_serie(
-        serie_id, paging_params.cursor, paging_params.limit
+        serie_id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=avaliacoes, pagination=paging)
 

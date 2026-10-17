@@ -5,7 +5,7 @@ from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationPara
 from schemas.filme import FilmeFiltros, FilmeListRead, FilmeRead, GeneroFilme
 from schemas.favorito import FilmeFavoritoRead
 from schemas.assistido import FilmeAssistidoRead
-from schemas.pagination.cursor import CursorPage, CursorPaginationParams
+from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from services import AssistidoServiceDep, FilmeServiceDep, AvaliacaoServiceDep
 from services.favorito import FavoritoServiceDep
 from schemas.avaliacao import (
@@ -111,10 +111,13 @@ def listar_generos_filmes(filme_service: FilmeServiceDep):
 def listar_filmes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     filmes, paging = favorito_service.list_favoritos_filme(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=filmes, pagination=paging)
 
@@ -123,10 +126,13 @@ def listar_filmes_favoritos(
 def listar_filmes_assistidos(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     filmes, paging = assistido_service.list_assistidos_filme(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=filmes, pagination=paging)
 
@@ -142,10 +148,13 @@ def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
 def listar_avaliacoes_do_filme(
     filme_id: int,
     avaliacao_service: AvaliacaoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     avaliacoes, paging = avaliacao_service.list_avaliacoes_filme(
-        filme_id, paging_params.cursor, paging_params.limit
+        filme_id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=avaliacoes, pagination=paging)
 

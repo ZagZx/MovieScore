@@ -7,7 +7,7 @@ from exceptions import ConflictException, EntityNotFoundException, NotFoundExcep
 from models import Assistido
 from repositories import AssistidoRepositoryDep
 from schemas.assistido import AnimeAssistidoRead, FilmeAssistidoRead, SerieAssistidaRead
-from schemas.pagination.cursor import CursorPagination
+from schemas.pagination.cursor import CursorPagination, OrdenacaoCursor
 from .usuario import UsuarioServiceDep
 from .serie import SerieServiceDep
 from .filme import FilmeServiceDep
@@ -36,11 +36,11 @@ class AssistidoService:
         return assistido
 
     def list_assistidos_serie(
-        self, usuario_id: int, last_id: int, limit: int
+        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[SerieAssistidaRead], CursorPagination]:
         usuario = self.usuario_service.get_usuario(usuario_id)
         assistidos, has_more = self.assistido_repository.list_series_assistidas(
-            usuario, last_id, limit
+            usuario, last_id, limit, ordenacao
         )
         items = AssistidoMapper.map_series(assistidos)
         return items, CursorPagination(
@@ -49,11 +49,11 @@ class AssistidoService:
         )
 
     def list_assistidos_filme(
-        self, usuario_id: int, last_id: int, limit: int
+        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[FilmeAssistidoRead], CursorPagination]:
         usuario = self.usuario_service.get_usuario(usuario_id)
         assistidos, has_more = self.assistido_repository.list_filmes_assistidos(
-            usuario, last_id, limit
+            usuario, last_id, limit, ordenacao
         )
         items = AssistidoMapper.map_filmes(assistidos)
         return items, CursorPagination(
@@ -62,11 +62,11 @@ class AssistidoService:
         )
 
     def list_assistidos_anime(
-        self, usuario_id: int, last_id: int, limit: int
+        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[AnimeAssistidoRead], CursorPagination]:
         usuario = self.usuario_service.get_usuario(usuario_id)
         assistidos, has_more = self.assistido_repository.list_animes_assistidos(
-            usuario, last_id, limit
+            usuario, last_id, limit, ordenacao
         )
         items = AssistidoMapper.map_animes(assistidos)
         return items, CursorPagination(

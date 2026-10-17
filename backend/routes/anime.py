@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, status
 from auth.dependencies import CurrentUsuarioDep
 from schemas.anime import AnimeFiltros, AnimeRead, CategoriaRead
 from schemas.assistido import AnimeAssistidoRead
-from schemas.pagination.cursor import CursorPage, CursorPaginationParams
+from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from schemas.favorito import AnimeFavoritoRead
 from schemas.pagination.kitsu import (
     KitsuPaginationParams,
@@ -128,10 +128,13 @@ def listar_categorias(
 def listar_animes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     animes, paging = favorito_service.list_favoritos_anime(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=animes, pagination=paging)
 
@@ -140,10 +143,13 @@ def listar_animes_favoritos(
 def listar_animes_assistidos(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     animes, paging = assistido_service.list_assistidos_anime(
-        current_user.id, paging_params.cursor, paging_params.limit
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=animes, pagination=paging)
 
@@ -159,10 +165,13 @@ def buscar_anime_id(anime_id: int, anime_service: AnimeServiceDep):
 def listar_avaliacoes_do_anime(
     anime_id: int,
     avaliacao_service: AvaliacaoServiceDep,
-    paging_params: CursorPaginationParams = Depends(),
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
     avaliacoes, paging = avaliacao_service.list_avaliacoes_anime(
-        anime_id, paging_params.cursor, paging_params.limit
+        anime_id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
     )
     return CursorPage(data=avaliacoes, pagination=paging)
 

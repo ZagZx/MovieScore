@@ -129,6 +129,16 @@ As avaliações também utilizam paginação por cursor:
 
 O cursor corresponde ao `id` da avaliação.
 
+As listagens de favoritos, assistidos e avaliações aceitam o parâmetro
+`ordenacao`:
+
+- `ordenacao=recentes` (padrão): mais recentes primeiro;
+- `ordenacao=antigos`: mais antigos primeiro.
+
+Quando a listagem é paginada, o cursor continua sendo o ID do registro, mas a
+consulta usa a data da linha apontada pelo cursor e o ID como desempate. Isso
+mantém a navegação correta mesmo quando dois registros possuem a mesma data.
+
 ## Paginação do TMDB
 
 O TMDB utiliza páginas numeradas. A API recebe `page` e `limit`; o parâmetro

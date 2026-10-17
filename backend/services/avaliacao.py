@@ -13,12 +13,12 @@ from schemas.avaliacao import (
     AvaliacaoCreate,
     AvaliacaoUpdate,
 )
-from schemas.pagination.cursor import CursorPagination
 from services.usuario import UsuarioServiceDep
 from services.conteudo import ConteudoServiceDep
 from services.serie import SerieServiceDep
 from services.filme import FilmeServiceDep
 from services.anime import AnimeServiceDep
+from schemas.pagination.cursor import CursorPagination, OrdenacaoCursor
 
 
 class AvaliacaoService:
@@ -39,12 +39,16 @@ class AvaliacaoService:
         self.anime_service = anime_service
 
     def list_avaliacoes_usuario(
-        self, usuario_id: int, last_id: int, limit: int
+        self,
+        usuario_id: int,
+        last_id: int,
+        limit: int,
+        ordenacao: OrdenacaoCursor,
     ) -> tuple[list[AvaliacaoUsuarioRead], CursorPagination]:
         """Retorna uma página de avaliações do usuário autenticado."""
         usuario = self.usuario_service.get_usuario(usuario_id)
         avaliacoes, has_more = self.avaliacao_repository.list_avaliacoes_by_usuario(
-            usuario, last_id, limit
+            usuario, last_id, limit, ordenacao
         )
         items = AvaliacaoMapper.map_avaliacoes_usuario(avaliacoes)
         return items, CursorPagination(
@@ -53,13 +57,18 @@ class AvaliacaoService:
         )
 
     def list_avaliacoes_conteudo(
-        self, id_externo: int, tipo: TipoConteudo, last_id: int, limit: int
+        self,
+        id_externo: int,
+        tipo: TipoConteudo,
+        last_id: int,
+        limit: int,
+        ordenacao: OrdenacaoCursor,
     ) -> tuple[list[AvaliacaoConteudoRead], CursorPagination]:
         conteudo = self.conteudo_service.get_conteudo_by_id_externo_and_tipo(
             id_externo, tipo
         )
         avaliacoes, has_more = self.avaliacao_repository.list_avaliacoes_by_conteudo(
-            conteudo, last_id, limit
+            conteudo, last_id, limit, ordenacao
         )
         items = AvaliacaoMapper.map_avaliacoes_conteudo(avaliacoes)
         return items, CursorPagination(
@@ -68,22 +77,28 @@ class AvaliacaoService:
         )
 
     def list_avaliacoes_serie(
-        self, serie_id: int, last_id: int, limit: int
+        self, serie_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[AvaliacaoConteudoRead], CursorPagination]:
         """Retorna todas as avaliações de uma série específica."""
-        return self.list_avaliacoes_conteudo(serie_id, tipo="serie", last_id=last_id, limit=limit)
+        return self.list_avaliacoes_conteudo(
+            serie_id, tipo="serie", last_id=last_id, limit=limit, ordenacao=ordenacao
+        )
 
     # --- Filme evaluations ---
     def list_avaliacoes_filme(
-        self, filme_id: int, last_id: int, limit: int
+        self, filme_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[AvaliacaoConteudoRead], CursorPagination]:
-        return self.list_avaliacoes_conteudo(filme_id, tipo="filme", last_id=last_id, limit=limit)
+        return self.list_avaliacoes_conteudo(
+            filme_id, tipo="filme", last_id=last_id, limit=limit, ordenacao=ordenacao
+        )
 
     # --- Anime evaluations ---
     def list_avaliacoes_anime(
-        self, anime_id: int, last_id: int, limit: int
+        self, anime_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
     ) -> tuple[list[AvaliacaoConteudoRead], CursorPagination]:
-        return self.list_avaliacoes_conteudo(anime_id, tipo="anime", last_id=last_id, limit=limit)
+        return self.list_avaliacoes_conteudo(
+            anime_id, tipo="anime", last_id=last_id, limit=limit, ordenacao=ordenacao
+        )
 
     def get_avaliacao_usuario_conteudo(
         self, usuario_id: int, conteudo_id: int
