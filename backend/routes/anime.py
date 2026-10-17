@@ -33,8 +33,7 @@ def buscar_animes(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     animes, total_results = anime_service.list_animes(
-        filtros=filtros,
-        paginacao=paginacao
+        filtros=filtros, paginacao=paginacao
     )
 
     return KitsuPage(
@@ -52,9 +51,7 @@ def listar_animes_em_alta(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_em_alta(
-        paginacao=paginacao
-    )
+    animes, total_results = anime_service.list_animes_em_alta(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
@@ -71,9 +68,7 @@ def listar_animes_populares(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_populares(
-        paginacao=paginacao
-    )
+    animes, total_results = anime_service.list_animes_populares(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
@@ -90,9 +85,7 @@ def listar_animes_em_breve(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_em_breve(
-        paginacao=paginacao
-    )
+    animes, total_results = anime_service.list_animes_em_breve(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
@@ -109,9 +102,7 @@ def listar_categorias(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    categorias, total_results = anime_service.list_categorias(
-        paginacao=paginacao
-    )
+    categorias, total_results = anime_service.list_categorias(paginacao=paginacao)
 
     return KitsuPage(
         data=categorias,

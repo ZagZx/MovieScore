@@ -60,9 +60,7 @@ class AnimeService:
         self, filtros: AnimeFiltros, paginacao: KitsuPaginationParams
     ) -> tuple[list[AnimeRead], int]:
         self._validar_filtros(filtros)
-        return self.anime_repository.search_animes(
-            filtros=filtros, paginacao=paginacao
-        )
+        return self.anime_repository.search_animes(filtros=filtros, paginacao=paginacao)
 
     def list_animes_em_alta(
         self, paginacao: KitsuPaginationParams

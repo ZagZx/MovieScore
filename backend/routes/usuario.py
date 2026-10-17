@@ -9,7 +9,11 @@ from schemas.usuario import (
 from schemas.avaliacao import AvaliacaoUsuarioRead
 
 # from schemas.favorito import FavoritoRead
-from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPaginationParams, CursorPage
+from schemas.pagination.cursor import (
+    CursorMediaPaginationParams,
+    CursorPaginationParams,
+    CursorPage,
+)
 from auth.dependencies import CurrentUsuarioDep
 
 usuario_router = APIRouter(prefix="/usuarios", tags=["usuarios"])

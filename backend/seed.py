@@ -39,9 +39,7 @@ fake = Faker("pt_BR")
 
 SENHA_PADRAO = get_password_hash("12345678")
 TIPOS_CONTEUDO = tuple(TipoConteudo)
-VALORES_ESTRELAS = tuple(
-    Decimal(str(valor / 2)) for valor in range(2, 11)
-)
+VALORES_ESTRELAS = tuple(Decimal(str(valor / 2)) for valor in range(2, 11))
 
 ModelT = TypeVar("ModelT")
 
@@ -76,7 +74,16 @@ def _obter_ids(session: Session, modelo: type[ModelT]) -> list[int]:
 
 
 def _limpar_banco(session: Session) -> None:
-    for modelo in (Avaliacao, Favorito, Assistido, Filme, Serie, Anime, Conteudo, Usuario):
+    for modelo in (
+        Avaliacao,
+        Favorito,
+        Assistido,
+        Filme,
+        Serie,
+        Anime,
+        Conteudo,
+        Usuario,
+    ):
         session.execute(delete(modelo))
     session.commit()
 
@@ -147,16 +154,16 @@ def popular_conteudos(
     if quantidade <= 0:
         return _obter_ids(session, Conteudo)
 
-    proximo_id_externo = (session.scalar(select(func.max(Conteudo.id_externo))) or 0) + 1
+    proximo_id_externo = (
+        session.scalar(select(func.max(Conteudo.id_externo))) or 0
+    ) + 1
     lote: list[object] = []
     inicio = time.perf_counter()
     for indice in range(quantidade):
         tipo = random.choice(TIPOS_CONTEUDO)
         conteudo = Conteudo(
             id_externo=proximo_id_externo + indice,
-            api_fonte=(
-                ApiFonte.KITSU if tipo is TipoConteudo.ANIME else ApiFonte.TMDB
-            ),
+            api_fonte=(ApiFonte.KITSU if tipo is TipoConteudo.ANIME else ApiFonte.TMDB),
             tipo=tipo,
         )
         lote.extend((conteudo, _criar_detalhe_conteudo(conteudo)))
@@ -224,9 +231,7 @@ def _popular_relacao(
             f"É necessário possuir usuários e conteúdos antes de criar {rotulo.lower()}."
         )
 
-    pares = _pares_disponiveis(
-        session, modelo, usuario_ids, conteudo_ids, quantidade
-    )
+    pares = _pares_disponiveis(session, modelo, usuario_ids, conteudo_ids, quantidade)
     lote: list[object] = []
     inicio = time.perf_counter()
     for indice, (usuario_id, conteudo_id) in enumerate(pares, start=1):
@@ -238,7 +243,9 @@ def _popular_relacao(
     return _obter_ids(session, modelo)
 
 
-def popular_avaliacoes(session: Session, quantidade: int, tamanho_lote: int) -> list[int]:
+def popular_avaliacoes(
+    session: Session, quantidade: int, tamanho_lote: int
+) -> list[int]:
     usuario_ids = _obter_ids(session, Usuario)
     conteudo_ids = _obter_ids(session, Conteudo)
     if quantidade <= 0:
@@ -273,11 +280,15 @@ def popular_avaliacoes(session: Session, quantidade: int, tamanho_lote: int) -> 
     return _obter_ids(session, Avaliacao)
 
 
-def popular_favoritos(session: Session, quantidade: int, tamanho_lote: int) -> list[int]:
+def popular_favoritos(
+    session: Session, quantidade: int, tamanho_lote: int
+) -> list[int]:
     return _popular_relacao(session, Favorito, quantidade, tamanho_lote, "Favoritos")
 
 
-def popular_assistidos(session: Session, quantidade: int, tamanho_lote: int) -> list[int]:
+def popular_assistidos(
+    session: Session, quantidade: int, tamanho_lote: int
+) -> list[int]:
     return _popular_relacao(session, Assistido, quantidade, tamanho_lote, "Assistidos")
 
 

@@ -57,18 +57,21 @@ class AssistidoRepository:
                 )
             )
         items = self.session.execute(
-            query
-            .join(Serie, Serie.conteudo_id == Assistido.conteudo_id)
+            query.join(Serie, Serie.conteudo_id == Assistido.conteudo_id)
             .join(Serie.conteudo)
             .options(contains_eager(Serie.conteudo))
             .where(Assistido.usuario_id == usuario.id)
             .order_by(
-                Assistido.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.data_adicao.asc(),
-                Assistido.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.id.asc(),
+                (
+                    Assistido.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.data_adicao.asc()
+                ),
+                (
+                    Assistido.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
@@ -101,18 +104,21 @@ class AssistidoRepository:
                 )
             )
         items = self.session.execute(
-            query
-            .join(Filme, Filme.conteudo_id == Assistido.conteudo_id)
+            query.join(Filme, Filme.conteudo_id == Assistido.conteudo_id)
             .join(Filme.conteudo)
             .options(contains_eager(Filme.conteudo))
             .where(Assistido.usuario_id == usuario.id)
             .order_by(
-                Assistido.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.data_adicao.asc(),
-                Assistido.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.id.asc(),
+                (
+                    Assistido.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.data_adicao.asc()
+                ),
+                (
+                    Assistido.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
@@ -145,18 +151,21 @@ class AssistidoRepository:
                 )
             )
         items = self.session.execute(
-            query
-            .join(Anime, Anime.conteudo_id == Assistido.conteudo_id)
+            query.join(Anime, Anime.conteudo_id == Assistido.conteudo_id)
             .join(Anime.conteudo)
             .options(contains_eager(Anime.conteudo))
             .where(Assistido.usuario_id == usuario.id)
             .order_by(
-                Assistido.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.data_adicao.asc(),
-                Assistido.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Assistido.id.asc(),
+                (
+                    Assistido.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.data_adicao.asc()
+                ),
+                (
+                    Assistido.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Assistido.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()

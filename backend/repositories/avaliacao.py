@@ -39,13 +39,18 @@ class AvaliacaoRepository:
                 )
             )
         avaliacoes = self.session.scalars(
-            query.where(Avaliacao.usuario_id == usuario.id).order_by(
-                Avaliacao.data_criacao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Avaliacao.data_criacao.asc(),
-                Avaliacao.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Avaliacao.id.asc(),
+            query.where(Avaliacao.usuario_id == usuario.id)
+            .order_by(
+                (
+                    Avaliacao.data_criacao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Avaliacao.data_criacao.asc()
+                ),
+                (
+                    Avaliacao.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Avaliacao.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
@@ -79,13 +84,18 @@ class AvaliacaoRepository:
                 )
             )
         avaliacoes = self.session.scalars(
-            query.where(Avaliacao.conteudo_id == conteudo.id).order_by(
-                Avaliacao.data_criacao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Avaliacao.data_criacao.asc(),
-                Avaliacao.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Avaliacao.id.asc(),
+            query.where(Avaliacao.conteudo_id == conteudo.id)
+            .order_by(
+                (
+                    Avaliacao.data_criacao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Avaliacao.data_criacao.asc()
+                ),
+                (
+                    Avaliacao.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Avaliacao.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()

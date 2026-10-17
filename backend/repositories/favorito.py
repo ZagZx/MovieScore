@@ -63,18 +63,21 @@ class FavoritoRepository:
                     )
                 )
         items = self.session.execute(
-            query
-            .join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
+            query.join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
             .join(Serie.conteudo)
             .options(contains_eager(Serie.conteudo))
             .where(Favorito.usuario_id == usuario.id)
             .order_by(
-                Favorito.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.data_adicao.asc(),
-                Favorito.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.id.asc(),
+                (
+                    Favorito.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.data_adicao.asc()
+                ),
+                (
+                    Favorito.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
@@ -116,18 +119,21 @@ class FavoritoRepository:
                     )
                 )
         items = self.session.execute(
-            query
-            .join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
+            query.join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
             .join(Filme.conteudo)
             .options(contains_eager(Filme.conteudo))
             .where(Favorito.usuario_id == usuario.id)
             .order_by(
-                Favorito.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.data_adicao.asc(),
-                Favorito.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.id.asc(),
+                (
+                    Favorito.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.data_adicao.asc()
+                ),
+                (
+                    Favorito.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
@@ -169,18 +175,21 @@ class FavoritoRepository:
                     )
                 )
         items = self.session.execute(
-            query
-            .join(Anime, Anime.conteudo_id == Favorito.conteudo_id)
+            query.join(Anime, Anime.conteudo_id == Favorito.conteudo_id)
             .join(Anime.conteudo)
             .options(contains_eager(Anime.conteudo))
             .where(Favorito.usuario_id == usuario.id)
             .order_by(
-                Favorito.data_adicao.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.data_adicao.asc(),
-                Favorito.id.desc()
-                if ordenacao is OrdenacaoCursor.RECENTES
-                else Favorito.id.asc(),
+                (
+                    Favorito.data_adicao.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.data_adicao.asc()
+                ),
+                (
+                    Favorito.id.desc()
+                    if ordenacao is OrdenacaoCursor.RECENTES
+                    else Favorito.id.asc()
+                ),
             )
             .limit(limit + 1)
         ).all()
