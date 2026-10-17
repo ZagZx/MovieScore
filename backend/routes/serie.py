@@ -115,12 +115,18 @@ def buscar_serie(serie_id: int, serie_service: SerieServiceDep):
     return serie
 
 
-@series_router.get("/{serie_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
+@series_router.get(
+    "/{serie_id}/avaliacoes", response_model=CursorPage[AvaliacaoConteudoRead]
+)
 def listar_avaliacoes_da_serie(
     serie_id: int,
     avaliacao_service: AvaliacaoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return avaliacao_service.list_avaliacoes_serie(serie_id)
+    avaliacoes, paging = avaliacao_service.list_avaliacoes_serie(
+        serie_id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=avaliacoes, pagination=paging)
 
 
 @series_router.post(

@@ -11,21 +11,31 @@ class AvaliacaoRepository:
     def __init__(self, session: SessionDep):
         self.session = session
 
-    def list_avaliacoes_by_usuario(self, usuario: Usuario) -> list[Avaliacao]:
-        """Retorna todas as avaliações de um usuário específico."""
-        return self.session.scalars(
+    def list_avaliacoes_by_usuario(
+        self, usuario: Usuario, last_id: int, limit: int
+    ) -> tuple[list[Avaliacao], bool]:
+        """Retorna uma página de avaliações de um usuário específico."""
+        avaliacoes = self.session.scalars(
             select(Avaliacao)
-            .where(Avaliacao.usuario_id == usuario.id)
-            .order_by(Avaliacao.data_criacao.desc())
+            .where(Avaliacao.usuario_id == usuario.id, Avaliacao.id > last_id)
+            .order_by(Avaliacao.id)
+            .limit(limit + 1)
         ).all()
+        has_more = len(avaliacoes) > limit
+        return avaliacoes[:limit], has_more
 
-    def list_avaliacoes_by_conteudo(self, conteudo: Conteudo) -> list[Avaliacao]:
-        """Retorna todas as avaliações de um conteúdo específico."""
-        return self.session.scalars(
+    def list_avaliacoes_by_conteudo(
+        self, conteudo: Conteudo, last_id: int, limit: int
+    ) -> tuple[list[Avaliacao], bool]:
+        """Retorna uma página de avaliações de um conteúdo específico."""
+        avaliacoes = self.session.scalars(
             select(Avaliacao)
-            .where(Avaliacao.conteudo_id == conteudo.id)
-            .order_by(Avaliacao.data_criacao.desc())
+            .where(Avaliacao.conteudo_id == conteudo.id, Avaliacao.id > last_id)
+            .order_by(Avaliacao.id)
+            .limit(limit + 1)
         ).all()
+        has_more = len(avaliacoes) > limit
+        return avaliacoes[:limit], has_more
 
     def get_avaliacao_by_usuario_and_conteudo(
         self, usuario: Usuario, conteudo: Conteudo

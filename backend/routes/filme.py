@@ -136,12 +136,18 @@ def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
     return filme_service.get_filme(filme_id=filme_id)
 
 
-@filmes_router.get("/{filme_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
+@filmes_router.get(
+    "/{filme_id}/avaliacoes", response_model=CursorPage[AvaliacaoConteudoRead]
+)
 def listar_avaliacoes_do_filme(
     filme_id: int,
     avaliacao_service: AvaliacaoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return avaliacao_service.list_avaliacoes_filme(filme_id)
+    avaliacoes, paging = avaliacao_service.list_avaliacoes_filme(
+        filme_id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=avaliacoes, pagination=paging)
 
 
 @filmes_router.post(

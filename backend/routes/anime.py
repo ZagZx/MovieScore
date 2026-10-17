@@ -153,12 +153,18 @@ def buscar_anime_id(anime_id: int, anime_service: AnimeServiceDep):
     return anime_service.get_anime(anime_id=anime_id)
 
 
-@animes_router.get("/{anime_id}/avaliacoes", response_model=list[AvaliacaoConteudoRead])
+@animes_router.get(
+    "/{anime_id}/avaliacoes", response_model=CursorPage[AvaliacaoConteudoRead]
+)
 def listar_avaliacoes_do_anime(
     anime_id: int,
     avaliacao_service: AvaliacaoServiceDep,
+    paging_params: CursorPaginationParams = Depends(),
 ):
-    return avaliacao_service.list_avaliacoes_anime(anime_id)
+    avaliacoes, paging = avaliacao_service.list_avaliacoes_anime(
+        anime_id, paging_params.cursor, paging_params.limit
+    )
+    return CursorPage(data=avaliacoes, pagination=paging)
 
 
 @animes_router.post(

@@ -120,6 +120,15 @@ As listagens de conteúdos favoritos seguem o mesmo contrato:
 
 O cursor corresponde ao `id` do registro de favorito.
 
+As avaliações também utilizam paginação por cursor:
+
+- `GET /usuarios/avaliacoes`;
+- `GET /filmes/{filme_id}/avaliacoes`;
+- `GET /series/{serie_id}/avaliacoes`;
+- `GET /animes/{anime_id}/avaliacoes`.
+
+O cursor corresponde ao `id` da avaliação.
+
 ## Paginação do TMDB
 
 O TMDB utiliza páginas numeradas. A API recebe `page` e `limit`; o parâmetro
