@@ -7,6 +7,7 @@ from models.anime import Anime
 from models.conteudo import ApiFonte, TipoConteudo
 from repositories import AnimeRepositoryDep
 from schemas.anime import AnimeFiltros, AnimeRead, CategoriaRead
+from schemas.pagination.kitsu import KitsuPaginationParams
 from .conteudo import ConteudoServiceDep
 
 
@@ -44,8 +45,10 @@ class AnimeService:
                 detail="'ano_inicio' não pode ser maior que 'ano_fim'.",
             )
 
-        if filtros.temporada is not None and filtros.ano is None and (
-            filtros.ano_inicio is not None or filtros.ano_fim is not None
+        if (
+            filtros.temporada is not None
+            and filtros.ano is None
+            and (filtros.ano_inicio is not None or filtros.ano_fim is not None)
         ):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -54,37 +57,37 @@ class AnimeService:
             )
 
     def list_animes(
-        self, filtros: AnimeFiltros, limit: int, offset: int
+        self, filtros: AnimeFiltros, paginacao: KitsuPaginationParams
     ) -> tuple[list[AnimeRead], int]:
         self._validar_filtros(filtros)
-        return self.anime_repository.search_animes(
-            filtros=filtros, limit=limit, offset=offset
-        )
+        return self.anime_repository.search_animes(filtros=filtros, paginacao=paginacao)
 
     def list_animes_em_alta(
-        self, limit: int, offset: int
+        self, paginacao: KitsuPaginationParams
     ) -> tuple[list[AnimeRead], int]:
-        return self.anime_repository.list_animes_em_alta(limit=limit, offset=offset)
+        return self.anime_repository.list_animes_em_alta(paginacao)
 
     def list_animes_populares(
-        self, limit: int, offset: int
+        self, paginacao: KitsuPaginationParams
     ) -> tuple[list[AnimeRead], int]:
-        return self.anime_repository.list_animes_populares(limit=limit, offset=offset)
+        return self.anime_repository.list_animes_populares(paginacao)
 
     def list_animes_em_breve(
-        self, limit: int, offset: int
+        self, paginacao: KitsuPaginationParams
     ) -> tuple[list[AnimeRead], int]:
-        return self.anime_repository.list_animes_em_breve(limit=limit, offset=offset)
+        return self.anime_repository.list_animes_em_breve(paginacao)
 
     def list_categorias(
-        self, limit: int, offset: int
+        self, paginacao: KitsuPaginationParams
     ) -> tuple[list[CategoriaRead], int]:
-        return self.anime_repository.list_categorias(limit=limit, offset=offset)
+        return self.anime_repository.list_categorias(paginacao)
 
     def get_anime_from_db(self, anime_id: int) -> Anime | None:
         return self.anime_repository.get_anime_by_id_externo(anime_id)
 
-    def get_anime_from_api_and_update_database(self, anime_id: int) -> tuple[AnimeRead, Anime]:
+    def get_anime_from_api_and_update_database(
+        self, anime_id: int
+    ) -> tuple[AnimeRead, Anime]:
         conteudo = self.conteudo_service.get_or_create_conteudo(
             id_externo=anime_id,
             api_fonte=ApiFonte.KITSU,

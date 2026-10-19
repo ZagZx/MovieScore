@@ -5,11 +5,13 @@ from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationPara
 from schemas.filme import FilmeFiltros, FilmeListRead, FilmeRead, GeneroFilme
 from schemas.favorito import FilmeFavoritoRead
 from schemas.assistido import FilmeAssistidoRead
+from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from services import AssistidoServiceDep, FilmeServiceDep, AvaliacaoServiceDep
 from services.favorito import FavoritoServiceDep
 from schemas.avaliacao import (
     AvaliacaoCreate,
-    AvaliacaoFilmeRead,
+    AvaliacaoBase,
+    AvaliacaoConteudoRead,
     AvaliacaoUpdate,
 )
 
@@ -21,7 +23,7 @@ def buscar_filmes(
     filme_service: FilmeServiceDep,
     filtros: FilmeFiltros = Depends(FilmeFiltros.as_dependency),
     busca: str | None = None,
-    paginacao: TmdbPaginationParams = Depends()
+    paginacao: TmdbPaginationParams = Depends(),
 ):
     filmes, total_pages, total_results = filme_service.search_filmes(
         busca=busca,
@@ -35,8 +37,8 @@ def buscar_filmes(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages
-        )
+            has_more=paginacao.page < total_pages,
+        ),
     )
 
 
@@ -55,8 +57,8 @@ def listar_filmes_em_alta(
             page=paginacao.page,
             total_pages=total_pages,
             total_results=total_results,
-            has_more=paginacao.page < total_pages
-        )
+            has_more=paginacao.page < total_pages,
+        ),
     )
 
 
@@ -105,20 +107,34 @@ def listar_generos_filmes(filme_service: FilmeServiceDep):
     return filme_service.list_generos()
 
 
-@filmes_router.get("/favoritos", response_model=list[FilmeFavoritoRead])
+@filmes_router.get("/favoritos", response_model=CursorPage[FilmeFavoritoRead])
 def listar_filmes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return favorito_service.list_favoritos_filme(current_user.id)
+    filmes, paging = favorito_service.list_favoritos_filme(
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=filmes, pagination=paging)
 
 
-@filmes_router.get("/assistidos", response_model=list[FilmeAssistidoRead])
+@filmes_router.get("/assistidos", response_model=CursorPage[FilmeAssistidoRead])
 def listar_filmes_assistidos(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return assistido_service.list_assistidos_filme(current_user.id)
+    filmes, paging = assistido_service.list_assistidos_filme(
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=filmes, pagination=paging)
 
 
 @filmes_router.get("/{filme_id}", response_model=FilmeRead)
@@ -126,17 +142,26 @@ def buscar_filme_id(filme_id: int, filme_service: FilmeServiceDep):
     return filme_service.get_filme(filme_id=filme_id)
 
 
-@filmes_router.get("/{filme_id}/avaliacoes", response_model=list[AvaliacaoFilmeRead])
+@filmes_router.get(
+    "/{filme_id}/avaliacoes", response_model=CursorPage[AvaliacaoConteudoRead]
+)
 def listar_avaliacoes_do_filme(
     filme_id: int,
     avaliacao_service: AvaliacaoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return avaliacao_service.list_avaliacoes_filme(filme_id)
+    avaliacoes, paging = avaliacao_service.list_avaliacoes_filme(
+        filme_id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=avaliacoes, pagination=paging)
 
 
 @filmes_router.post(
     "/{filme_id}/avaliacoes",
-    response_model=AvaliacaoFilmeRead,
+    response_model=AvaliacaoBase,
     status_code=status.HTTP_201_CREATED,
 )
 def criar_avaliacao_do_filme(
@@ -145,17 +170,21 @@ def criar_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao_filme(filme_id, current_user.id, avaliacao)
+    return avaliacao_service.create_avaliacao(
+        avaliacao, filme_id, current_user.id, tipo_conteudo="filme"
+    )
 
 
-@filmes_router.patch("/{filme_id}/avaliacoes", response_model=AvaliacaoFilmeRead)
+@filmes_router.patch("/{filme_id}/avaliacoes", response_model=AvaliacaoBase)
 def atualizar_avaliacao_do_filme(
     filme_id: int,
     avaliacao: AvaliacaoUpdate,
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao_filme(filme_id, current_user.id, avaliacao)
+    return avaliacao_service.update_avaliacao(
+        avaliacao, filme_id, current_user.id, tipo_conteudo="filme"
+    )
 
 
 @filmes_router.delete("/{filme_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
@@ -164,7 +193,8 @@ def remover_avaliacao_do_filme(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    avaliacao_service.delete_avaliacao_filme(filme_id, current_user.id)
+
+    avaliacao_service.delete_avaliacao(filme_id, current_user.id, tipo_conteudo="filme")
 
 
 @filmes_router.post("/{filme_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)

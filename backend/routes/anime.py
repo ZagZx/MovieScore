@@ -3,16 +3,23 @@ from fastapi import APIRouter, Depends, status
 from auth.dependencies import CurrentUsuarioDep
 from schemas.anime import AnimeFiltros, AnimeRead, CategoriaRead
 from schemas.assistido import AnimeAssistidoRead
+from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from schemas.favorito import AnimeFavoritoRead
 from schemas.pagination.kitsu import (
     KitsuPaginationParams,
     KitsuPage,
     KitsuPagination,
 )
-from services import AnimeServiceDep, AssistidoServiceDep, FavoritoServiceDep, AvaliacaoServiceDep
+from services import (
+    AnimeServiceDep,
+    AssistidoServiceDep,
+    FavoritoServiceDep,
+    AvaliacaoServiceDep,
+)
 from schemas.avaliacao import (
     AvaliacaoCreate,
-    AvaliacaoAnimeRead,
+    AvaliacaoBase,
+    AvaliacaoConteudoRead,
     AvaliacaoUpdate,
 )
 
@@ -26,18 +33,15 @@ def buscar_animes(
     paginacao: KitsuPaginationParams = Depends(),
 ):
     animes, total_results = anime_service.list_animes(
-        filtros=filtros,
-        limit=paginacao.limit,
-        offset=paginacao.offset,
+        filtros=filtros, paginacao=paginacao
     )
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -47,18 +51,14 @@ def listar_animes_em_alta(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_em_alta(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
-    )
+    animes, total_results = anime_service.list_animes_em_alta(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -68,18 +68,14 @@ def listar_animes_populares(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_populares(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
-    )
+    animes, total_results = anime_service.list_animes_populares(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -89,18 +85,14 @@ def listar_animes_em_breve(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    animes, total_results = anime_service.list_animes_em_breve(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
-    )
+    animes, total_results = anime_service.list_animes_em_breve(paginacao=paginacao)
 
     return KitsuPage(
         data=animes,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
@@ -110,36 +102,46 @@ def listar_categorias(
     anime_service: AnimeServiceDep,
     paginacao: KitsuPaginationParams = Depends(),
 ):
-    categorias, total_results = anime_service.list_categorias(
-        limit=paginacao.limit,
-        offset=paginacao.offset,
-    )
+    categorias, total_results = anime_service.list_categorias(paginacao=paginacao)
 
     return KitsuPage(
         data=categorias,
         pagination=KitsuPagination(
-            limit=paginacao.limit,
-            offset=paginacao.offset,
+            page=paginacao.page,
             total_results=total_results,
-            has_more=paginacao.offset + paginacao.limit < total_results,
+            has_more=paginacao.page * 20 < total_results,
         ),
     )
 
 
-@animes_router.get("/favoritos", response_model=list[AnimeFavoritoRead])
+@animes_router.get("/favoritos", response_model=CursorPage[AnimeFavoritoRead])
 def listar_animes_favoritos(
     current_user: CurrentUsuarioDep,
     favorito_service: FavoritoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return favorito_service.list_favoritos_anime(current_user.id)
+    animes, paging = favorito_service.list_favoritos_anime(
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=animes, pagination=paging)
 
 
-@animes_router.get("/assistidos", response_model=list[AnimeAssistidoRead])
+@animes_router.get("/assistidos", response_model=CursorPage[AnimeAssistidoRead])
 def listar_animes_assistidos(
     current_user: CurrentUsuarioDep,
     assistido_service: AssistidoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return assistido_service.list_assistidos_anime(current_user.id)
+    animes, paging = assistido_service.list_assistidos_anime(
+        current_user.id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=animes, pagination=paging)
 
 
 @animes_router.get("/{anime_id}", response_model=AnimeRead)
@@ -147,17 +149,26 @@ def buscar_anime_id(anime_id: int, anime_service: AnimeServiceDep):
     return anime_service.get_anime(anime_id=anime_id)
 
 
-@animes_router.get("/{anime_id}/avaliacoes", response_model=list[AvaliacaoAnimeRead])
+@animes_router.get(
+    "/{anime_id}/avaliacoes", response_model=CursorPage[AvaliacaoConteudoRead]
+)
 def listar_avaliacoes_do_anime(
     anime_id: int,
     avaliacao_service: AvaliacaoServiceDep,
+    paging_params: CursorMediaPaginationParams = Depends(),
 ):
-    return avaliacao_service.list_avaliacoes_anime(anime_id)
+    avaliacoes, paging = avaliacao_service.list_avaliacoes_anime(
+        anime_id,
+        paging_params.cursor,
+        paging_params.limit,
+        paging_params.ordenacao,
+    )
+    return CursorPage(data=avaliacoes, pagination=paging)
 
 
 @animes_router.post(
     "/{anime_id}/avaliacoes",
-    response_model=AvaliacaoAnimeRead,
+    response_model=AvaliacaoBase,
     status_code=status.HTTP_201_CREATED,
 )
 def criar_avaliacao_do_anime(
@@ -166,17 +177,21 @@ def criar_avaliacao_do_anime(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.create_avaliacao_anime(anime_id, current_user.id, avaliacao)
+    return avaliacao_service.create_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
 
 
-@animes_router.patch("/{anime_id}/avaliacoes", response_model=AvaliacaoAnimeRead)
+@animes_router.patch("/{anime_id}/avaliacoes", response_model=AvaliacaoBase)
 def atualizar_avaliacao_do_anime(
     anime_id: int,
     avaliacao: AvaliacaoUpdate,
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    return avaliacao_service.update_avaliacao_anime(anime_id, current_user.id, avaliacao)
+    return avaliacao_service.update_avaliacao(
+        avaliacao, anime_id, current_user.id, tipo_conteudo="anime"
+    )
 
 
 @animes_router.delete("/{anime_id}/avaliacoes", status_code=status.HTTP_204_NO_CONTENT)
@@ -185,7 +200,7 @@ def remover_avaliacao_do_anime(
     current_user: CurrentUsuarioDep,
     avaliacao_service: AvaliacaoServiceDep,
 ):
-    avaliacao_service.delete_avaliacao_anime(anime_id, current_user.id)
+    avaliacao_service.delete_avaliacao(anime_id, current_user.id, tipo_conteudo="anime")
 
 
 @animes_router.post("/{anime_id}/favoritos", status_code=status.HTTP_204_NO_CONTENT)

@@ -109,14 +109,14 @@ class UsuarioService:
 
         if usuario_data.email and usuario_data.email != usuario.email:
             if self.get_usuario_by_email(usuario_data.email):
-                raise ConflictException("Já existe um usuário cadastrado com esse email")
+                raise ConflictException(
+                    "Já existe um usuário cadastrado com esse email"
+                )
             usuario.email = usuario_data.email
         if usuario_data.nome:
             usuario.nome = usuario_data.nome
         if usuario_data.senha:
             usuario.senha_hash = get_password_hash(usuario_data.senha)
-        if usuario_data.sobre_mim is not None:
-            usuario.sobre_mim = usuario_data.sobre_mim
 
         return self.usuario_repository.update_usuario(usuario)
 
