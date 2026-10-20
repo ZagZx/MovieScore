@@ -2,20 +2,20 @@
 
 import useCarousel from "@/hooks/useCarousel";
 import CarouselSection from "@/components/ui/CarouselSection";
-import type { FilmeListagem } from "@/lib/types/filme";
 import type { ActionResult } from "@/lib/types/action-result";
 import type { TmdbPage, TmdbPagination } from "@/lib/types/pagination";
 import { useState } from "react";
 import Image from "next/image";
+import { SerieListagem } from "@/lib/types/serie";
 
 interface SeriesCarouselProps {
   title?: string;
   loading?: "eager" | "lazy";
-  series: FilmeListagem[];
+  series: SerieListagem[];
   pagination?: TmdbPagination;
   loadNextPage?: (
     page: number,
-  ) => Promise<ActionResult<TmdbPage<FilmeListagem>>>;
+  ) => Promise<ActionResult<TmdbPage<SerieListagem>>>;
 }
 
 export default function SeriesCarousel({
@@ -38,7 +38,7 @@ export default function SeriesCarousel({
     handleAfterChange,
   } = useCarousel({
     initialItems: series,
-    getItemId: (filme) => filme.id,
+    getItemId: (serie) => serie.id,
     initialHasMore: pagination?.has_more ?? false,
     loadMore: loadNextPage
       ? async () => {
@@ -60,7 +60,7 @@ export default function SeriesCarousel({
     <CarouselSection
       title={title}
       items={items}
-      getItemKey={(filme) => filme.id}
+      getItemKey={(serie) => serie.id}
       carouselRef={carouselRef}
       isLoading={isLoading}
       canScrollPrevious={canScrollPrevious}
