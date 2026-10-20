@@ -1,3 +1,5 @@
+import { Anime } from "./anime";
+
 export interface CursorPagination {
     cursor: number | null;
     has_more: boolean;
@@ -16,8 +18,12 @@ export interface TmdbPage<T> {
 }
 
 export interface KitsuPagination {
-    limit: number;
-    offset: number;
+    page: number;
     total_results: number;
     has_more: boolean;
+}
+
+export interface KitsuPage {
+    data: Anime[];
+    pagination: KitsuPagination;
 }

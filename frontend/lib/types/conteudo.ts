@@ -1,3 +1,7 @@
+import { Anime } from "./anime";
+import { Filme, FilmeListagem } from "./filme";
+import { Serie, SerieListagem } from "./serie";
+
 export interface Categoria {
     id: number;
     nome: string;
@@ -19,10 +23,9 @@ export enum TipoConteudo {
     SERIE = "Série",
 }
 
-export interface Conteudo {
-    id: number;
-    id_externo: number;
-    api_fonte: string;
-    tipo: TipoConteudo;
-    data_adicao: string;
+export type Conteudo = FilmeListagem | Filme | SerieListagem | Serie | Anime;
+
+export interface ConteudoTitulos {
+  titulo: string;
+  tituloAlternativo?: string;
 }

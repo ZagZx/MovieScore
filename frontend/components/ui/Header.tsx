@@ -19,7 +19,7 @@ const navItems = [
   { href: "/perfil", label: "Perfil", icon: HiUser },
 ];
 
-export default function HeaderHome() {
+export default function Header() {
   const pathname = usePathname();
 
   return (
