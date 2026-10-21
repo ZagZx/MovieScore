@@ -19,7 +19,7 @@ export default function Select({
   const Icon = icon;
 
   return(
-    <div className="relative ml-auto w-fit">
+    <div className="relative w-fit">
       { Icon &&
         <div className="pointer-events-none absolute left-3 top-1/2 z-10 size-4 -translate-y-1/2">
           <Icon />
