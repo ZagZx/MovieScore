@@ -8,6 +8,7 @@ from schemas.usuario import (
     UsuarioRead,
     UsuarioUpdate,
 )
+from models.conteudo import TipoConteudo
 from schemas.pagination.cursor import (
     CursorMediaPaginationParams,
     CursorPaginationParams,
@@ -50,14 +51,23 @@ def listar_avaliacoes_do_usuario_logado(
     )
     return CursorPage(data=avaliacoes, pagination=paging)
 
-# TODO
-# @usuario_router.get("/favoritos", response_model=CursorPage[FavoritoRead])
-# def listar_favoritos_do_usuario_logado(
-#     current_user: CurrentUsuarioDep,
-#     favorito_service: FavoritoServiceDep,
-#     paging_params: CursorMediaPaginationParams = Depends(),  
-# ):
-#     return 
+
+@usuario_router.get("/favoritos", response_model=CursorPage[FavoritoRead])
+def listar_favoritos_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    favorito_service: FavoritoServiceDep,
+    tipo: TipoConteudo | None = None,
+    paging_params: CursorMediaPaginationParams = Depends(),
+):
+
+    items, pagination = favorito_service.list_conteudos_favoritos(
+        current_user.id,
+        paging_params.ordenacao,
+        tipo,
+        paging_params.cursor,
+        paging_params.limit,
+    )
+    return CursorPage(data=items, pagination=pagination)
 
 
 @usuario_router.patch("", response_model=UsuarioRead)

@@ -5,8 +5,11 @@ from fastapi import Depends
 from mappers.favorito import FavoritoMapper
 from exceptions import ConflictException, EntityNotFoundException, NotFoundException
 from models import Favorito
+from models.conteudo import TipoConteudo
 from repositories import FavoritoRepositoryDep
-from schemas.favorito import AnimeFavoritoRead, FilmeFavoritoRead, SerieFavoritaRead
+from schemas.favorito import (
+    FavoritoRead,
+)
 from schemas.pagination.cursor import CursorPagination, OrdenacaoCursor
 from .usuario import UsuarioServiceDep
 from .serie import SerieServiceDep
@@ -35,44 +38,70 @@ class FavoritoService:
             raise EntityNotFoundException("Favorito", favorito_id)
         return favorito
 
-    def list_favoritos_serie(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[SerieFavoritaRead], CursorPagination]:
+    def list_conteudos_favoritos(
+        self,
+        usuario_id: int,
+        ordenacao: OrdenacaoCursor,
+        tipo: TipoConteudo | None,
+        last_id: int,
+        limit: int,
+    ) -> tuple[list[FavoritoRead], CursorPagination]:
         usuario = self.usuario_service.get_usuario(usuario_id)
-        favoritos, has_more = self.favorito_repository.list_series_favoritas(
-            usuario, last_id, limit, ordenacao
-        )
-        items = FavoritoMapper.map_series(favoritos)
-        return items, CursorPagination(
-            cursor=favoritos[-1][1].id if favoritos else None,
-            has_more=has_more,
+
+        conteudos_favoritos, has_more = (
+            self.favorito_repository.list_conteudos_favoritos(
+                usuario=usuario,
+                ordenacao=ordenacao,
+                tipo=tipo,
+                last_id=last_id,
+                limit=limit,
+            )
         )
 
-    def list_favoritos_filme(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[FilmeFavoritoRead], CursorPagination]:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        favoritos, has_more = self.favorito_repository.list_filmes_favoritos(
-            usuario, last_id, limit, ordenacao
-        )
-        items = FavoritoMapper.map_filmes(favoritos)
+        items = FavoritoMapper.map_conteudos(conteudos_favoritos)
+
         return items, CursorPagination(
-            cursor=favoritos[-1][1].id if favoritos else None,
-            has_more=has_more,
+            cursor=items[-1].id if items else None, has_more=has_more
         )
 
-    def list_favoritos_anime(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[AnimeFavoritoRead], CursorPagination]:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        favoritos, has_more = self.favorito_repository.list_animes_favoritos(
-            usuario, last_id, limit, ordenacao
-        )
-        items = FavoritoMapper.map_animes(favoritos)
-        return items, CursorPagination(
-            cursor=favoritos[-1][1].id if favoritos else None,
-            has_more=has_more,
-        )
+    # def list_favoritos_serie(
+    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
+    # ) -> tuple[list[SerieFavoritaRead], CursorPagination]:
+    #     usuario = self.usuario_service.get_usuario(usuario_id)
+    #     favoritos, has_more = self.favorito_repository.list_series_favoritas(
+    #         usuario, last_id, limit, ordenacao
+    #     )
+    #     items = FavoritoMapper.map_series(favoritos)
+    #     return items, CursorPagination(
+    #         cursor=favoritos[-1][1].id if favoritos else None,
+    #         has_more=has_more,
+    #     )
+
+    # def list_favoritos_filme(
+    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
+    # ) -> tuple[list[FilmeFavoritoRead], CursorPagination]:
+    #     usuario = self.usuario_service.get_usuario(usuario_id)
+    #     favoritos, has_more = self.favorito_repository.list_filmes_favoritos(
+    #         usuario, last_id, limit, ordenacao
+    #     )
+    #     items = FavoritoMapper.map_filmes(favoritos)
+    #     return items, CursorPagination(
+    #         cursor=favoritos[-1][1].id if favoritos else None,
+    #         has_more=has_more,
+    #     )
+
+    # def list_favoritos_anime(
+    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
+    # ) -> tuple[list[AnimeFavoritoRead], CursorPagination]:
+    #     usuario = self.usuario_service.get_usuario(usuario_id)
+    #     favoritos, has_more = self.favorito_repository.list_animes_favoritos(
+    #         usuario, last_id, limit, ordenacao
+    #     )
+    #     items = FavoritoMapper.map_animes(favoritos)
+    #     return items, CursorPagination(
+    #         cursor=favoritos[-1][1].id if favoritos else None,
+    #         has_more=has_more,
+    #     )
 
     def add_favorito_serie(self, serie_id: int, usuario_id: int):
         usuario = self.usuario_service.get_usuario(usuario_id)

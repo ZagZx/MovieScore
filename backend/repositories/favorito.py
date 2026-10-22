@@ -6,6 +6,7 @@ from sqlalchemy.orm import contains_eager
 
 from database import SessionDep
 from models import Anime, Favorito, Usuario, Conteudo, Filme, Serie
+from models.conteudo import TipoConteudo
 from schemas.pagination.cursor import OrdenacaoCursor
 
 
@@ -28,19 +29,37 @@ class FavoritoRepository:
     def get_favoritos_usuario(self, usuario: Usuario) -> list[Favorito]:
         return self.session.scalars(select(Favorito).where(Favorito.usuario == usuario))
 
-    def list_series_favoritas(
+    def list_conteudos_favoritos(
         self,
         usuario: Usuario,
+        ordenacao: OrdenacaoCursor,
+        tipo: TipoConteudo | None,
         last_id: int,
         limit: int,
-        ordenacao: OrdenacaoCursor,
-    ) -> tuple[list[tuple[Serie, Favorito]], bool]:
+    ):
+        query = (
+            select(Filme, Serie, Anime, Favorito)
+            .select_from(Favorito)
+            .join(Conteudo, Conteudo.id == Favorito.conteudo_id)
+            .outerjoin(Filme, Filme.conteudo_id == Conteudo.id)
+            .outerjoin(Serie, Serie.conteudo_id == Conteudo.id)
+            .outerjoin(Anime, Anime.conteudo_id == Conteudo.id)
+            .options(
+                contains_eager(Filme.conteudo),
+                contains_eager(Serie.conteudo),
+                contains_eager(Anime.conteudo),
+            )
+            .where(Favorito.usuario_id == usuario.id)
+        )
+        if tipo:
+            query = query.where(Conteudo.tipo == tipo)
+
         cursor_date = self.session.scalar(
             select(Favorito.data_adicao).where(
                 Favorito.id == last_id, Favorito.usuario_id == usuario.id
             )
         )
-        query = select(Serie, Favorito).select_from(Favorito)
+
         if cursor_date:
             if ordenacao is OrdenacaoCursor.RECENTES:
                 query = query.where(
@@ -62,139 +81,183 @@ class FavoritoRepository:
                         ),
                     )
                 )
-        items = self.session.execute(
-            query.join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
-            .join(Serie.conteudo)
-            .options(contains_eager(Serie.conteudo))
-            .where(Favorito.usuario_id == usuario.id)
-            .order_by(
-                (
-                    Favorito.data_adicao.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.data_adicao.asc()
-                ),
-                (
-                    Favorito.id.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.id.asc()
-                ),
-            )
-            .limit(limit + 1)
-        ).all()
+        if ordenacao is OrdenacaoCursor.RECENTES:
+            order = (Favorito.data_adicao.desc(), Favorito.id.desc())
+        else:
+            order = (Favorito.data_adicao.asc(), Favorito.id.asc())
+        query = query.order_by(*order).limit(limit + 1)
+
+        items = self.session.execute(query).all()
         has_more = len(items) > limit
         return items[:limit], has_more
 
-    def list_filmes_favoritos(
-        self,
-        usuario: Usuario,
-        last_id: int,
-        limit: int,
-        ordenacao: OrdenacaoCursor,
-    ) -> tuple[list[tuple[Filme, Favorito]], bool]:
-        cursor_date = self.session.scalar(
-            select(Favorito.data_adicao).where(
-                Favorito.id == last_id, Favorito.usuario_id == usuario.id
-            )
-        )
-        query = select(Filme, Favorito).select_from(Favorito)
-        if cursor_date:
-            if ordenacao is OrdenacaoCursor.RECENTES:
-                query = query.where(
-                    or_(
-                        Favorito.data_adicao < cursor_date,
-                        and_(
-                            Favorito.data_adicao == cursor_date,
-                            Favorito.id < last_id,
-                        ),
-                    )
-                )
-            else:
-                query = query.where(
-                    or_(
-                        Favorito.data_adicao > cursor_date,
-                        and_(
-                            Favorito.data_adicao == cursor_date,
-                            Favorito.id > last_id,
-                        ),
-                    )
-                )
-        items = self.session.execute(
-            query.join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
-            .join(Filme.conteudo)
-            .options(contains_eager(Filme.conteudo))
-            .where(Favorito.usuario_id == usuario.id)
-            .order_by(
-                (
-                    Favorito.data_adicao.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.data_adicao.asc()
-                ),
-                (
-                    Favorito.id.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.id.asc()
-                ),
-            )
-            .limit(limit + 1)
-        ).all()
-        has_more = len(items) > limit
-        return items[:limit], has_more
+    # def list_series_favoritas(
+    #     self,
+    #     usuario: Usuario,
+    #     last_id: int,
+    #     limit: int,
+    #     ordenacao: OrdenacaoCursor,
+    # ) -> tuple[list[tuple[Serie, Favorito]], bool]:
+    #     cursor_date = self.session.scalar(
+    #         select(Favorito.data_adicao).where(
+    #             Favorito.id == last_id, Favorito.usuario_id == usuario.id
+    #         )
+    #     )
+    #     query = select(Serie, Favorito).select_from(Favorito)
+    #     if cursor_date:
+    #         if ordenacao is OrdenacaoCursor.RECENTES:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao < cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id < last_id,
+    #                     ),
+    #                 )
+    #             )
+    #         else:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao > cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id > last_id,
+    #                     ),
+    #                 )
+    #             )
+    #     items = self.session.execute(
+    #         query.join(Serie, Serie.conteudo_id == Favorito.conteudo_id)
+    #         .join(Serie.conteudo)
+    #         .options(contains_eager(Serie.conteudo))
+    #         .where(Favorito.usuario_id == usuario.id)
+    #         .order_by(
+    #             (
+    #                 Favorito.data_adicao.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.data_adicao.asc()
+    #             ),
+    #             (
+    #                 Favorito.id.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.id.asc()
+    #             ),
+    #         )
+    #         .limit(limit + 1)
+    #     ).all()
+    #     has_more = len(items) > limit
+    #     return items[:limit], has_more
 
-    def list_animes_favoritos(
-        self,
-        usuario: Usuario,
-        last_id: int,
-        limit: int,
-        ordenacao: OrdenacaoCursor,
-    ) -> tuple[list[tuple[Anime, Favorito]], bool]:
-        cursor_date = self.session.scalar(
-            select(Favorito.data_adicao).where(
-                Favorito.id == last_id, Favorito.usuario_id == usuario.id
-            )
-        )
-        query = select(Anime, Favorito).select_from(Favorito)
-        if cursor_date:
-            if ordenacao is OrdenacaoCursor.RECENTES:
-                query = query.where(
-                    or_(
-                        Favorito.data_adicao < cursor_date,
-                        and_(
-                            Favorito.data_adicao == cursor_date,
-                            Favorito.id < last_id,
-                        ),
-                    )
-                )
-            else:
-                query = query.where(
-                    or_(
-                        Favorito.data_adicao > cursor_date,
-                        and_(
-                            Favorito.data_adicao == cursor_date,
-                            Favorito.id > last_id,
-                        ),
-                    )
-                )
-        items = self.session.execute(
-            query.join(Anime, Anime.conteudo_id == Favorito.conteudo_id)
-            .join(Anime.conteudo)
-            .options(contains_eager(Anime.conteudo))
-            .where(Favorito.usuario_id == usuario.id)
-            .order_by(
-                (
-                    Favorito.data_adicao.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.data_adicao.asc()
-                ),
-                (
-                    Favorito.id.desc()
-                    if ordenacao is OrdenacaoCursor.RECENTES
-                    else Favorito.id.asc()
-                ),
-            )
-            .limit(limit + 1)
-        ).all()
-        has_more = len(items) > limit
-        return items[:limit], has_more
+    # def list_filmes_favoritos(
+    #     self,
+    #     usuario: Usuario,
+    #     last_id: int,
+    #     limit: int,
+    #     ordenacao: OrdenacaoCursor,
+    # ) -> tuple[list[tuple[Filme, Favorito]], bool]:
+    #     cursor_date = self.session.scalar(
+    #         select(Favorito.data_adicao).where(
+    #             Favorito.id == last_id, Favorito.usuario_id == usuario.id
+    #         )
+    #     )
+    #     query = select(Filme, Favorito).select_from(Favorito)
+    #     if cursor_date:
+    #         if ordenacao is OrdenacaoCursor.RECENTES:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao < cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id < last_id,
+    #                     ),
+    #                 )
+    #             )
+    #         else:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao > cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id > last_id,
+    #                     ),
+    #                 )
+    #             )
+    #     items = self.session.execute(
+    #         query.join(Filme, Filme.conteudo_id == Favorito.conteudo_id)
+    #         .join(Filme.conteudo)
+    #         .options(contains_eager(Filme.conteudo))
+    #         .where(Favorito.usuario_id == usuario.id)
+    #         .order_by(
+    #             (
+    #                 Favorito.data_adicao.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.data_adicao.asc()
+    #             ),
+    #             (
+    #                 Favorito.id.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.id.asc()
+    #             ),
+    #         )
+    #         .limit(limit + 1)
+    #     ).all()
+    #     has_more = len(items) > limit
+    #     return items[:limit], has_more
+
+    # def list_animes_favoritos(
+    #     self,
+    #     usuario: Usuario,
+    #     last_id: int,
+    #     limit: int,
+    #     ordenacao: OrdenacaoCursor,
+    # ) -> tuple[list[tuple[Anime, Favorito]], bool]:
+    #     cursor_date = self.session.scalar(
+    #         select(Favorito.data_adicao).where(
+    #             Favorito.id == last_id, Favorito.usuario_id == usuario.id
+    #         )
+    #     )
+    #     query = select(Anime, Favorito).select_from(Favorito)
+    #     if cursor_date:
+    #         if ordenacao is OrdenacaoCursor.RECENTES:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao < cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id < last_id,
+    #                     ),
+    #                 )
+    #             )
+    #         else:
+    #             query = query.where(
+    #                 or_(
+    #                     Favorito.data_adicao > cursor_date,
+    #                     and_(
+    #                         Favorito.data_adicao == cursor_date,
+    #                         Favorito.id > last_id,
+    #                     ),
+    #                 )
+    #             )
+    #     items = self.session.execute(
+    #         query.join(Anime, Anime.conteudo_id == Favorito.conteudo_id)
+    #         .join(Anime.conteudo)
+    #         .options(contains_eager(Anime.conteudo))
+    #         .where(Favorito.usuario_id == usuario.id)
+    #         .order_by(
+    #             (
+    #                 Favorito.data_adicao.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.data_adicao.asc()
+    #             ),
+    #             (
+    #                 Favorito.id.desc()
+    #                 if ordenacao is OrdenacaoCursor.RECENTES
+    #                 else Favorito.id.asc()
+    #             ),
+    #         )
+    #         .limit(limit + 1)
+    #     ).all()
+    #     has_more = len(items) > limit
+    #     return items[:limit], has_more
 
     def add_favorito_serie(self, serie: Serie, usuario: Usuario) -> Favorito:
         favorito = Favorito(

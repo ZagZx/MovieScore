@@ -5,7 +5,6 @@ from services.favorito import FavoritoServiceDep
 from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.serie import GeneroSerie, SerieFiltros, SerieListRead, SerieRead
-from schemas.favorito import SerieFavoritaRead
 from schemas.assistido import SerieAssistidaRead
 from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from schemas.avaliacao import (
@@ -85,19 +84,19 @@ def listar_generos_series(serie_service: SerieServiceDep):
     return serie_service.list_generos()
 
 
-@series_router.get("/favoritas", response_model=CursorPage[SerieFavoritaRead])
-def listar_series_favoritas(
-    current_user: CurrentUsuarioDep,
-    favorito_service: FavoritoServiceDep,
-    paging_params: CursorMediaPaginationParams = Depends(),
-):
-    series, paging = favorito_service.list_favoritos_serie(
-        current_user.id,
-        paging_params.cursor,
-        paging_params.limit,
-        paging_params.ordenacao,
-    )
-    return CursorPage(data=series, pagination=paging)
+# @series_router.get("/favoritas", response_model=CursorPage[SerieFavoritaRead])
+# def listar_series_favoritas(
+#     current_user: CurrentUsuarioDep,
+#     favorito_service: FavoritoServiceDep,
+#     paging_params: CursorMediaPaginationParams = Depends(),
+# ):
+#     series, paging = favorito_service.list_favoritos_serie(
+#         current_user.id,
+#         paging_params.cursor,
+#         paging_params.limit,
+#         paging_params.ordenacao,
+#     )
+#     return CursorPage(data=series, pagination=paging)
 
 
 @series_router.get("/assistidas", response_model=CursorPage[SerieAssistidaRead])

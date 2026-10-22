@@ -4,7 +4,6 @@ from auth.dependencies import CurrentUsuarioDep
 from schemas.anime import AnimeFiltros, AnimeRead, CategoriaRead
 from schemas.assistido import AnimeAssistidoRead
 from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
-from schemas.favorito import AnimeFavoritoRead
 from schemas.pagination.kitsu import (
     KitsuPaginationParams,
     KitsuPage,
@@ -114,19 +113,19 @@ def listar_categorias(
     )
 
 
-@animes_router.get("/favoritos", response_model=CursorPage[AnimeFavoritoRead])
-def listar_animes_favoritos(
-    current_user: CurrentUsuarioDep,
-    favorito_service: FavoritoServiceDep,
-    paging_params: CursorMediaPaginationParams = Depends(),
-):
-    animes, paging = favorito_service.list_favoritos_anime(
-        current_user.id,
-        paging_params.cursor,
-        paging_params.limit,
-        paging_params.ordenacao,
-    )
-    return CursorPage(data=animes, pagination=paging)
+# @animes_router.get("/favoritos", response_model=CursorPage[AnimeFavoritoRead])
+# def listar_animes_favoritos(
+#     current_user: CurrentUsuarioDep,
+#     favorito_service: FavoritoServiceDep,
+#     paging_params: CursorMediaPaginationParams = Depends(),
+# ):
+#     animes, paging = favorito_service.list_favoritos_anime(
+#         current_user.id,
+#         paging_params.cursor,
+#         paging_params.limit,
+#         paging_params.ordenacao,
+#     )
+#     return CursorPage(data=animes, pagination=paging)
 
 
 @animes_router.get("/assistidos", response_model=CursorPage[AnimeAssistidoRead])
