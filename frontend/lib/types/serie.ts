@@ -1,4 +1,4 @@
-import { Genero, Imagens } from "./conteudo";
+import { Genero, ImagensConteudo } from "./conteudo";
 
 export interface TemporadaSerie {
 	id: number;
@@ -18,7 +18,7 @@ export interface SerieListagem {
 	descricao: string | null;
 	status: string;
 	data_lancamento: string | null;
-	imagens: Imagens;
+	imagens: ImagensConteudo;
 	generos_ids: number[];
 }
 
@@ -30,7 +30,7 @@ export interface Serie {
 	descricao: string | null;
 	status: string;
 	data_lancamento: string | null;
-	imagens: Imagens;
+	imagens: ImagensConteudo;
 	generos: Genero[];
 	duracao_episodios: number[];
 	quantidade_episodios: number;

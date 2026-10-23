@@ -12,15 +12,15 @@ export interface Genero {
     nome: string;
 }
 
-export interface Imagens {
+export interface ImagensConteudo {
     capa: string | null;
     banner: string | null;
 }
 
 export enum TipoConteudo {
-    ANIME = "Anime",
-    FILME = "Filme",
-    SERIE = "Série",
+    ANIME = "anime",
+    FILME = "filme",
+    SERIE = "serie",
 }
 
 export type Conteudo = FilmeListagem | Filme | SerieListagem | Serie | Anime;

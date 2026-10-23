@@ -1,4 +1,4 @@
-import { Categoria, Genero, Imagens } from "./conteudo";
+import { Categoria, Genero, ImagensConteudo } from "./conteudo";
 
 export enum StatusAnime {
     ANDAMENTO = "Em andamento",
@@ -18,7 +18,7 @@ export interface Anime {
     data_fim: string | null;
     quantidade_episodios: number | null;
     duracao_episodios: number | null;
-    imagens: Imagens;
+    imagens: ImagensConteudo;
     generos: Genero[];
     categorias: Categoria[];
 }

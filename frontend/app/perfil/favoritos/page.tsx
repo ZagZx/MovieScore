@@ -1,8 +1,11 @@
+import { getFavoritosUsuario } from "@/actions/usuario";
 import Header from "@/components/ui/Header";
 import FiltroConteudo from "@/components/ui/filtros/FiltroConteudo";
 import FiltroOrdemRecentes from "@/components/ui/filtros/FiltroOrdemRecentes";
 
 export default async function FavoritosPage() {
+  const result = await getFavoritosUsuario();
+  console.log(result)
   return (
     <>
       <Header />
