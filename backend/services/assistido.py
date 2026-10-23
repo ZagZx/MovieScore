@@ -6,7 +6,8 @@ from mappers.assistido import AssistidoMapper
 from exceptions import ConflictException, EntityNotFoundException, NotFoundException
 from models import Assistido
 from repositories import AssistidoRepositoryDep
-from schemas.assistido import AnimeAssistidoRead, FilmeAssistidoRead, SerieAssistidaRead
+from models.conteudo import TipoConteudo
+from schemas.assistido import AssistidoRead
 from schemas.pagination.cursor import CursorPagination, OrdenacaoCursor
 from .usuario import UsuarioServiceDep
 from .serie import SerieServiceDep
@@ -35,43 +36,29 @@ class AssistidoService:
             raise EntityNotFoundException("Assistido", assistido_id)
         return assistido
 
-    def list_assistidos_serie(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[SerieAssistidaRead], CursorPagination]:
+    def list_conteudos_assistidos(
+        self,
+        usuario_id: int,
+        ordenacao: OrdenacaoCursor,
+        tipo: TipoConteudo | None,
+        last_id: int,
+        limit: int,
+    ) -> tuple[list[AssistidoRead], CursorPagination]:
         usuario = self.usuario_service.get_usuario(usuario_id)
-        assistidos, has_more = self.assistido_repository.list_series_assistidas(
-            usuario, last_id, limit, ordenacao
-        )
-        items = AssistidoMapper.map_series(assistidos)
-        return items, CursorPagination(
-            cursor=assistidos[-1][1].id if assistidos else None,
-            has_more=has_more,
+
+        conteudos_assistidos, has_more = (
+            self.assistido_repository.list_conteudos_assistidos(
+                usuario=usuario,
+                ordenacao=ordenacao,
+                tipo=tipo,
+                last_id=last_id,
+                limit=limit,
+            )
         )
 
-    def list_assistidos_filme(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[FilmeAssistidoRead], CursorPagination]:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        assistidos, has_more = self.assistido_repository.list_filmes_assistidos(
-            usuario, last_id, limit, ordenacao
-        )
-        items = AssistidoMapper.map_filmes(assistidos)
+        items = AssistidoMapper.map_conteudos(conteudos_assistidos)
         return items, CursorPagination(
-            cursor=assistidos[-1][1].id if assistidos else None,
-            has_more=has_more,
-        )
-
-    def list_assistidos_anime(
-        self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    ) -> tuple[list[AnimeAssistidoRead], CursorPagination]:
-        usuario = self.usuario_service.get_usuario(usuario_id)
-        assistidos, has_more = self.assistido_repository.list_animes_assistidos(
-            usuario, last_id, limit, ordenacao
-        )
-        items = AssistidoMapper.map_animes(assistidos)
-        return items, CursorPagination(
-            cursor=assistidos[-1][1].id if assistidos else None,
-            has_more=has_more,
+            cursor=items[-1].id if items else None, has_more=has_more
         )
 
     def add_assistido_serie(self, serie_id: int, usuario_id: int):

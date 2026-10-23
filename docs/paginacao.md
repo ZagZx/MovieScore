@@ -102,15 +102,13 @@ Quando o cursor informado ultrapassa o último ID disponível, a API retorna
 Os esquemas envolvidos são `CursorPaginationParams`, `CursorPagination` e
 `CursorPage[T]`.
 
-As listagens de conteúdos assistidos também utilizam paginação por cursor:
+A listagem de conteúdos assistidos utiliza a rota `GET /usuarios/assistidos`.
+Ela recebe os parâmetros `limit`, `cursor` e `ordenacao`, além do filtro
+opcional `tipo`, que aceita `anime`, `filme` ou `serie`. Sem o filtro, retorna
+filmes, séries e animes na mesma lista; cada item informa seu `tipo`.
 
-- `GET /filmes/assistidos`;
-- `GET /series/assistidas`;
-- `GET /animes/assistidos`.
-
-Esses endpoints recebem os mesmos parâmetros `limit` e `cursor` e retornam
-`CursorPage[T]`. O cursor corresponde ao `id` do registro de assistência, e
-não ao ID externo do filme, série ou anime.
+A resposta usa `CursorPage[AssistidoRead]`. O cursor corresponde ao `id` do
+registro de assistência, e não ao ID externo do conteúdo.
 
 As listagens de conteúdos favoritos seguem o mesmo contrato:
 

@@ -64,45 +64,6 @@ class FavoritoService:
             cursor=items[-1].id if items else None, has_more=has_more
         )
 
-    # def list_favoritos_serie(
-    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    # ) -> tuple[list[SerieFavoritaRead], CursorPagination]:
-    #     usuario = self.usuario_service.get_usuario(usuario_id)
-    #     favoritos, has_more = self.favorito_repository.list_series_favoritas(
-    #         usuario, last_id, limit, ordenacao
-    #     )
-    #     items = FavoritoMapper.map_series(favoritos)
-    #     return items, CursorPagination(
-    #         cursor=favoritos[-1][1].id if favoritos else None,
-    #         has_more=has_more,
-    #     )
-
-    # def list_favoritos_filme(
-    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    # ) -> tuple[list[FilmeFavoritoRead], CursorPagination]:
-    #     usuario = self.usuario_service.get_usuario(usuario_id)
-    #     favoritos, has_more = self.favorito_repository.list_filmes_favoritos(
-    #         usuario, last_id, limit, ordenacao
-    #     )
-    #     items = FavoritoMapper.map_filmes(favoritos)
-    #     return items, CursorPagination(
-    #         cursor=favoritos[-1][1].id if favoritos else None,
-    #         has_more=has_more,
-    #     )
-
-    # def list_favoritos_anime(
-    #     self, usuario_id: int, last_id: int, limit: int, ordenacao: OrdenacaoCursor
-    # ) -> tuple[list[AnimeFavoritoRead], CursorPagination]:
-    #     usuario = self.usuario_service.get_usuario(usuario_id)
-    #     favoritos, has_more = self.favorito_repository.list_animes_favoritos(
-    #         usuario, last_id, limit, ordenacao
-    #     )
-    #     items = FavoritoMapper.map_animes(favoritos)
-    #     return items, CursorPagination(
-    #         cursor=favoritos[-1][1].id if favoritos else None,
-    #         has_more=has_more,
-    #     )
-
     def add_favorito_serie(self, serie_id: int, usuario_id: int):
         usuario = self.usuario_service.get_usuario(usuario_id)
         serie = self.serie_service.get_serie_from_db(serie_id)

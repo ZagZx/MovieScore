@@ -1,8 +1,14 @@
 from fastapi import APIRouter, status, UploadFile, Depends
 
-from services import UsuarioServiceDep, AvaliacaoServiceDep, FavoritoServiceDep
+from services import (
+    UsuarioServiceDep,
+    AvaliacaoServiceDep,
+    FavoritoServiceDep,
+    AssistidoServiceDep,
+)
 from schemas.avaliacao import AvaliacaoUsuarioRead
 from schemas.favorito import FavoritoRead
+from schemas.assistido import AssistidoRead
 from schemas.usuario import (
     UsuarioCreate,
     UsuarioRead,
@@ -61,6 +67,23 @@ def listar_favoritos_do_usuario_logado(
 ):
 
     items, pagination = favorito_service.list_conteudos_favoritos(
+        current_user.id,
+        paging_params.ordenacao,
+        tipo,
+        paging_params.cursor,
+        paging_params.limit,
+    )
+    return CursorPage(data=items, pagination=pagination)
+
+
+@usuario_router.get("/assistidos", response_model=CursorPage[AssistidoRead])
+def listar_assistidos_do_usuario_logado(
+    current_user: CurrentUsuarioDep,
+    assistido_service: AssistidoServiceDep,
+    tipo: TipoConteudo | None = None,
+    paging_params: CursorMediaPaginationParams = Depends(),
+):
+    items, pagination = assistido_service.list_conteudos_assistidos(
         current_user.id,
         paging_params.ordenacao,
         tipo,

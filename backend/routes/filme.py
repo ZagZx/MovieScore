@@ -3,7 +3,6 @@ from fastapi import APIRouter, Depends, status
 from auth.dependencies import CurrentUsuarioDep
 from schemas.pagination.tmdb import TmdbPage, TmdbPagination, TmdbPaginationParams
 from schemas.filme import FilmeFiltros, FilmeListRead, FilmeRead, GeneroFilme
-from schemas.assistido import FilmeAssistidoRead
 from schemas.pagination.cursor import CursorMediaPaginationParams, CursorPage
 from services import AssistidoServiceDep, FilmeServiceDep, AvaliacaoServiceDep
 from services.favorito import FavoritoServiceDep
@@ -104,36 +103,6 @@ def listar_filmes_em_breve(
 @filmes_router.get("/generos", response_model=list[GeneroFilme])
 def listar_generos_filmes(filme_service: FilmeServiceDep):
     return filme_service.list_generos()
-
-
-# @filmes_router.get("/favoritos", response_model=CursorPage[FilmeFavoritoRead])
-# def listar_filmes_favoritos(
-#     current_user: CurrentUsuarioDep,
-#     favorito_service: FavoritoServiceDep,
-#     paging_params: CursorMediaPaginationParams = Depends(),
-# ):
-#     filmes, paging = favorito_service.list_favoritos_filme(
-#         current_user.id,
-#         paging_params.cursor,
-#         paging_params.limit,
-#         paging_params.ordenacao,
-#     )
-#     return CursorPage(data=filmes, pagination=paging)
-
-
-@filmes_router.get("/assistidos", response_model=CursorPage[FilmeAssistidoRead])
-def listar_filmes_assistidos(
-    current_user: CurrentUsuarioDep,
-    assistido_service: AssistidoServiceDep,
-    paging_params: CursorMediaPaginationParams = Depends(),
-):
-    filmes, paging = assistido_service.list_assistidos_filme(
-        current_user.id,
-        paging_params.cursor,
-        paging_params.limit,
-        paging_params.ordenacao,
-    )
-    return CursorPage(data=filmes, pagination=paging)
 
 
 @filmes_router.get("/{filme_id}", response_model=FilmeRead)

@@ -1,34 +1,24 @@
 from datetime import date, datetime
 
+from models.conteudo import TipoConteudo
 from .base import Base
 from .conteudo import ImagensConteudo
 
 
-class FilmeAssistidoRead(Base):
-    id: int
+class ConteudoAssistido(Base):
+    id: int  # id externo
+    tipo: TipoConteudo
     titulo: str
     titulo_original: str
     status: str
     imagens: ImagensConteudo
     data_lancamento: date | None = None
-    data_adicao: datetime
 
 
-class SerieAssistidaRead(Base):
+class AssistidoBase(Base):
     id: int
-    titulo: str
-    titulo_original: str
-    status: str
-    imagens: ImagensConteudo
-    data_lancamento: date | None = None
     data_adicao: datetime
 
 
-class AnimeAssistidoRead(Base):
-    id: int
-    titulo: str
-    titulo_original: str
-    status: str
-    imagens: ImagensConteudo
-    data_lancamento: date | None = None
-    data_adicao: datetime
+class AssistidoRead(AssistidoBase):
+    conteudo: ConteudoAssistido
