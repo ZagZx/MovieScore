@@ -80,7 +80,9 @@ def decode_refresh_token(token: str) -> dict:
     Decodifica e valida um JWT de refresh.
     Lança JWTError se o token for inválido, expirado ou revogado.
     """
-    return _decode_token(token=token, expected_type="refresh", secret_key=REFRESH_SECRET_KEY)
+    return _decode_token(
+        token=token, expected_type="refresh", secret_key=REFRESH_SECRET_KEY
+    )
 
 
 def revoke_access_token(token: str) -> None:
