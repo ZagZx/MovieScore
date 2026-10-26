@@ -4,14 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError
 
-from auth import (
-    CurrentUsuarioDep,
-    create_access_token,
-    create_refresh_token,
-    decode_refresh_token,
-    revoke_access_token,
-    revoke_refresh_token,
-)
+from auth import CurrentUsuarioDep, create_access_token, create_refresh_token, decode_refresh_token, revoke_access_token, revoke_refresh_token
 from schemas.auth import LoginInput, RefreshTokenInput, TokenResponse
 from schemas.usuario import UsuarioRead
 from services import AuthServiceDep
@@ -57,9 +50,7 @@ def refresh(dados: RefreshTokenInput):
 @auth_router.post("/logout")
 def logout(
     dados: RefreshTokenInput,
-    credentials: Annotated[
-        HTTPAuthorizationCredentials | None, Depends(optional_bearer_scheme)
-    ] = None,
+    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(optional_bearer_scheme)] = None,
 ):
     """Revoga o refresh token e também invalida o access token atual, se fornecido."""
     try:
