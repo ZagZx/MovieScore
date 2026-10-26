@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import Depends, HTTPException, status
 
-from auth import create_access_token, verify_password
+from auth import create_access_token, create_refresh_token, verify_password
 from repositories import UsuarioRepositoryDep
 from schemas.auth import LoginInput
 
@@ -11,7 +11,7 @@ class AuthService:
     def __init__(self, usuario_repository: UsuarioRepositoryDep):
         self.usuario_repository = usuario_repository
 
-    def autenticar(self, dados: LoginInput) -> str:
+    def autenticar(self, dados: LoginInput) -> dict:
         usuario = self.usuario_repository.get_usuario_by_email(dados.email)
 
         if not usuario or not verify_password(dados.senha, usuario.senha_hash):
@@ -21,7 +21,10 @@ class AuthService:
                 headers={"WWW-Authenticate": "Bearer"},
             )
 
-        return create_access_token(data={"sub": str(usuario.id)})
+        return {
+            "access_token": create_access_token(data={"sub": str(usuario.id)}),
+            "refresh_token": create_refresh_token(data={"sub": str(usuario.id)}),
+        }
 
 
 AuthServiceDep = Annotated[AuthService, Depends(AuthService)]
