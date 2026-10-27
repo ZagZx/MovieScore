@@ -1,4 +1,5 @@
 import { getFavoritosUsuario } from "@/actions/usuario";
+import CardConteudo from "@/components/ui/CardConteudo";
 import Header from "@/components/ui/Header";
 import FiltroConteudo from "@/components/ui/filtros/FiltroConteudo";
 import FiltroOrdemRecentes from "@/components/ui/filtros/FiltroOrdemRecentes";
@@ -16,6 +17,14 @@ export default async function FavoritosPage() {
         <div className="flex gap-2">
           <FiltroConteudo />
           <FiltroOrdemRecentes />
+        </div>
+
+        <div>
+          { result.success && result.data?.data.map(
+            (favorito) => (
+              <CardConteudo key={favorito.conteudo.id} conteudo={favorito.conteudo} />
+            )  
+          )}
         </div>
       </main>
     </>

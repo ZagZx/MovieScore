@@ -1,4 +1,5 @@
 import { Anime } from "./anime";
+import { ConteudoFavorito } from "./favoritos";
 import { Filme, FilmeListagem } from "./filme";
 import { Serie, SerieListagem } from "./serie";
 
@@ -23,7 +24,7 @@ export enum TipoConteudo {
     SERIE = "serie",
 }
 
-export type Conteudo = FilmeListagem | Filme | SerieListagem | Serie | Anime;
+export type Conteudo = FilmeListagem | Filme | SerieListagem | Serie | Anime | ConteudoFavorito;
 
 export interface ConteudoTitulos {
   titulo: string;
