@@ -9,7 +9,7 @@ export default async function FavoritosPage() {
   return (
     <>
       <Header />
-      <main className="px-5 py-8 md:px-8">
+      <main className="max-w-375 mx-auto w-full py-8 px-5 2xl:px-0">
         <h1 className="text-2xl my-2 font-bold border-b border-surface-border pb-2">
           Favoritos
         </h1>

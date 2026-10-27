@@ -4,13 +4,12 @@ import Header from "@/components/ui/Header";
 
 export default async function HomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
       <Header />
-
-      <main className="px-5 py-8 md:px-8">
+      <main className="py-8 max-w-375 mx-auto w-full px-5 2xl:px-0">
         <FilmesEmAlta />
         <SeriesEmAlta />
       </main>
-    </div>
+    </>
   );
 }
