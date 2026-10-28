@@ -14,10 +14,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 RUN useradd --create-home moviescore
 COPY --chown=moviescore:moviescore . .
+RUN chmod +x entrypoint.sh \ 
+    && mkdir -p storage/usuarios/fotos \ 
+    && chown -R moviescore:moviescore /app
 USER moviescore
 
 EXPOSE 8000
 
-RUN alembic upgrade head
-
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
