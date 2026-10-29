@@ -1,6 +1,6 @@
 # Segredos e configuração local
-# .env
-# .env.*
+.env
+.env.*
 !.env.example
 
 # Dependências (instaladas dentro da imagem com npm ci)
