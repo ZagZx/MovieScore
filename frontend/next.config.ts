@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/storage/:path*",
+        destination: `${process.env.BACKEND_URL}/storage/:path*`,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
