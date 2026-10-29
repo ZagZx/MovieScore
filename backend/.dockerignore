@@ -4,7 +4,7 @@
 !.env.example
 
 # Dados gerados em runtime (fotos de perfil ficam em volume)
-# storage/
+storage/
 
 # Python
 __pycache__/
