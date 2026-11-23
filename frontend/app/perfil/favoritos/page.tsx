@@ -1,12 +1,38 @@
 import { getFavoritosUsuario } from "@/actions/usuario";
-import CardConteudo from "@/components/ui/CardConteudo";
+import FavoritosLista from "@/components/features/favoritos/FavoritosLista";
 import Header from "@/components/ui/Header";
-import FiltroConteudo from "@/components/ui/filtros/FiltroConteudo";
-import FiltroOrdemRecentes from "@/components/ui/filtros/FiltroOrdemRecentes";
+import { TipoConteudo } from "@/lib/types/conteudo";
+import { OrdenacaoPorData } from "@/lib/types/ordenacao";
 
-export default async function FavoritosPage() {
-  const result = await getFavoritosUsuario();
-  console.log(result)
+interface FavoritosPageProps {
+  searchParams: Promise<{ tipo?: string | string[]; ordenacao?: string | string[] }>;
+}
+
+function parseTipo(value?: string | string[]): TipoConteudo | undefined {
+  if (typeof value !== "string") return undefined;
+  return Object.values(TipoConteudo).find((tipo) => tipo === value);
+}
+
+function parseOrdenacao(value?: string | string[]): OrdenacaoPorData {
+  if (typeof value !== "string") return OrdenacaoPorData.RECENTES;
+  return Object.values(OrdenacaoPorData).find((ordenacao) => ordenacao === value)
+    ?? OrdenacaoPorData.RECENTES;
+}
+
+export default async function FavoritosPage({ searchParams }: FavoritosPageProps) {
+  const query = await searchParams;
+  const tipo = parseTipo(query.tipo);
+  const ordenacao = parseOrdenacao(query.ordenacao);
+  const result = await getFavoritosUsuario({ tipo, ordenacao });
+
+  const erroInicial = result.success
+    ? result.data
+      ? undefined
+      : "Não foi possível carregar seus favoritos."
+    : typeof result.error === "string"
+      ? result.error
+      : result.error.map((item) => item.msg).join(" ");
+
   return (
     <>
       <Header />
@@ -14,18 +40,14 @@ export default async function FavoritosPage() {
         <h1 className="text-2xl my-2 font-bold border-b border-surface-border pb-2">
           Favoritos
         </h1>
-        <div className="flex gap-2">
-          <FiltroConteudo />
-          <FiltroOrdemRecentes />
-        </div>
-
-        <div>
-          { result.success && result.data?.data.map(
-            (favorito) => (
-              <CardConteudo key={favorito.conteudo.id} conteudo={favorito.conteudo} />
-            )  
-          )}
-        </div>
+        <FavoritosLista
+          key={`${tipo ?? "todos"}:${ordenacao}`}
+          favoritos={result.success ? result.data?.data ?? [] : []}
+          paginacao={result.success ? result.data?.pagination ?? null : null}
+          tipo={tipo}
+          ordenacao={ordenacao}
+          erroInicial={erroInicial}
+        />
       </main>
     </>
   );

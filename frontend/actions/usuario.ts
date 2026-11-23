@@ -60,7 +60,7 @@ export async function getFavoritosUsuario(
         const response = await axios.get<GetFavoritosUsuarioResponse>(
             GET_FAVORITOS_USUARIO_AUTENTICADO(), 
             {
-                params: {params},
+                params,
                 headers: headers,
             });
         return {
