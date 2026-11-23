@@ -1,3 +1,4 @@
+
 import FilmesEmAlta from "@/components/features/home/FilmesEmAlta";
 import SeriesEmAlta from "@/components/features/home/SeriesEmAlta";
 import Header from "@/components/ui/Header";
@@ -13,3 +14,5 @@ export default async function HomePage() {
     </>
   );
 }
+
+export const dynamic = "force-dynamic";
